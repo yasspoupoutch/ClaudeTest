@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>CNSNN brag</title>
+<style>
+/* Tokens from CNSNN App/DesignSystem/Theme.swift and Firebase/hosting/style.css */
+@font-face { font-family: "Fraunces"; font-weight: 900; src: url("fonts/Fraunces-Black.ttf"); }
+@font-face { font-family: "Instrument Serif"; font-style: normal; src: url("fonts/InstrumentSerif-Regular.ttf"); }
+@font-face { font-family: "Instrument Serif"; font-style: italic; src: url("fonts/InstrumentSerif-Italic.ttf"); }
+:root {
+  --bg: #06070c; --bg-top: #121426; --fg: #f4f5f8; --fg2: rgba(244,245,248,.64); --fg3: rgba(244,245,248,.56);
+  --gold: #ffc65a; --gold-top: #ffd673; --gold-bot: #f6b84d; --on-gold: #1a1406; --mint: #5ae6c6; --red: #ff8785;
+  --fill1: rgba(255,255,255,.08); --fill2: rgba(255,255,255,.14); --border: rgba(255,255,255,.16); --hl: rgba(255,255,255,.38); --line: rgba(255,255,255,.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+body { font-family: "Inter", sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
+#stage { position: absolute; inset: 0; overflow: hidden;
+  background: radial-gradient(1500px 1350px at 50% 0%, var(--bg-top), var(--bg)); }
+.abs { position: absolute; }
+.blob { position: absolute; border-radius: 50%; will-change: transform; }
+.serif { font-family: "Instrument Serif", serif; font-weight: 400; }
+.italic { font-family: "Instrument Serif", serif; font-style: italic; }
+.glass { background: linear-gradient(rgba(255,255,255,.14), rgba(255,255,255,.05)); border: 2px solid var(--border);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.22), 0 35px 60px rgba(0,0,0,.3); }
+.panel { background: var(--fill1); border: 2px solid var(--border); }
+.pill { border-radius: 999px; display: flex; align-items: center; justify-content: center; }
+.gold-fill { background: linear-gradient(var(--gold-top), var(--gold-bot)); color: var(--on-gold); }
+.center-x { left: 0; right: 0; text-align: center; }
+.v { color: var(--gold); display: inline-block; }
+
+/* Game screen (SwiftUI points x 2.5) */
+#topbar { left: 92px; right: 92px; top: 170px; height: 120px; }
+#closeBtn { left: 0; top: 15px; width: 90px; height: 90px; border-radius: 50%; }
+#chrono { right: 0; top: 15px; height: 90px; padding: 0 32px; font-weight: 700; font-size: 35px; font-variant-numeric: tabular-nums; }
+#title { left: 0; right: 0; top: 18px; text-align: center; }
+#title b { display: block; font-size: 40px; font-weight: 600; }
+#title span { display: block; font-size: 30px; color: var(--fg3); margin-top: 2px; }
+#srr { left: 0; right: 0; text-align: center; line-height: 1; white-space: nowrap; transform-origin: 50% 50%; }
+#divider { left: 495px; width: 90px; height: 4px; background: var(--fg3); top: 700px; }
+#hint { top: 760px; font-size: 64px; }
+#notice { top: 950px; font-size: 30px; color: var(--fg3); }
+#answer { left: 112px; right: 112px; top: 1040px; height: 140px; border-bottom: 2px solid var(--fg3);
+  display: flex; align-items: center; justify-content: center; }
+#answer .ph { font-size: 55px; color: var(--fg3); }
+#answer .ch { font-size: 75px; font-weight: 500; letter-spacing: 6px; display: inline-block; }
+#caret { width: 6px; height: 75px; border-radius: 4px; background: var(--fg); margin-left: 6px; }
+#gbtns { left: 0; right: 0; top: 1210px; display: flex; justify-content: center; gap: 20px; }
+#gbtns .pill { height: 90px; padding: 0 40px; font-size: 33px; font-weight: 500; }
+#kb { left: 92px; right: 92px; top: 1330px; height: 565px; border-radius: 75px; padding: 25px 15px; }
+.krow { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.key { width: 77.5px; height: 110px; border-radius: 25px; display: flex; align-items: center; justify-content: center;
+  font-size: 47px; font-weight: 500; background: var(--fill1); border: 2px solid var(--border); }
+.key.vk { background: linear-gradient(var(--gold-top), var(--gold-bot)); border: none; color: var(--on-gold); }
+.kbottom { display: flex; gap: 15px; padding: 5px 10px 0; }
+.kspace { width: 275px; height: 120px; font-size: 40px; }
+#valider { flex: 1; height: 120px; font-size: 42px; font-weight: 600; }
+
+/* Result sheet */
+#dim { inset: 0; background: rgba(0,0,0,.42); }
+#sheet { left: 72px; right: 72px; bottom: 60px; border-radius: 120px; padding: 70px 55px 60px;
+  background: linear-gradient(rgb(36,38,50), rgb(19,20,27)); border: 2px solid var(--border);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.3), 0 -50px 80px rgba(0,0,0,.3);
+  display: flex; flex-direction: column; align-items: center; }
+#rkicker { font-size: 62px; color: var(--mint); }
+#rword { margin-top: 26px; font-size: 118px; font-weight: 900; letter-spacing: 7px; white-space: nowrap; position: relative; line-height: 1.15; }
+#rglow { position: absolute; left: 50%; top: 50%; width: 900px; height: 360px; margin: -180px 0 0 -450px;
+  background: radial-gradient(closest-side, rgba(255,198,90,.45), rgba(255,198,90,0)); }
+#rword .v { text-shadow: 0 0 30px rgba(255,198,90,.6); }
+#rhint { margin-top: 14px; font-size: 38px; color: var(--fg2); }
+#tiles { margin-top: 46px; display: flex; gap: 25px; width: 100%; }
+.tile { flex: 1; padding: 28px 0; border-radius: 50px; background: var(--fill1); border: 2px solid var(--line); text-align: center; }
+.tile b { display: block; font-size: 55px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tile span { display: block; font-size: 30px; color: var(--fg3); margin-top: 4px; }
+#official { margin-top: 36px; text-align: center; }
+#official b { display: block; font-size: 46px; color: var(--mint); font-weight: 700; }
+#official span { display: block; font-size: 34px; color: var(--fg2); margin-top: 4px; }
+#rbtns { margin-top: 48px; display: flex; gap: 25px; width: 100%; }
+#rbtns .pill { height: 135px; font-size: 42px; font-weight: 600; }
+
+/* Scene 4 */
+#s4h { top: 330px; font-size: 128px; line-height: 1.02; }
+#board { left: 90px; right: 90px; top: 760px; border-radius: 85px; padding: 40px 40px 30px; }
+#seg { display: flex; padding: 8px; border-radius: 999px; background: rgba(0,0,0,.25); margin-bottom: 26px; }
+#seg div { flex: 1; text-align: center; padding: 20px 0; font-size: 31px; font-weight: 600; color: var(--fg2); border-radius: 999px; }
+#seg div.on { background: rgba(255,255,255,.17); color: var(--fg); }
+.row { display: flex; align-items: center; height: 116px; padding: 0 28px; border-radius: 50px; margin-top: 8px; }
+.row .rk { width: 64px; font-size: 38px; font-weight: 700; color: var(--fg3); }
+.row .av { width: 76px; height: 76px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 700; color: #0b0c10; margin-right: 28px; }
+.row .nm { flex: 1; font-size: 42px; font-weight: 600; }
+.row .tm { font-size: 42px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.row.me { background: rgba(255,198,90,.14); border: 2px solid rgba(255,198,90,.35); }
+.row.me .nm, .row.me .tm { color: var(--gold); }
+#s4sub { top: 1590px; font-size: 56px; color: var(--fg2); }
+
+/* Scene 5 */
+.mode { background: linear-gradient(rgb(46,40,92), rgb(22,30,52)) !important; left: 90px; width: 900px; top: 360px; height: 1140px; border-radius: 95px; padding: 70px 50px; text-align: center; }
+.kick { font-size: 34px; font-weight: 800; letter-spacing: 9px; color: var(--gold); }
+.mcap { position: absolute; left: 0; right: 0; bottom: 90px; font-size: 84px; }
+#ring { position: absolute; left: 175px; top: 210px; width: 550px; height: 550px; }
+#ringNum { position: absolute; left: 0; right: 0; top: 345px; font-size: 300px; line-height: 1; }
+#ringNum small { font-size: 110px; font-style: italic; color: var(--fg2); }
+#combo { position: absolute; left: 50%; top: 790px; height: 110px; padding: 0 50px; transform: translateX(-50%); font-size: 58px; font-weight: 800; }
+#hearts { position: absolute; left: 0; right: 0; top: 330px; display: flex; justify-content: center; gap: 50px; }
+#hearts svg { width: 220px; height: 220px; }
+#lvl { position: absolute; left: 50%; top: 650px; transform: translateX(-50%); height: 90px; padding: 0 44px; font-size: 38px; font-weight: 600; white-space: nowrap; }
+#frn { position: absolute; left: 0; right: 0; top: 190px; font-size: 300px; line-height: 1; letter-spacing: 8px; }
+.dw { position: absolute; left: 0; right: 0; font-size: 140px; font-weight: 900; letter-spacing: 6px; white-space: nowrap; line-height: 1; }
+.dw .v { text-shadow: 0 0 26px rgba(255,198,90,.55); }
+#ou { position: absolute; left: 0; right: 0; top: 690px; font-size: 80px; color: var(--fg2); }
+
+/* Scene 6 */
+#mark { left: 0; right: 0; top: 650px; text-align: center; font-family: "Fraunces", serif; font-weight: 900; white-space: nowrap; line-height: 1; letter-spacing: .02em; }
+#mark .v { text-shadow: 0 0 40px rgba(255,198,90,.55); }
+#markGlow { left: 40px; right: 40px; top: 560px; height: 420px; background: radial-gradient(closest-side, rgba(255,198,90,.35), rgba(255,198,90,0)); }
+#tag { top: 1020px; font-size: 92px; line-height: 1.1; }
+#free { left: 50%; top: 1330px; height: 120px; padding: 0 60px; font-size: 44px; font-weight: 700; transform: translateX(-50%); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="blob" id="b1"></div>
+  <div class="blob" id="b2"></div>
+
+  <!-- Scene 1: hook -->
+  <div class="abs center-x italic" id="hookK" style="top:1120px;font-size:84px;color:var(--gold)">Trouverez-vous les voyelles ?</div>
+
+  <!-- Scene 2: game screen -->
+  <div id="g2" class="abs" style="inset:0">
+  <div id="game" class="abs" style="inset:0">
+    <div class="abs" id="topbar">
+      <div class="abs glass" id="closeBtn"><svg viewBox="0 0 24 24" width="90" height="90"><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#f4f5f8" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <div class="abs" id="title"><b>Mot du jour</b><span>Général · Facile</span></div>
+      <div class="abs glass pill" id="chrono">0:00</div>
+    </div>
+    <div class="abs" id="divider"></div>
+    <div class="abs center-x italic" id="hint">« On le voit sur mon visage. »</div>
+    <div class="abs center-x" id="notice">Chrono officiel. 20 essais pour trouver le mot.</div>
+    <div class="abs" id="answer"><span class="italic ph" id="ph">votre réponse</span><span id="typed"></span><div id="caret"></div></div>
+    <div class="abs" id="gbtns">
+      <div class="pill glass" id="indiceBtn"><b style="font-weight:700">Indice</b>&nbsp;&nbsp;<span id="indiceTag">+1 min</span></div>
+      <div class="pill glass" style="color:var(--fg2)">Passer</div>
+    </div>
+    <div class="abs glass" id="kb"></div>
+  </div>
+  <div class="abs serif" id="srr">SRR</div>
+
+  <div class="abs" id="dim"></div>
+  <div class="abs" id="sheet">
+    <div class="italic" id="rkicker">Trouvé en 0:12.</div>
+    <div id="rword"><div id="rglow"></div><span style="position:relative" id="rletters"></span></div>
+    <div id="rhint">« On le voit sur mon visage. »</div>
+    <div id="tiles">
+      <div class="tile"><b>1:12</b><span>temps</span></div>
+      <div class="tile"><b>+1 min</b><span>indice</span></div>
+      <div class="tile"><b>7</b><span>jours de série</span></div>
+    </div>
+    <div id="official"><b>Top 5 %</b><span>3e sur 120 aujourd’hui</span></div>
+    <div id="rbtns"><div class="pill glass" style="flex:1">Partager</div><div class="pill gold-fill" style="flex:1.4">Terminer</div></div>
+  </div>
+  </div>
+
+  <!-- Scene 4: same word for everyone -->
+  <div id="s4" class="abs" style="inset:0">
+    <div class="abs center-x" id="s4h"><div class="serif" id="s4l1">Un mot par jour.</div><div class="italic" id="s4l2" style="color:var(--gold)">Le même pour tous.</div></div>
+    <div class="abs glass" id="board">
+      <div id="seg"><div class="on">Aujourd’hui</div><div>Mois</div><div>Amis</div><div>Records</div></div>
+      <div id="rows"></div>
+    </div>
+  </div>
+
+  <!-- Scene 5: modes -->
+  <div class="abs glass mode" id="m1">
+    <div class="kick">SPRINT</div>
+    <svg id="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3"/>
+      <circle id="ringArc" cx="50" cy="50" r="46" fill="none" stroke="#ffc65a" stroke-width="3" stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="289.03" stroke-dashoffset="0"/></svg>
+    <div class="serif" id="ringNum"><span id="ringN">90</span><small> s</small></div>
+    <div class="pill gold-fill" id="combo">combo ×1</div>
+    <div class="mcap serif">90 secondes chrono.</div>
+  </div>
+  <div class="abs glass mode" id="m2">
+    <div class="kick">SURVIE</div>
+    <div id="hearts"></div>
+    <div class="pill glass" id="lvl">Niveau 4 · de plus en plus dur</div>
+    <div class="mcap serif">Trois vies, pas plus.</div>
+  </div>
+  <div class="abs glass mode" id="m3">
+    <div class="kick">DOUBLE SENS</div>
+    <div class="serif" id="frn">FRN</div>
+    <div class="dw" id="dw1" style="top:540px"></div>
+    <div class="italic" id="ou">ou</div>
+    <div class="dw" id="dw2" style="top:800px"></div>
+    <div class="mcap serif" style="font-size:74px">Mêmes consonnes. Deux mots.</div>
+  </div>
+
+  <!-- Scene 6: outro -->
+  <div class="abs" id="markGlow"></div>
+  <div class="abs" id="mark"></div>
+  <div class="abs center-x italic" id="tag"><span>Retrouvez le mot.</span><br><span style="color:var(--gold)">Sans ses voyelles.</span></div>
+  <div class="abs pill gold-fill" id="free">Gratuit, sans publicité.</div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, p) => a + (b - a) * p;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+// cubic-bezier solver (CNSNNTheme.ease = 0.2, 0.9, 0.25, 1)
+function bezier(x1, y1, x2, y2) {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sx = u => ((ax * u + bx) * u + cx) * u, sy = u => ((ay * u + by) * u + cy) * u;
+  return x => { if (x <= 0) return 0; if (x >= 1) return 1; let u = x;
+    for (let i = 0; i < 8; i++) { const d = (3 * ax * u + 2 * bx) * u + cx; if (Math.abs(d) < 1e-6) break; u -= (sx(u) - x) / d; }
+    return sy(clamp(u)); };
+}
+const ease = bezier(0.2, 0.9, 0.25, 1);
+const easeIn = bezier(0.5, 0, 0.9, 0.4);
+const io = bezier(0.65, 0, 0.35, 1);
+// SwiftUI-style spring(response, dampingFraction)
+function spring(t, response = 0.42, damping = 0.62) {
+  if (t <= 0) return 0;
+  const w = 2 * Math.PI / response, wd = w * Math.sqrt(1 - damping * damping);
+  return 1 - Math.exp(-damping * w * t) * (Math.cos(wd * t) + (damping * w / wd) * Math.sin(wd * t));
+}
+const set = (el, op, tf = '') => { el.style.opacity = op; el.style.transform = tf; el.style.visibility = op <= 0.001 ? 'hidden' : 'visible'; };
+const isVowel = c => 'AEIOUY'.includes(c);
+
+// Build letters for words whose vowels slide into the gaps (VowelReveal)
+function buildWord(el, word) {
+  el.innerHTML = '';
+  return [...word].map(c => { const s = document.createElement('span'); s.textContent = c; s.style.display = 'inline-block';
+    if (isVowel(c)) { s.className = 'v'; s.style.display = 'inline-flex'; s.style.justifyContent = 'center'; } el.appendChild(s); return { el: s, v: isVowel(c), w: 0 }; });
+}
+function measure(letters) { letters.forEach(l => { l.el.style.width = ''; l.w = l.el.getBoundingClientRect().width; }); }
+function reveal(letters, pFor) { // pFor(vowelIndex) -> progress
+  let i = 0; letters.forEach(l => { if (!l.v) return; const p = pFor(i++);
+    l.el.style.width = Math.max(0, l.w * p) + 'px'; l.el.style.opacity = Math.pow(clamp(p), 1.6);
+    l.el.style.transform = `translateY(${(-0.35 * (1 - clamp(p)))}em) scale(${lerp(0.6, 1, clamp(p))})`; });
+}
+
+// Keyboard
+const rowsKB = ['AZERTYUIOP', 'QSDFGHJKLM', 'WXCVBN'];
+const keyEls = {};
+rowsKB.forEach((r, ri) => { const row = document.createElement('div'); row.className = 'krow';
+  [...r].forEach(c => { const k = document.createElement('div'); k.className = 'key' + (isVowel(c) ? ' vk' : ''); k.textContent = c; keyEls[c] = k; row.appendChild(k); });
+  if (ri === 2) { const d = document.createElement('div'); d.className = 'key'; d.style.width = (77.5 * 2 + 10) + 'px'; d.textContent = '⌫'; row.appendChild(d); }
+  $('kb').appendChild(row); });
+const kbb = document.createElement('div'); kbb.className = 'kbottom';
+kbb.innerHTML = '<div class="key kspace">espace</div><div class="pill gold-fill" id="valider">Valider</div>';
+$('kb').appendChild(kbb);
+
+// Typing schedule
+const WORD = 'SOURIRE';
+const typeAt = [...WORD].map((_, i) => 4.55 + i * 0.26);
+const typedEls = [...WORD].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; if (isVowel(c)) s.style.color = 'var(--gold)'; $('typed').appendChild(s); return s; });
+
+// Leaderboard rows (fictional players)
+const avatars = ['#f3b94c', '#49d9b9', '#aa99ff', '#f28abd', '#5dc0f6'];
+const people = [['Léa', '0:41', 0], ['Malik', '0:58', 1], ['Vous', '1:12', 2], ['Inès', '1:30', 3], ['Tom', '2:05', 4]];
+const rowEls = people.map(([n, tm, a], i) => { const r = document.createElement('div'); r.className = 'row' + (n === 'Vous' ? ' me' : '');
+  r.innerHTML = `<div class="rk">${i + 1}</div><div class="av" style="background:${avatars[a]}">${n[0]}</div><div class="nm">${n}</div><div class="tm">${tm}</div>`;
+  $('rows').appendChild(r); return r; });
+
+// Hearts
+const heartPath = 'M12 21s-7.5-4.6-10-9.3C.3 8.4 2.2 4 6.4 4c2.3 0 3.9 1.3 5.6 3.3C13.7 5.3 15.3 4 17.6 4 21.8 4 23.7 8.4 22 11.7 19.5 16.4 12 21 12 21z';
+const heartEls = [0, 1, 2].map(() => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24');
+  s.innerHTML = `<path d="${heartPath}" fill="#ff8785"/>`; $('hearts').appendChild(s); return s; });
+
+let R, D1, D2, M;
+window.setup = async () => {
+  await document.fonts.ready;
+  R = buildWord($('rletters'), 'SOURIRE'); measure(R);
+  D1 = buildWord($('dw1'), 'FARINE'); measure(D1);
+  D2 = buildWord($('dw2'), 'FREIN'); measure(D2);
+  // Wordmark: fit CONSONNE into 940px
+  $('mark').style.fontSize = '200px';
+  M = buildWord($('mark'), 'CONSONNE'); const full = $('mark').scrollWidth;
+  const span = document.createElement('span'); span.style.display = 'inline-block'; span.textContent = 'CONSONNE'; $('mark').appendChild(span);
+  const fs = Math.floor(200 * 940 / span.getBoundingClientRect().width); span.remove();
+  $('mark').style.fontSize = fs + 'px'; measure(M);
+  return true;
+};
+
+window.render = (t) => {
+  // Ambient background (AmbientBackground): two cool blobs drifting
+  const sc = 1080 / 390;
+  const dimmed = lerp(0.5, 0.28, prog(t, 2.8, 3.3) * (1 - prog(t, 9.5, 10.0)));
+  const d1 = (1 - Math.cos(Math.PI * 2 * t / 32)) / 2, d2 = (1 - Math.cos(Math.PI * 2 * t / 38)) / 2;
+  [[$('b1'), '89,62,199', -80, -60, 90, 140, 1, 1.25, d1], [$('b2'), '0,125,134', 170, 420, -110, -120, 1.1, 0.9, d2]].forEach(([el, rgb, x, y, dx, dy, s0, s1, d]) => {
+    const size = (360 + 140) * sc;
+    el.style.width = el.style.height = size + 'px';
+    el.style.background = `radial-gradient(closest-side, rgba(${rgb},1), rgba(${rgb},.55) 70%, rgba(${rgb},0))`;
+    el.style.left = (x - 70) * sc + 'px'; el.style.top = ((y - 70) * sc + 200) + 'px';
+    el.style.opacity = dimmed;
+    el.style.transform = `translate(${dx * d * sc}px, ${dy * d * sc}px) scale(${lerp(s0, s1, d)})`;
+  });
+
+  // ---------- Scene 1 + 2: SRR moves from hook to board ----------
+  const gameOut = prog(t, 9.55, 9.9);
+  const mv = ease(prog(t, 2.75, 3.35));
+  const srr = $('srr');
+  const fs = lerp(430, 220, mv);
+  srr.style.fontSize = fs + 'px'; srr.style.letterSpacing = lerp(18, 7.5, mv) + 'px';
+  srr.style.top = (lerp(830, 520, mv) - fs * 0.5) + 'px';
+  const hookIn = ease(prog(t, -0.2, 0.4));
+  set(srr, hookIn, `scale(${lerp(1.08, 1, hookIn)})`);
+  set($('g2'), 1 - ease(gameOut), `scale(${1 - 0.04 * ease(gameOut)})`);
+  const hk = ease(prog(t, 0.45, 0.95)), hkOut = prog(t, 2.55, 2.85);
+  set($('hookK'), hk * (1 - hkOut), `translateY(${(1 - hk) * 30 - hkOut * 40}px)`);
+
+  const gIn = ease(prog(t, 3.0, 3.5));
+  set($('game'), t < 2.9 ? 0 : 1);
+  set($('topbar'), gIn, `translateY(${(1 - gIn) * -40}px)`);
+  set($('divider'), ease(prog(t, 3.1, 3.5)), `scaleX(${ease(prog(t, 3.1, 3.5))})`);
+  set($('notice'), ease(prog(t, 3.2, 3.6)));
+  set($('answer'), ease(prog(t, 3.1, 3.55)), `translateY(${(1 - ease(prog(t, 3.1, 3.55))) * 30}px)`);
+  set($('gbtns'), ease(prog(t, 3.15, 3.6)), `translateY(${(1 - ease(prog(t, 3.15, 3.6))) * 30}px)`);
+  const kbIn = ease(prog(t, 3.0, 3.5));
+  set($('kb'), kbIn, `translateY(${(1 - kbIn) * 600}px)`);
+
+  // Chrono: time-lapsed, 0:00 at 3.1s, 0:12 at Valider
+  const secs = Math.floor(clamp((t - 3.1) / (6.4 - 3.1)) * 12);
+  $('chrono').textContent = '0:' + String(secs).padStart(2, '0');
+
+  // Indice tap
+  const ind = $('indiceBtn');
+  const pressI = Math.exp(-Math.pow((t - 3.8) / 0.07, 2));
+  ind.style.transform = `scale(${1 - 0.06 * pressI})`;
+  $('indiceTag').textContent = t >= 3.85 ? 'révélé' : '+1 min';
+  ind.style.opacity = t >= 3.95 ? 0.5 : 1;
+  const hi = ease(prog(t, 3.9, 4.35));
+  set($('hint'), hi, `translateY(${(1 - hi) * 20}px)`);
+
+  // Typing
+  let n = 0; typedEls.forEach((s, i) => { const on = t >= typeAt[i]; if (on) n++;
+    s.style.display = on ? 'inline-block' : 'none';
+    const pop = prog(t, typeAt[i], typeAt[i] + 0.14); s.style.transform = `scale(${lerp(1.25, 1, ease(pop))})`; });
+  $('ph').style.display = n ? 'none' : 'inline';
+  $('caret').style.opacity = (t > 6.45) ? 0 : (Math.floor(t * 2) % 2 === 0 || (n && t - typeAt[n - 1] < 0.5)) ? 1 : 0;
+  Object.values(keyEls).forEach(k => { k.style.transform = ''; k.style.filter = ''; });
+  WORD.split('').forEach((c, i) => { const d = t - typeAt[i] + 0.05; if (d > 0 && d < 0.18) {
+    const p = Math.sin(Math.PI * d / 0.18); keyEls[c].style.transform = `scale(${1 - 0.12 * p})`; keyEls[c].style.filter = `brightness(${1 + 0.6 * p})`; } });
+  const pv = Math.exp(-Math.pow((t - 6.45) / 0.07, 2));
+  $('valider').style.transform = `scale(${1 - 0.06 * pv})`;
+  // A small shake-free success: answer line flashes gold
+  $('answer').style.borderBottomColor = t > 6.5 ? 'rgba(255,198,90,.9)' : 'var(--fg3)';
+
+  // ---------- Scene 3: result sheet ----------
+  const sh = ease(prog(t, 6.7, 7.2));
+  set($('dim'), sh);
+  set($('sheet'), t < 6.7 ? 0 : 1, `translateY(${(1 - sh) * 1300}px)`);
+  const r0 = 7.2 + 0.35;
+  reveal(R, i => spring(t - (r0 + i * 0.16)));
+  const glow = ease(prog(t, r0 + 3 * 0.16 + 0.3, r0 + 3 * 0.16 + 0.65)) * (1 - prog(t, 8.6, 9.5));
+  $('rglow').style.opacity = glow;
+  set($('official'), ease(prog(t, 8.45, 8.85)), `translateY(${(1 - ease(prog(t, 8.45, 8.85))) * 20}px)`);
+
+  // ---------- Scene 4: same word, leaderboard ----------
+  const s4out = prog(t, 12.5, 12.8);
+  set($('s4'), t < 9.8 || t > 12.85 ? 0 : 1 - s4out, `translateY(${-60 * ease(s4out)}px)`);
+  const l1 = ease(prog(t, 9.9, 10.3)), l2 = ease(prog(t, 10.15, 10.55));
+  set($('s4l1'), l1, `translateY(${(1 - l1) * 40}px)`);
+  set($('s4l2'), l2, `translateY(${(1 - l2) * 40}px)`);
+  const bIn = ease(prog(t, 10.35, 10.8));
+  set($('board'), bIn, `translateY(${(1 - bIn) * 80}px)`);
+  rowEls.forEach((r, i) => { const p = ease(prog(t, 10.5 + i * 0.1, 10.85 + i * 0.1)); set(r, p, `translateX(${(1 - p) * 60}px)`); });
+  const me = Math.exp(-Math.pow((t - 11.4) / 0.25, 2));
+  rowEls[2].style.transform = `scale(${1 + 0.04 * me})`;
+  rowEls[2].style.boxShadow = `0 0 ${60 * me}px rgba(255,198,90,${0.5 * me})`;
+
+  // ---------- Scene 5: modes (swipe cards) ----------
+  const cards = [[$('m1'), 12.8, 14.2], [$('m2'), 14.2, 15.6], [$('m3'), 15.6, 17.0]];
+  cards.forEach(([el, a, b], i) => {
+    const inP = i === 0 ? ease(prog(t, a, a + 0.4)) : io(prog(t, a - 0.15, a + 0.2));
+    const outP = i === 2 ? prog(t, b - 0.2, b + 0.1) : io(prog(t, b - 0.15, b + 0.2));
+    const vis = t >= a - 0.15 && t <= b + 0.3;
+    let tx = 0, op = 1, s = 1;
+    if (i === 0) { op = inP; s = lerp(0.92, 1, inP); } else { tx = (1 - inP) * 1100; }
+    if (i === 2) { op *= 1 - outP; s *= 1 - 0.04 * outP; } else { tx -= outP * 1100; }
+    set(el, vis ? op : 0, `translateX(${tx}px) scale(${s})`);
+  });
+  // Sprint: ring drains, combo climbs
+  const sp = prog(t, 13.0, 14.2);
+  $('ringArc').setAttribute('stroke-dashoffset', (289.03 * sp * 0.12).toFixed(2));
+  $('ringN').textContent = String(90 - Math.floor(sp * 5));
+  const step = clamp(Math.floor((t - 13.15) / 0.2) + 1, 1, 5);
+  $('combo').textContent = 'combo ×' + step;
+  const cp = (t - 13.15) - (step - 1) * 0.2; const pop = step > 1 && cp < 0.15 ? Math.sin(Math.PI * cp / 0.15) : 0;
+  $('combo').style.transform = `translateX(-50%) scale(${1 + 0.12 * pop})`;
+  // Survie: one heart lost
+  heartEls.forEach((h, i) => { const pin = spring(t - (14.35 + i * 0.1), 0.4, 0.6); h.style.transform = `scale(${pin})`; });
+  const lost = prog(t, 14.95, 15.15);
+  const shake = t > 14.95 && t < 15.3 ? Math.sin((t - 14.95) * 60) * 12 * (1 - prog(t, 14.95, 15.3)) : 0;
+  heartEls[2].querySelector('path').setAttribute('fill', lost > 0.5 ? 'rgba(255,255,255,.12)' : '#ff8785');
+  heartEls[2].style.transform += ` translateX(${shake}px)`;
+  set($('lvl'), ease(prog(t, 14.6, 14.95)));
+  // Double sens: FRN -> FARINE / FREIN
+  reveal(D1, i => spring(t - (16.0 + i * 0.12), 0.42, 0.62));
+  reveal(D2, i => spring(t - (16.35 + i * 0.12), 0.42, 0.62));
+  set($('dw1'), t >= 15.95 ? 1 : 0); set($('dw2'), t >= 16.3 ? 1 : 0);
+  set($('ou'), ease(prog(t, 16.2, 16.4)));
+
+  // ---------- Scene 6: CNSNN -> CONSONNE ----------
+  const mk = ease(prog(t, 17.05, 17.5));
+  set($('mark'), mk, `scale(${lerp(1.12, 1, mk)})`);
+  reveal(M, i => spring(t - (17.9 + i * 0.16), 0.42, 0.62));
+  set($('markGlow'), ease(prog(t, 18.3, 18.7)) * (0.6 + 0.4 * (1 - prog(t, 18.7, 20))));
+  const tg = ease(prog(t, 18.55, 19.0));
+  set($('tag'), tg, `translateY(${(1 - tg) * 30}px)`);
+  const fr = spring(t - 19.3, 0.5, 0.7);
+  set($('free'), clamp(fr), `translateX(-50%) scale(${lerp(0.8, 1, fr)})`);
+  return true;
+};
+</script>
+</body>
+</html>
