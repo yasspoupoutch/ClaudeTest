@@ -5,3 +5,8 @@ work/*.wav
 work/renders/
 work/*_screen/
 __pycache__/
+work/overlays/
+work/screens/
+work/edit/
+work/queue.sh.log
+work/peek*
