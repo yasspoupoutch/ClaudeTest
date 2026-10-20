@@ -10,3 +10,7 @@ work/screens/
 work/edit/
 work/queue.sh.log
 work/peek*
+work/renders_v1/
+work/*.blend
+work/*.blend1
+work/tests/

@@ -1,10 +1,10 @@
 # Full soundtrack of the 3D video, timed on the edit (see assemble.sh):
 # quiet bedroom until the rewind, lo-fi groove from the app on, typewriter on the end card.
 import sys; from synth import *
-EDIT = dict(open=0.0, chat=2.0, type=6.8, mock=10.7, rewind=13.9, etsi=14.7, app=15.6, revenge=21.1, end=27.1)
-SCREEN0 = dict(open=-0.3, chat=1.7, type=6.4, mock=10.3, app=15.0, revenge=20.5)   # screen time at each shot's first frame
+EDIT = dict(open=0.0, chat=1.3, type=6.1, mock=10.0, rewind=13.2, etsi=14.0, app=14.9, revenge=20.4, end=26.4)
+SCREEN0 = dict(open=0.4, chat=1.7, type=6.4, mock=10.3, app=15.0, revenge=20.5)   # screen time at each shot's first frame
 def at(shot, screen_t): return EDIT[shot] + screen_t - SCREEN0[shot]
-DUR = 32.3
+DUR = 31.6
 M = Mix(DUR, seed=5)
 bpm = 88; beat = 60 / bpm; bar = 4 * beat
 chords = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]]   # Fmaj7 Em7 Dm7 Cmaj7
@@ -24,10 +24,10 @@ def tapback(t):
 
 # Bedroom tone under everything before the end card, a soft Fmaj7 pad until the rewind
 n = int(EDIT['end'] * SR)
-M.place(0.03 * smooth(M.noise(n), 300) + 0.004 * smooth(M.noise(n), 8), 0, 1.0)
+M.place(0.012 * smooth(smooth(M.noise(n), 400), 400), 0, 1.0)
 for m in [53, 57, 60, 64]: M.place(pad(m, EDIT['rewind']), 0, 0.012)
 # Timeline A
-M.place(bell(84, 0.25, 0.6), at('open', 0.15), 0.05); M.place(bell(88, 0.3, 0.8), at('open', 0.27), 0.05)   # notification
+M.place(bell(84, 0.25, 0.6), 0.05, 0.05); M.place(bell(88, 0.3, 0.8), 0.17, 0.05)   # notification (already shown when the shot starts)
 M.place(blip(96, dur=0.03), at('open', 1.3), 0.04)                                                            # tap
 for s in (2.75, 4.0, 5.35): incoming(at('chat', s))
 for i in range(8): soft_click(at('type', 7.25 + i * 0.27), 0.16)
