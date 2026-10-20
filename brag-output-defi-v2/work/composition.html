@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>CNSNN brag — défi v2</title>
+<link rel="stylesheet" href="base.css">
+<style>
+/* Night room around the phone */
+#room { inset: 0; background:
+  radial-gradient(900px 700px at 15% 8%, rgba(255,170,90,.38), rgba(255,170,90,0) 70%),
+  radial-gradient(1400px 900px at 70% 110%, rgba(120,70,30,.35), rgba(0,0,0,0) 70%),
+  linear-gradient(#1a120c, #070504); }
+#cam { inset: 0; perspective: 2100px; perspective-origin: 540px 960px; }
+#phone { left: 0; top: 0; width: 1080px; height: 2337px; border-radius: 150px; transform-style: preserve-3d;
+  box-shadow: 0 0 0 26px #0b0b0c, 0 0 0 30px #3a3530, 0 80px 160px rgba(0,0,0,.7); }
+#screen { position: absolute; inset: 0; border-radius: 150px; overflow: hidden; background: #000; }
+/* Status bar */
+.status { position: absolute; left: 0; right: 0; top: 0; height: 150px; display: flex; align-items: center; justify-content: space-between; padding: 30px 110px 0; font-size: 46px; font-weight: 600; z-index: 5; }
+.status .r { display: flex; gap: 18px; align-items: center; }
+.bat { width: 74px; height: 36px; border-radius: 11px; border: 3px solid rgba(255,255,255,.5); padding: 4px; } .bat i { display: block; width: 70%; height: 100%; border-radius: 5px; background: #fff; }
+/* Lock screen */
+#lock { position: absolute; inset: 0; z-index: 7; background: radial-gradient(1200px 1000px at 50% 20%, #2a2050, #08070f); }
+#lockDate { position: absolute; left: 0; right: 0; top: 300px; text-align: center; font-size: 56px; font-weight: 600; color: rgba(255,255,255,.8); }
+#lockTime { position: absolute; left: 0; right: 0; top: 360px; text-align: center; font-size: 290px; font-weight: 600; letter-spacing: -6px; color: rgba(255,255,255,.92); line-height: 1; }
+#notif { position: absolute; left: 40px; right: 40px; top: 1450px; border-radius: 70px; padding: 36px 40px; display: flex; gap: 32px; align-items: center;
+  background: rgba(60,58,70,.75); box-shadow: 0 20px 50px rgba(0,0,0,.4); }
+#notif .ic { width: 120px; height: 120px; border-radius: 30px; flex: none; background: linear-gradient(#ffd673, #f6b84d); display: flex; align-items: center; justify-content: center; font-family: "Fraunces"; font-weight: 900; font-size: 44px; color: #1a1406; }
+#notif b { display: block; font-size: 44px; } #notif span { display: block; font-size: 44px; color: rgba(255,255,255,.85); margin-top: 4px; }
+#notif small { position: absolute; right: 50px; top: 40px; font-size: 34px; color: rgba(255,255,255,.55); }
+/* Chat app */
+#chat { position: absolute; inset: 0; background: #000; }
+#chead { position: absolute; left: 0; right: 0; top: 0; height: 420px; background: rgba(22,22,24,.92); z-index: 4; border-bottom: 2px solid rgba(255,255,255,.08); }
+#back { position: absolute; left: 50px; top: 215px; width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; }
+#gav { position: absolute; left: 50%; top: 170px; transform: translateX(-50%); display: flex; }
+#gav div { width: 96px; height: 96px; border-radius: 50%; margin-left: -30px; border: 5px solid #161618; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 42px; color: #0b0c10; }
+#gav div:first-child { margin-left: 0; }
+#gname { position: absolute; left: 0; right: 0; top: 300px; text-align: center; }
+#gname span { display: inline-block; padding: 8px 26px; border-radius: 40px; background: rgba(255,255,255,.1); font-size: 34px; font-weight: 500; }
+#vid { position: absolute; right: 60px; top: 230px; }
+#viewport { position: absolute; left: 0; right: 0; top: 420px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+#list { display: flex; flex-direction: column; padding: 0 36px 26px; }
+.m { overflow: visible; position: relative; flex: none; }
+.mi { display: flex; align-items: flex-end; gap: 20px; padding-top: 10px; }
+.me .mi { justify-content: flex-end; }
+.av { width: 80px; height: 80px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 700; color: #0b0c10; }
+.col { display: flex; flex-direction: column; max-width: 760px; }
+.me .col { align-items: flex-end; }
+.nm { font-size: 30px; color: rgba(235,235,245,.6); margin: 0 0 6px 34px; }
+.b { font-size: 48px; line-height: 1.28; padding: 20px 36px; border-radius: 52px; background: #262628; color: #fff; position: relative; }
+.me .b { background: #0a84ff; }
+.jumbo { font-size: 150px; line-height: 1.1; padding: 0 10px; }
+.ts { text-align: center; font-size: 30px; color: rgba(235,235,245,.6); font-weight: 600; padding: 34px 0 14px; }
+.ts b { font-weight: 400; }
+.lu { text-align: right; font-size: 30px; color: rgba(235,235,245,.6); padding: 8px 14px 0 0; }
+.tb { position: absolute; top: -44px; width: 104px; height: 92px; border-radius: 46px; display: flex; align-items: center; justify-content: center;
+  background: #3a3a3c; border: 6px solid #000; font-size: 24px; font-weight: 900; line-height: .95; text-align: center; color: #fff; letter-spacing: 1px; z-index: 2; }
+.me .tb { left: -60px; } .tb.r { right: -54px; }
+.tb::after { content: ''; position: absolute; width: 22px; height: 22px; border-radius: 50%; background: #3a3a3c; bottom: -16px; left: 10px; }
+.me .tb::after { left: auto; right: 10px; }
+/* ShareCard image (HomeView.swift ShareCard, 360x450 pt) */
+.share { width: 560px; height: 700px; border-radius: 50px; padding: 52px; display: flex; flex-direction: column; align-items: center;
+  background: linear-gradient(#121426, #06070c); border: 2px solid rgba(255,255,255,.12); position: relative; }
+.share .mark { font-size: 50px; }
+.share .ttl { font-size: 20px; font-weight: 700; letter-spacing: 2.5px; color: rgba(244,245,248,.64); margin-top: 16px; }
+.share .cons { font-size: 128px; letter-spacing: 6px; margin-top: auto; line-height: 1; }
+.share .cap { width: 68px; height: 6px; border-radius: 3px; background: #ffc65a; margin-top: 28px; }
+.share .out { font-size: 33px; font-weight: 600; color: #5ae6c6; margin-top: 28px; }
+.share .q { font-size: 33px; color: #ffc65a; margin-top: auto; }
+.typing { display: flex; gap: 12px; padding: 32px 36px; }
+.typing i { width: 20px; height: 20px; border-radius: 50%; background: #8e8e93; }
+/* Input + keyboard */
+#inputbar { position: absolute; left: 0; right: 0; height: 150px; display: flex; align-items: center; gap: 24px; padding: 0 36px; }
+#plus { width: 100px; height: 100px; border-radius: 50%; background: #2c2c2e; display: flex; align-items: center; justify-content: center; flex: none; }
+#field { flex: 1; min-height: 100px; border-radius: 50px; border: 3px solid #3a3a3c; display: flex; align-items: center; padding: 0 30px 0 36px; font-size: 48px; position: relative; }
+#ph { color: #5e5e63; }
+#caret { width: 5px; height: 58px; background: #0a84ff; border-radius: 3px; margin-left: 2px; }
+#send { position: absolute; right: 12px; width: 76px; height: 76px; border-radius: 50%; background: #0a84ff; display: flex; align-items: center; justify-content: center; }
+#mic { position: absolute; right: 32px; }
+#kb { position: absolute; left: 0; right: 0; height: 960px; background: #1c1c1e; padding: 0 8px; }
+#qt { height: 130px; display: flex; align-items: center; font-size: 46px; }
+#qt div { flex: 1; text-align: center; color: #fff; } #qt i { width: 2px; height: 60px; background: #3a3a3c; }
+.kr { display: flex; justify-content: center; gap: 16px; margin-top: 30px; }
+.k { width: 88px; height: 124px; border-radius: 16px; background: #5b5b5e; box-shadow: 0 3px 0 #0b0b0b; display: flex; align-items: center; justify-content: center; font-size: 62px; color: #fff; position: relative; }
+.k.f { background: #3a3a3c; font-size: 40px; }
+.pop { position: absolute; bottom: 30px; left: 50%; width: 150px; height: 240px; margin-left: -75px; border-radius: 30px; background: #6c6c70; display: flex; align-items: flex-start; justify-content: center; padding-top: 22px; font-size: 100px; box-shadow: 0 10px 30px rgba(0,0,0,.5); z-index: 3; }
+#home { position: absolute; left: 50%; bottom: 22px; width: 380px; height: 14px; border-radius: 7px; background: rgba(255,255,255,.8); transform: translateX(-50%); z-index: 6; }
+/* CNSNN app inside the phone */
+#app { position: absolute; inset: 0; overflow: hidden; background:
+  radial-gradient(700px 700px at 15% 22%, rgba(89,62,199,.55), rgba(89,62,199,0) 70%),
+  radial-gradient(700px 700px at 85% 75%, rgba(0,125,134,.5), rgba(0,125,134,0) 70%),
+  radial-gradient(1500px 1300px at 50% 0%, #121426, #06070c); }
+#atop { position: absolute; left: 60px; right: 60px; top: 190px; height: 120px; }
+#atop .t { position: absolute; left: 0; right: 0; text-align: center; top: 10px; font-size: 44px; font-weight: 600; }
+#atop .t span { display: block; font-size: 32px; color: rgba(244,245,248,.56); font-weight: 400; }
+#achrono { position: absolute; right: 0; top: 12px; height: 96px; padding: 0 34px; font-size: 38px; font-weight: 700; font-variant-numeric: tabular-nums; }
+#acombo { position: absolute; left: 0; top: 12px; height: 96px; padding: 0 34px; font-size: 38px; font-weight: 800; }
+#aword { position: absolute; left: 0; right: 0; top: 560px; text-align: center; font-size: 250px; line-height: 1; white-space: nowrap; letter-spacing: 8px; }
+#aword .v { text-shadow: 0 0 30px rgba(255,198,90,.6); }
+#aok { position: absolute; left: 50%; top: 880px; margin-left: -70px; width: 140px; height: 140px; border-radius: 50%; background: rgba(90,230,198,.16); border: 3px solid #5ae6c6; display: flex; align-items: center; justify-content: center; }
+#aans { position: absolute; left: 110px; right: 110px; top: 1120px; height: 150px; border-bottom: 3px solid rgba(244,245,248,.56); display: flex; align-items: center; justify-content: center; font-size: 82px; font-weight: 500; letter-spacing: 6px; }
+#akb { position: absolute; left: 50px; right: 50px; top: 1420px; height: 640px; border-radius: 82px; padding: 30px 16px; }
+#akb .row { display: flex; justify-content: center; gap: 11px; margin-bottom: 22px; }
+#akb .key { width: 86px; height: 122px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 52px; font-weight: 500; background: rgba(255,255,255,.08); border: 2px solid rgba(255,255,255,.16); }
+#akb .key.vk { background: linear-gradient(#ffd673, #f6b84d); border: none; color: #1a1406; }
+#avalid { margin: 6px 12px 0; height: 130px; font-size: 46px; font-weight: 600; }
+/* Overlays */
+#rw { inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
+#rw svg { filter: drop-shadow(0 6px 20px rgba(0,0,0,.6)); }
+#etsi { font-size: 96px; font-weight: 700; color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.7); }
+#end { inset: 0; background: #000; }
+#endTxt { left: 0; right: 0; top: 880px; text-align: center; font-size: 76px; font-weight: 600; white-space: nowrap; }
+#endCaret { display: inline-block; width: 6px; height: 84px; background: #fff; vertical-align: -12px; margin-left: 4px; }
+#endMark { left: 0; right: 0; top: 820px; text-align: center; }
+#endMark .v { text-shadow: 0 0 40px rgba(255,198,90,.55); }
+#endSub { left: 0; right: 0; top: 1100px; text-align: center; font-size: 56px; font-weight: 500; color: rgba(255,255,255,.75); }
+#vig { inset: 0; pointer-events: none; background: radial-gradient(1300px 1700px at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55)); }
+#grain { inset: -50px; pointer-events: none; opacity: .07; mix-blend-mode: overlay; }
+</style>
+</head>
+<body>
+<div id="stage" style="background:#000">
+  <div id="room" class="abs"></div>
+  <div id="cam" class="abs">
+    <div id="phone" class="abs"><div id="screen">
+      <div class="status"><span id="clock">08:02</span><span class="r"><svg width="56" height="36" viewBox="0 0 28 18"><rect x="0" y="12" width="5" height="6" rx="1.5" fill="#fff"/><rect x="7.5" y="8" width="5" height="10" rx="1.5" fill="#fff"/><rect x="15" y="4" width="5" height="14" rx="1.5" fill="#fff"/><rect x="22.5" y="0" width="5" height="18" rx="1.5" fill="#fff"/></svg><span class="bat"><i></i></span></span></div>
+
+      <div id="lock"><div id="lockDate">lundi 20 octobre</div><div id="lockTime">08:02</div>
+        <div id="notif"><div class="ic">C</div><div><b>Les cousins 🏆</b><span>Léa : 0:41. Battez ça 😏</span></div><small>maintenant</small></div></div>
+
+      <div id="chat">
+        <div id="viewport"><div id="list"></div></div>
+        <div id="chead">
+          <div id="back"><svg width="40" height="60" viewBox="0 0 10 16"><path d="M8 1L2 8l6 7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div id="gav"></div>
+          <div id="gname"><span>Les cousins 🏆 ›</span></div>
+          <svg id="vid" width="90" height="70" viewBox="0 0 26 18"><rect x="1" y="2" width="16" height="14" rx="4" fill="none" stroke="#fff" stroke-width="2"/><path d="M18 7l6-4v12l-6-4z" fill="#fff"/></svg>
+        </div>
+        <div id="inputbar">
+          <div id="plus"><svg width="44" height="44" viewBox="0 0 10 10"><path d="M5 1v8M1 5h8" stroke="#aeaeb2" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+          <div id="field"><span id="ph">Message</span><span id="typed"></span><span id="caret"></span>
+            <svg id="mic" width="34" height="50" viewBox="0 0 10 15"><rect x="2.5" y="0.5" width="5" height="9" rx="2.5" fill="#5e5e63"/><path d="M1 7a4 4 0 008 0M5 11v3" stroke="#5e5e63" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+            <div id="send"><svg width="40" height="40" viewBox="0 0 10 10"><path d="M5 9V1.5M1.8 4.5L5 1.3l3.2 3.2" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+        </div>
+        <div id="kb"><div id="qt"><div>Je</div><i></i><div>Oui</div><i></i><div>Ok</div></div></div>
+      </div>
+
+      <div id="app">
+        <div id="atop"><div class="pill gold-fill" id="acombo">combo ×4</div><div class="t">Sprint<span>Général · Moyen</span></div><div class="pill glass" id="achrono">1:12</div></div>
+        <div id="aword" class="serif"></div>
+        <div id="aok"><svg viewBox="0 0 24 24" width="84" height="84"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#5ae6c6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div id="aans"></div>
+        <div id="akb" class="glass"></div>
+      </div>
+      <div id="home"></div>
+    </div></div>
+  </div>
+  <div id="rw" class="abs"><svg id="rwIcon" width="300" height="200" viewBox="0 0 30 20"><path d="M14 2L2 10l12 8zM28 2L16 10l12 8z" fill="#fff"/></svg><div id="etsi">Et si…</div></div>
+  <div id="end" class="abs"><div id="endTxt" class="abs"></div><div id="endMark" class="abs mark"></div><div id="endSub" class="abs">Gratuit, sans publicité.</div></div>
+  <div id="vig" class="abs"></div>
+  <svg id="grain" class="abs" width="1180" height="2020"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+</div>
+<script src="lib.js"></script>
+<script>
+const AV = { 'Léa': '#f3b94c', 'Malik': '#49d9b9', 'Inès': '#aa99ff', 'Tom': '#f28abd' };
+['Léa', 'Malik', 'Inès', 'Tom'].forEach(n => { const d = document.createElement('div'); d.style.background = AV[n]; d.textContent = n[0]; $('gav').appendChild(d); });
+const share = (time) => `<div class="share"><div class="mark">C<span class="v">O</span>NS<span class="v">O</span>NN<span class="v">E</span></div>
+  <div class="ttl">MOT DU JOUR · 2026-10-20</div><div class="cons serif">CHCRT</div><div class="cap"></div>
+  <div class="out">Trouvé en ${time}</div><div class="q italic">Trouverez-vous les voyelles ?</div></div>`;
+
+// Thread. br: 'both' | 'A' (first timeline) | 'B' (after "Et si…"). at: appearance time on that timeline.
+const T = [
+  { at: -1, br: 'both', ts: '<b>Hier</b> 23:12' },
+  { at: -1, br: 'both', who: 'Tom', html: 'bonne nuit les gens 😴' },
+  { at: -1, br: 'both', ts: '<b>Aujourd’hui</b> 08:02' },
+  { at: -1, br: 'both', who: 'Léa', raw: share('0:41'), noAv: true },
+  { at: -1, br: 'both', who: 'Léa', html: '0:41. Battez ça 😏', cont: true },
+  { at: 2.5, br: 'both', who: 'Malik', html: 'CHCRT ??? 😭' },
+  { at: 3.3, br: 'both', who: 'Inès', html: 'c’est trop dur 😭' },
+  { at: 4.2, br: 'both', who: 'Léa', html: 'pas de spoil 🤫' },
+  { at: 9.75, br: 'A', who: 'Vous', html: 'chocolat', tb: [10.5, 'HA<br>HA'], lu: true },
+  { at: 11.2, br: 'A', who: 'Malik', html: 'CHCLT ≠ CHCRT 💀' },
+  { at: 12.0, br: 'A', who: 'Léa', html: 'même pas proche 😭', tb: [12.6, 'HA<br>HA', 'r'] },
+  { at: 18.5, br: 'B', who: 'Vous', raw: share('0:38'), tb: [19.7, '<span style="font-size:44px;color:#ff375f">♥</span>'] },
+  { at: 19.1, br: 'B', who: 'Vous', html: '😌', jumbo: true },
+  { at: 20.3, br: 'B', who: 'Léa', html: 'NON 😭😭' },
+  { at: 21.0, br: 'B', who: 'Malik', html: 't’as triché ??' },
+  { at: 21.7, br: 'B', who: 'Vous', html: 'non. CNSNN tous les jours 😌', lu: true },
+];
+let prevWho = null;
+T.forEach(m => {
+  const el = document.createElement('div'); el.className = 'm' + (m.who === 'Vous' ? ' me' : '');
+  if (m.ts) { el.innerHTML = `<div class="ts">${m.ts}</div>`; prevWho = null; }
+  else {
+    const name = m.who !== 'Vous' && prevWho !== m.who ? `<div class="nm">${m.who}</div>` : '';
+    const body = m.raw ? m.raw : `<div class="b${m.jumbo ? ' jumbo' : ''}" ${m.jumbo ? 'style="background:none"' : ''}>${m.html}</div>`;
+    const av = m.who !== 'Vous' ? `<div class="av" style="background:${AV[m.who]};${m.noAv ? 'visibility:hidden' : ''}">${m.who[0]}</div>` : '';
+    el.innerHTML = `<div class="mi">${av}<div class="col">${name}<div style="position:relative">${body}${m.tb ? `<div class="tb ${m.tb[2] || ''}">${m.tb[1]}</div>` : ''}</div></div></div>${m.lu ? '<div class="lu">Lu à 08:05</div>' : ''}`;
+    prevWho = m.who;
+  }
+  $('list').appendChild(el); m.el = el; m.inner = el.firstElementChild; m.tbEl = el.querySelector('.tb'); m.luEl = el.querySelector('.lu');
+});
+// Name labels for Malik/Léa after Vous's message in timeline A must reappear; handled by prevWho above (Vous resets runs).
+
+// iOS-style keyboard (AZERTY, dark)
+const KR = ['azertyuiop', 'qsdfghjklm', 'wxcvbn'];
+const KEYS = {};
+KR.forEach((r, i) => { const row = document.createElement('div'); row.className = 'kr';
+  if (i === 2) row.innerHTML += '<div class="k f" style="width:130px">⇧</div>';
+  [...r].forEach(c => { const k = document.createElement('div'); k.className = 'k'; k.textContent = c; KEYS[c] = k; row.appendChild(k); });
+  if (i === 2) row.innerHTML += '<div class="k f" style="width:88px">’</div><div class="k f" style="width:130px">⌫</div>';
+  $('kb').appendChild(row); });
+const last = document.createElement('div'); last.className = 'kr';
+last.innerHTML = '<div class="k f" style="width:200px">123</div><div class="k f" style="width:110px">🙂</div><div class="k" style="width:440px;font-size:42px" id="space">espace</div><div class="k f" style="width:200px">envoyer</div>';
+$('kb').appendChild(last);
+document.querySelectorAll('#kb .kr').forEach(r => { r.querySelectorAll('.k').forEach(k => { if (k.id !== 'space' && !k.classList.contains('f')) {} }); });
+// KEYS refs were lost by innerHTML on row 3: rebind
+document.querySelectorAll('#kb .k').forEach(k => { if (k.textContent.length === 1 && /[a-z]/.test(k.textContent)) KEYS[k.textContent] = k; });
+const TYPED = 'chocolat', TYPE0 = 7.25, TSTEP = 0.27, SEND = 9.7;
+
+// CNSNN app keyboard (glass AZERTY, gold vowels)
+const AKEYS = {};
+['AZERTYUIOP', 'QSDFGHJKLM', 'WXCVBN'].forEach((r, i) => { const row = document.createElement('div'); row.className = 'row';
+  [...r].forEach(c => { const k = document.createElement('div'); k.className = 'key' + (isVowel(c) ? ' vk' : ''); k.textContent = c; AKEYS[c] = k; row.appendChild(k); });
+  if (i === 2) { const d = document.createElement('div'); d.className = 'key'; d.style.width = '182px'; d.textContent = '⌫'; row.appendChild(d); }
+  $('akb').appendChild(row); });
+$('akb').insertAdjacentHTML('beforeend', '<div class="pill gold-fill" id="avalid">Valider</div>');
+const AW = [{ w: 'CITRON', t0: 15.45 }, { w: 'BRIOCHE', t0: 16.95 }];
+
+// Camera keys: t, scale, rotX, rotY, rotZ, focusX, focusY (screen px)
+const CAM = [
+  [0.0, 0.5, 52, 0, -18, 540, 1168], [1.15, 0.58, 38, 0, -11, 540, 1168], [1.9, 1.06, 10, -9, -3, 545, 1420],
+  [6.4, 1.12, 12, -6, -2, 545, 1560], [7.05, 1.9, 26, -14, -6, 470, 1450], [9.9, 1.98, 22, -10, -5, 520, 1430],
+  [10.55, 1.08, 8, 5, 2, 545, 900], [13.45, 1.12, 9, 4, 2, 545, 920],
+  [14.3, 1.12, 12, -6, -2, 545, 1560], [15.2, 1.0, 8, -10, -3, 540, 1020], [17.95, 1.05, 6, -4, -1, 540, 1040],
+  [18.3, 1.06, 10, -6, -2, 545, 1500], [23.2, 1.14, 8, 4, 1, 545, 1600],
+];
+function cam(t) {
+  if (t <= CAM[0][0]) return CAM[0].slice(1);
+  for (let i = 0; i < CAM.length - 1; i++) { const a = CAM[i], b = CAM[i + 1];
+    if (t <= b[0]) { const p = io(prog(t, a[0], b[0])); return a.slice(1).map((v, j) => lerp(v, b[j + 1], p)); } }
+  return CAM[CAM.length - 1].slice(1);
+}
+let H = [], AWL = [], ENDM;
+window.setup = async () => {
+  await document.fonts.ready;
+  $('viewport').style.bottom = '400px';
+  T.forEach(m => { m.el.style.height = ''; m.h = m.el.offsetHeight; });
+  AW.forEach(a => { const d = document.createElement('div'); d.style.position = 'absolute'; d.style.left = 0; d.style.right = 0; $('aword').appendChild(d); a.d = d; a.L = buildWord(d, a.w); measure(a.L); });
+  fitFont($('endMark'), 'CONSONNE', 900); ENDM = buildWord($('endMark'), 'CONSONNE'); measure(ENDM);
+  return true;
+};
+
+window.render = (t) => {
+  // Timeline: A until 13.5, rewind 13.5–14.3 (tau runs back to 6.5), "Et si…" 14.3–15.2, app 15.2–18.2, B after.
+  let tau = t, br = 'A';
+  if (t >= 13.5 && t < 14.3) tau = 13.5 - (t - 13.5) / 0.8 * 7.0;
+  else if (t >= 14.3 && t < 18.2) tau = 6.5;
+  if (t >= 14.3) br = 'B';
+  const camT = (t >= 13.5 && t < 14.3) ? tau : t;
+  const [s, rx, ry, rz, fx, fy] = cam(camT);
+  const ph = $('phone');
+  ph.style.transformOrigin = `${fx}px ${fy}px`;
+  ph.style.transform = `translate(${540 - fx}px, ${960 - fy}px) rotateZ(${rz}deg) rotateX(${rx}deg) rotateY(${ry}deg) scale(${s})`;
+  ph.style.filter = (t >= 13.5 && t < 14.3) ? 'blur(2px) saturate(.6) contrast(1.1)' : '';
+
+  // Lock screen → chat (tap the notification)
+  const unlock = ease(prog(t, 1.25, 1.65));
+  set($('lock'), 1 - unlock, `scale(${1 + 0.06 * unlock})`);
+  const ni = spring(t - 0.15, 0.45, 0.7);
+  $('notif').style.transform = `translateY(${(1 - ni) * -200}px) scale(${lerp(0.9, 1, clamp(ni))})`; $('notif').style.opacity = clamp(ni * 1.5);
+  $('clock').textContent = t < 9 ? '08:02' : '08:05';
+
+  // Keyboard (only while typing in timeline A)
+  const kbShow = br === 'A' ? ease(prog(tau, 6.55, 6.85)) * (1 - ease(prog(tau, 13.0, 13.3)) * 0) : 0;
+  const kbY = 2337 - 960 * kbShow;
+  $('kb').style.top = (2337 - 960 * kbShow + (kbShow < 0.01 ? 40 : 0)) + 'px';
+  const inBottom = lerp(2337 - 70, kbY, kbShow);
+  $('inputbar').style.top = (inBottom - 150) + 'px';
+  $('viewport').style.bottom = (2337 - (inBottom - 150)) + 'px';
+
+  // Thread messages
+  T.forEach(m => {
+    const vis = (m.br === 'both' || m.br === br) && tau >= m.at;
+    const p = m.at < 0 ? 1 : ease(prog(tau, m.at, m.at + 0.28));
+    m.el.style.display = vis ? '' : 'none';
+    m.el.style.height = (m.h * p) + 'px';
+    const sp = m.at < 0 ? 1 : spring(tau - m.at, 0.35, 0.72);
+    m.inner.style.transformOrigin = m.who === 'Vous' ? '100% 100%' : '0 100%';
+    m.inner.style.transform = `scale(${lerp(0.7, 1, sp)})`; m.inner.style.opacity = clamp(sp * 2);
+    if (m.tbEl) { const q = spring(tau - m.tb[0], 0.35, 0.55); m.tbEl.style.transform = `scale(${Math.max(0, q)})`; m.tbEl.style.opacity = tau >= m.tb[0] ? 1 : 0; }
+    if (m.luEl) m.luEl.style.opacity = tau >= m.at + 0.6 ? 1 : 0;
+  });
+  // Only the latest "Lu" stays visible
+  const shownLu = T.filter(m => m.luEl && m.el.style.display !== 'none' && tau >= m.at + 0.6);
+  shownLu.forEach((m, i) => { if (i < shownLu.length - 1) m.luEl.style.opacity = 0; });
+
+  // Typing in the field
+  const n = br === 'A' ? TYPED.length - TYPED.split('').filter((_, i) => tau < TYPE0 + i * TSTEP).length : 0;
+  const sent = br === 'A' && tau >= SEND;
+  const shown = sent ? '' : TYPED.slice(0, n);
+  $('typed').textContent = shown;
+  $('ph').style.display = shown ? 'none' : '';
+  $('caret').style.display = kbShow > 0.5 && Math.floor(t * 2.2) % 2 === 0 ? '' : 'none';
+  $('send').style.display = shown ? 'flex' : 'none'; $('mic').style.display = shown ? 'none' : '';
+  Object.values(KEYS).forEach(k => { const p = k.querySelector('.pop'); if (p) p.remove(); });
+  if (br === 'A' && !sent) TYPED.split('').forEach((c, i) => { const d = tau - (TYPE0 + i * TSTEP);
+    if (d >= -0.02 && d < 0.17 && KEYS[c]) { const pop = document.createElement('div'); pop.className = 'pop'; pop.textContent = c; KEYS[c].appendChild(pop); } });
+  const sendP = Math.exp(-Math.pow((tau - SEND) / 0.06, 2));
+  $('send').style.transform = `scale(${1 - 0.15 * sendP})`;
+
+  // CNSNN app 15.2–18.2 (slides in like an app switch)
+  const appIn = io(prog(t, 15.05, 15.4)), appOut = io(prog(t, 18.0, 18.35));
+  const appOn = t >= 15.05 && t < 18.35;
+  $('app').style.display = appOn ? '' : 'none';
+  $('app').style.transform = `translateX(${(1 - appIn) * 1080 - appOut * 1080}px)`;
+  $('chat').style.transform = `translateX(${appOn ? (-appIn + appOut) * 1080 * (t < 18 ? 1 : 1) : 0}px)`;
+  if (appOn) {
+    let typedA = '';
+    set($('aok'), 0);
+    AW.forEach((a, i) => {
+      const lt = t - a.t0, on = lt >= 0 && (i === AW.length - 1 || t < AW[i + 1].t0);
+      a.d.style.display = on ? '' : 'none'; if (!on) return;
+      const nT = clamp(Math.floor(lt / 0.13) + 1, 0, a.w.length);
+      typedA = a.w.slice(0, nT);
+      const done = a.t0 + a.w.length * 0.13 + 0.12;
+      reveal(a.L, j => spring(t - done - j * 0.08, 0.32, 0.65));
+      a.d.style.transform = `scale(${lerp(1.12, 1, ease(clamp(lt / 0.2)))})`;
+      const ok = spring(t - done - 0.2, 0.3, 0.6); set($('aok'), clamp(ok), `scale(${ok})`);
+      if (t > done) typedA = '';
+      Object.values(AKEYS).forEach(k => { k.style.transform = ''; k.style.filter = ''; });
+      const ki = Math.floor(lt / 0.13); const kd = lt - ki * 0.13;
+      if (ki < a.w.length && kd < 0.1) { const k = AKEYS[a.w[ki]]; k.style.transform = 'scale(.88)'; k.style.filter = 'brightness(1.6)'; }
+      $('acombo').textContent = 'combo ×' + (i === 0 ? (t > done + 0.2 ? 5 : 4) : 5);
+    });
+    $('aans').innerHTML = typedA.split('').map(c => `<span style="color:${isVowel(c) ? '#ffc65a' : '#f4f5f8'}">${c}</span>`).join('') || '<span class="italic" style="color:rgba(244,245,248,.56);font-size:60px;letter-spacing:0">votre réponse</span>';
+    $('achrono').textContent = '1:' + String(12 - Math.floor((t - 15.2) * 1.3)).padStart(2, '0');
+  }
+
+  // Rewind overlay
+  const rwOn = t >= 13.5 && t < 15.2;
+  set($('rw'), rwOn ? 1 - prog(t, 15.0, 15.2) : 0);
+  $('rw').style.background = `rgba(0,0,0,${0.55 * ease(prog(t, 14.25, 14.5))})`;
+  const ic = spring(t - 13.5, 0.3, 0.6);
+  $('rwIcon').style.transform = `scale(${ic * (1 + 0.06 * Math.sin(t * 20))})`;
+  set($('etsi'), ease(prog(t, 14.35, 14.6)));
+
+  // End card 23.3+
+  set($('end'), t >= 23.3 ? 1 : 0);
+  const line = 'Zéro voyelle, zéro pitié.';
+  let txt = '';
+  if (t < 25.3) txt = line.slice(0, Math.floor(clamp((t - 23.45) / 1.0) * line.length));
+  else txt = line.slice(0, Math.max(0, line.length - Math.floor((t - 25.3) / 0.3 * line.length)));
+  const caretOn = Math.floor(t * 2.5) % 2 === 0 || (t > 23.45 && t < 24.5) || (t > 25.3 && t < 25.6);
+  $('endTxt').innerHTML = `${txt}<span id="endCaret" style="opacity:${t < 25.75 && caretOn ? 1 : 0}"></span>`;
+  set($('endTxt'), t < 25.75 ? 1 : 0);
+  const em = t >= 25.75 ? 1 : 0;
+  set($('endMark'), em, `scale(${lerp(1.1, 1, ease(prog(t, 25.75, 26.1)))})`);
+  reveal(ENDM, i => spring(t - (26.3 + i * 0.16)));
+  const es = ease(prog(t, 27.0, 27.4));
+  set($('endSub'), es, `translateY(${(1 - es) * 20}px)`);
+  $('vig').style.opacity = t >= 23.3 ? 0 : 1;
+  $('grain').style.transform = `translate(${(Math.floor(t * 30) * 37) % 50 - 25}px, ${(Math.floor(t * 30) * 53) % 50 - 25}px)`;
+  return true;
+};
+</script>
+</body>
+</html>
