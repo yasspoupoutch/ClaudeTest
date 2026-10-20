@@ -1,0 +1,7 @@
+work/frames/
+work/stills/
+work/*.jpg
+work/*.wav
+work/renders/
+work/*_screen/
+__pycache__/
