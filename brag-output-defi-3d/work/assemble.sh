@@ -27,6 +27,6 @@ ffmpeg -loglevel error -y -framerate 30 -i edit/f%04d.png -i overlays/rewind.png
   [a]eq=brightness=-0.18:enable='between(n,$rw_end,$((etsi_end-1)))'[b];
   [b][1]overlay=enable='between(n,$((rw_start-1)),$((rw_end-1)))'[c];
   [c][2]overlay=enable='between(n,$rw_end,$((etsi_end-1)))'[d];
-  [d]noise=alls=4:allf=t,unsharp=5:5:0.5,format=yuv420p[out]" \
-  -map "[out]" -map 3:a -c:v libx264 -preset slow -crf 17 -profile:v high -af loudnorm=I=-14:TP=-1.5:LRA=11 -ar 44100 -c:a aac -b:a 192k -movflags +faststart -shortest ../brag.mp4
+  [d]noise=alls=2:allf=t,unsharp=5:5:0.5,format=yuv420p[out]" \
+  -map "[out]" -map 3:a -c:v libx264 -preset slow -crf 21 -maxrate 12M -bufsize 24M -profile:v high -af loudnorm=I=-14:TP=-1.5:LRA=11 -ar 44100 -c:a aac -b:a 192k -movflags +faststart -shortest ../brag.mp4
 echo "frames=$i duration=$(ffprobe -v error -show_entries format=duration -of csv=p=0 ../brag.mp4)"
