@@ -31,7 +31,7 @@ const Wordmark: React.FC<{ t: number }> = ({ t }) => {
   const sweep = clamp((t - (END + 0.9)) / 0.65);
   const letters = 'CONSONNE'.split('');
   let vi = 0;
-  const tag = ease(prog(t, END + 2.5, END + 2.9));
+  const tag = ease(prog(t, END + 2.3, END + 2.7));   // with the voice: "Le mot du jour…"
   const lineFade = 1 - 0.75 * prog(t, END + 1.6, END + 2.3);
   return (
     <div style={{ position: 'absolute', left: 0, right: 0, top: 118, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

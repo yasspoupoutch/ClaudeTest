@@ -34,7 +34,7 @@ const LIFT = 6.0, VOWELS = 7.25, FLIP = 9.0, BACKDOWN = 10.3, RESULT = 10.75;
 const SLOTS = 1.25;                                          // gold slots where the vowels are missing
 const LOOP = 4.8, LOOPED = 5.95;                            // neon traces around the word + answer, then it pops out
 const MODES = 11.1, BOARD = 15.0, END = 17.0;
-export const DURATION = T(21.5);
+export const DURATION = T(23.3);   // the voice-over's last line ends at 22.9
 export { END };
 
 function screenTexture(t: number) {
@@ -354,7 +354,7 @@ const CAM: [number, number[], number[], CurveName?][] = [
   [15.3, [0.05, 1.25, 0.85], [0.0, 0.09, -0.25], 'snap'],
   [16.8, [0.1, 0.9, 0.6], [0.0, 0.09, -0.33], 'glide'],
   [17.7, [0.0, 0.7, 6.5], [0.0, 0.6, -0.25], 'snap'],
-  [21.5, [0.0, 0.68, 6.2], [0.0, 0.59, -0.25], 'glide'],
+  [23.3, [0.0, 0.67, 6.0], [0.0, 0.59, -0.25], 'glide'],
 ];
 // Focus point for the depth of field
 const FOCUS: [number, number[]][] = [

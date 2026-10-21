@@ -1,6 +1,6 @@
 # Soundtrack of the 3D promo, timed on the script (src/Promo.tsx). A minor, 120 BPM.
 import sys; from synth import *
-DUR = 21.5
+DUR = 23.3
 M = Mix(DUR, seed=21)
 beat = 0.5; bar = 2.0
 chords = [[57, 60, 64], [53, 57, 60], [48, 52, 55, 60], [55, 59, 62]]   # Am F C G
@@ -71,5 +71,5 @@ for i, m in enumerate([81, 84, 88]): M.place(bell(m, 0.9), 18.75 + i * 0.16 + 0.
 for m in [45, 57, 64, 69, 72, 76]: M.place(tone(hz(m), 2.3, ((1, 1), (2, .2), (3, .06)), a=.01, tau=1.3, det=.002), 19.2, 0.045)
 # End card: icon and App Store badge, then the TikTok account
 M.place(blip(88, dur=0.08), 19.4, 0.05); M.place(blip(93, dur=0.08), 19.58, 0.045)
-M.write(sys.argv[1], fade_out=1.0)
+M.write(sys.argv[1], fade_out=1.6)
 print('ok')
