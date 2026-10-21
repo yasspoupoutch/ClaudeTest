@@ -42,18 +42,17 @@ while t < 17.0:
 for tt in (0.25, 1.25): click(tt, 0.08)
 low_hit(0.0, 0.25)
 # 1.35: the gold slots light up where the vowels are missing; 2.15-3.5 the neon links them and runs to the answer field
-swoosh(1.2, 0.5, 0.05)
-for i in range(5): M.place(bell(88 + [0, 2, 4, 7, 9][i], 0.25, 0.6), 1.38 + i * 0.07, 0.035, (i - 2) * 0.2)
-hum(2.15, 1.4, 90, 260, 0.04)
-for i in range(5): zip_(2.2 + i * 0.13)
-swoosh(2.9, 0.5); M.place(bell(81, 0.5), 3.35, 0.05)
+swoosh(1.15, 0.5, 0.05)
+for i in range(5): M.place(bell(88 + [0, 2, 4, 7, 9][i], 0.25, 0.6), 1.3 + i * 0.07, 0.035, (i - 2) * 0.2)
+swoosh(2.75, 0.4, 0.05)
 # 3.8-6.3: typing CHOUCROUTE, Valider
-for i in range(10): click(4.0 + i * 0.2)
-click(6.05, 0.2); M.place(tone(hz(69), 0.2, ((1, 1),), a=.002, tau=.05), 6.05, 0.06)
-M.place(riser(M, 0.9), 5.4, 0.05)
-# 6.3: the card leaves the screen, vowels fly in, flip, back down
-low_hit(6.3, 0.3); swoosh(6.6, 0.8, 0.07)
-for i, m in enumerate([81, 84, 86, 88, 91]): M.place(bell(m, 0.8), 7.3 + i * 0.26 + 0.3, 0.06, (i - 2) * 0.2)
+for i in range(10): click(2.55 + i * 0.19)
+click(4.55, 0.2); M.place(tone(hz(69), 0.2, ((1, 1),), a=.002, tau=.05), 4.55, 0.06)
+# 4.8-5.95: the thin neon goes round the word and the answer; when it closes, the card pops out
+hum(4.8, 1.2, 140, 330, 0.035); M.place(riser(M, 1.1), 4.9, 0.045)
+M.place(bell(93, 0.4), 5.95, 0.05)
+low_hit(6.0, 0.3); swoosh(6.3, 0.8, 0.07)
+for i, m in enumerate([81, 84, 86, 88, 91]): M.place(bell(m, 0.8), 7.25 + i * 0.26 + 0.3, 0.06, (i - 2) * 0.2)
 for m in [57, 64, 69, 72, 76]: M.place(tone(hz(m), 2.0, ((1, 1), (2, .25), (3, .08)), a=.01, tau=1.0, det=.002), 8.65, 0.04)
 low_hit(8.65, 0.3)
 M.place(smooth(M.noise(int(0.12 * SR)), 3) * env(int(0.12 * SR), .001, .03), 9.0, 0.12)        # flip

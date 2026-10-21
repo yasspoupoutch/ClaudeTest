@@ -29,9 +29,10 @@ const T = (s: number) => s * FPS;                            // seconds -> frame
 
 // ----------------------------------- timeline (seconds) -----------------------------------
 const WORD = 'CHOUCROUTE';
-const TYPE0 = 4.0, TSTEP = 0.2, VALID = 6.05;               // typing in the app
-const LIFT = 6.3, VOWELS = 7.3, FLIP = 9.0, BACKDOWN = 10.3, RESULT = 10.75;
-const SLOTS = 1.35, PATH = 2.15, ANSWER = 3.35;             // missing-vowel slots, neon to the answer field
+const TYPE0 = 2.55, TSTEP = 0.19, VALID = 4.55;             // typing in the app
+const LIFT = 6.0, VOWELS = 7.25, FLIP = 9.0, BACKDOWN = 10.3, RESULT = 10.75;
+const SLOTS = 1.25;                                          // gold slots where the vowels are missing
+const LOOP = 4.8, LOOPED = 5.95;                            // neon traces around the word + answer, then it pops out
 const MODES = 11.1, BOARD = 15.0, END = 17.0;
 export const DURATION = T(21.5);
 export { END };
@@ -41,37 +42,40 @@ function screenTexture(t: number) {
   if (t >= RESULT) return 'game_result.png';
   if (t >= LIFT) return 'game_lifted.png';
   if (t >= VALID - 0.05) return t < VALID + 0.2 ? 'game_valid.png' : 'game_10.png';
-  if (t < TYPE0) return t >= ANSWER ? 'game_answer.png' : 'game_00.png';
+  if (t < TYPE0) return 'game_00.png';
   const n = WORD.split('').filter((_, i) => t >= TYPE0 + i * TSTEP).length;
   return `game_${String(n).padStart(2, '0')}.png`;
 }
 /** The gold slots screen fades over the game screen, then away once the neon reaches the answer field. */
-const slotsMix = (t: number) => ease(prog(t, SLOTS, SLOTS + 0.35)) * (1 - ease(prog(t, ANSWER - 0.1, ANSWER + 0.3)));
+const slotsMix = (t: number) => ease(prog(t, SLOTS, SLOTS + 0.35)) * (1 - ease(prog(t, TYPE0 - 0.3, TYPE0 - 0.05)));
 
 // ----------------------------------- glyph metrics -----------------------------------
 // Letter advances of Instrument Serif, measured in the page once the font is loaded (fraction of font size).
 const ADV: Record<string, number> = {};
+const ADV_INTER: Record<string, number> = {};
 let advReady = false;
 function useAdvances() {
   const [, set] = useState(0);
   useLayoutEffect(() => {
     if (advReady) return;
     const done = hold('advances');
-    const face = new FontFace('IS', `url(${staticFile('fonts/InstrumentSerif-Regular.ttf')})`);
-    face.load().then((f) => {
-      (document.fonts as any).add(f);
+    const faces = [new FontFace('IS', `url(${staticFile('fonts/InstrumentSerif-Regular.ttf')})`), new FontFace('IM', `url(${staticFile('fonts/Inter-Medium.woff')})`)];
+    Promise.all(faces.map((f) => f.load())).then((loaded) => {
+      loaded.forEach((f) => (document.fonts as any).add(f));
       const ctx = document.createElement('canvas').getContext('2d')!;
       ctx.font = '100px IS';
       for (const c of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') ADV[c] = ctx.measureText(c).width / 100;
+      ctx.font = '100px IM';
+      for (const c of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') ADV_INTER[c] = ctx.measureText(c).width / 100;
       advReady = true; set(1); done();
     });
   }, []);
 }
 /** x of each letter's centre: vowels take p (0..1) of their width, so consonants close up when vowels are out. */
-function layout(word: string, size: number, spacing: number, vowelP: (i: number) => number) {
+function layout(word: string, size: number, spacing: number, vowelP: (i: number) => number, adv: Record<string, number> = ADV) {
   const isV = (c: string) => 'AEIOUY'.includes(c);
   let vi = 0;
-  const widths = word.split('').map((c) => (ADV[c] ?? 0.6) * size * (isV(c) ? vowelP(vi++) : 1) + spacing * (isV(c) ? vowelP(vi - 1) : 1));
+  const widths = word.split('').map((c) => (adv[c] ?? 0.6) * size * (isV(c) ? vowelP(vi++) : 1) + spacing * (isV(c) ? vowelP(vi - 1) : 1));
   const total = widths.reduce((a, b) => a + b, 0);
   let x = -total / 2;
   return widths.map((w) => { const c = x + w / 2; x += w; return c; });
@@ -157,60 +161,71 @@ const Neon: React.FC<{ curve: THREE.Curve<THREE.Vector3>; p: number; fade?: numb
   );
 };
 
-/** The word card (ShareCard) that comes out of the screen: CHCRT, vowels flying in, flip to the result. */
+/** The word + answer region of the screen peels off as a card: the vowels of the typed answer rise into CHCRT,
+ * then the card flips to the result and goes back into the screen. */
+const CW = (999 / TX) * SW, CH = (975 / TX) * SW;            // the screen region px 90..1089 x 400..1375
+const REGION = sp(589.5, 887.5);
 const WordCard: React.FC<{ t: number }> = ({ t }) => {
-  const CW = 0.64, CH = 0.48;
   const front = tex('card_front.png'), back = tex('card_back.png');
-  const face = useMemo(() => roundedPlane(CW, CH, 0.048), []);
+  const face = useMemo(() => roundedPlane(CW, CH, 0.034), []);
   const slab = useMemo(() => {
-    const g = new THREE.ExtrudeGeometry(roundedRectShape(CW, CH, 0.048), { depth: 0.016, bevelEnabled: false, curveSegments: 24 });
-    g.translate(0, 0, -0.008); return g;
+    const g = new THREE.ExtrudeGeometry(roundedRectShape(CW, CH, 0.034), { depth: 0.012, bevelEnabled: false, curveSegments: 24 });
+    g.translate(0, 0, -0.006); return g;
   }, []);
-  const edge = useMemo(() => roundedRectCurve(CW - 0.006, CH - 0.006, 0.045, 0.0095), []);
-  // Out of the screen and back
+  const edge = useMemo(() => roundedRectCurve(CW - 0.004, CH - 0.004, 0.032, 0.0072), []);
   const up = ease(prog(t, LIFT, LIFT + 1.0)), down = io(prog(t, BACKDOWN, RESULT));
   const k = up * (1 - down);
-  const start = sp(590, 600, 0.004);
-  const pos = start.clone().lerp(new THREE.Vector3(0, 0.5, -0.12), k);
-  pos.y += Math.sin(t * 2.1) * 0.012 * k;                                  // gentle float
+  const pos = REGION.clone().setY(TOP + 0.0035).lerp(new THREE.Vector3(0, 0.5, -0.12), k);
+  pos.y += Math.sin(t * 2.1) * 0.01 * k;
   const flip = io(prog(t, FLIP, FLIP + 0.55)) * Math.PI * (1 - io(prog(t, BACKDOWN, BACKDOWN + 0.35)));
-  const rotX = lerp(-Math.PI / 2, -0.12, k), rotY = flip + Math.sin(t * 1.3) * 0.05 * k;
-  const scale = lerp(0.75, 1, k);
+  const rotX = lerp(-Math.PI / 2, -0.1, k), rotY = flip + Math.sin(t * 1.3) * 0.04 * k;
   const visible = t >= LIFT && t < RESULT + 0.02;
-  // Letters: consonants close up until the vowels arrive one by one
-  const vp = (i: number) => spring(t - (VOWELS + i * 0.26), 0.42, 0.62);
-  const size = 0.092, spacing = 0.004;
-  const xs = layout(WORD, size, spacing, vp);
-  const glowPulse = ease(prog(t, VOWELS + 1.35, VOWELS + 1.6)) * (1 - prog(t, VOWELS + 1.6, FLIP));
+  // Local positions mirror the screen: word centre at 20.7% of the region, answer at 88.7% (local y = (0.5 - rel) * CH)
+  const vp = (i: number) => spring(t - (VOWELS + i * 0.26), 0.45, 0.66);
+  const all = clamp((t - VOWELS) / (4 * 0.26 + 0.5));
+  const wordSize = lerp(0.152, 0.083, ease(all)), wordY = lerp((0.5 - 0.207) * CH, 0.11, ease(all));
+  const xs = layout(WORD, wordSize, 0.003, vp);
+  const ansSize = 0.051, ansY = (0.5 - 0.887) * CH;
+  const xa = layout(WORD, ansSize, 0.007, () => 1, ADV_INTER);
+  const glowPulse = ease(prog(t, VOWELS + 1.4, VOWELS + 1.65)) * (1 - prog(t, VOWELS + 1.65, FLIP));
   let vi = 0;
   return (
-    <group position={pos} rotation={[rotX, rotY, 0]} scale={scale} visible={visible}>
+    <group position={pos} rotation={[rotX, rotY, 0]} visible={visible}>
       <mesh geometry={slab} castShadow><meshPhysicalMaterial color="#0a0b12" roughness={0.35} clearcoat={0.6} /></mesh>
-      <mesh geometry={face} position-z={0.0085}><meshBasicMaterial map={front} toneMapped={false} transparent /></mesh>
-      <mesh geometry={face} position-z={-0.0085} rotation-y={Math.PI}><meshBasicMaterial map={back} toneMapped={false} transparent /></mesh>
-      <Neon curve={edge} p={1} fade={0.3 + 0.7 * up + glowPulse} radius={0.0016} light={0.2} power={2.2} />
+      <mesh geometry={face} position-z={0.0062}><meshBasicMaterial map={front} toneMapped={false} transparent /></mesh>
+      <mesh geometry={face} position-z={-0.0062} rotation-y={Math.PI}><meshBasicMaterial map={back} toneMapped={false} transparent /></mesh>
+      <Neon curve={edge} p={1} fade={0.25 + 0.75 * up + glowPulse} radius={0.0013} light={0.15} power={2.0} />
+      {/* answer row: consonants fade as the vowels leave it */}
+      {WORD.split('').map((c, i) => 'AEIOUY'.includes(c) ? null : (
+        <SyncText key={'a' + i} font={staticFile('fonts/Inter-Medium.woff')} fontSize={ansSize} anchorX="center" anchorY="middle"
+          position={[xa[i], ansY, 0.0075]} fillOpacity={1 - ease(all)}>
+          {c}
+          <meshBasicMaterial color={new THREE.Color(0.96, 0.96, 0.98)} toneMapped={false} transparent opacity={1 - ease(all)} />
+        </SyncText>
+      ))}
+      {/* small burst where each vowel lands */}
       {WORD.split('').map((c, i) => {
         if (!'AEIOUY'.includes(c)) return null;
         const j = WORD.slice(0, i).split('').filter((x) => 'AEIOUY'.includes(x)).length;
-        const land = VOWELS + j * 0.26 + 0.24, r = prog(t, land, land + 0.32);
+        const land = VOWELS + j * 0.26 + 0.3, r = prog(t, land, land + 0.32);
         return (
-          <mesh key={'spark' + i} position={[xs[i], 0, 0.013]} visible={r > 0 && r < 1} scale={0.01 + 0.03 * ease(r)}>
+          <mesh key={'spark' + i} position={[xs[i], wordY, 0.008]} visible={r > 0 && r < 1} scale={0.01 + 0.028 * ease(r)}>
             <ringGeometry args={[0.86, 1, 48]} />
             <meshBasicMaterial color={GOLD_TEXT.clone().multiplyScalar(1.6 * (1 - r))} toneMapped={false} transparent opacity={1 - r} depthWrite={false} />
           </mesh>
         );
       })}
+      {/* the word: consonants stay, vowels travel up from the answer row into their slots */}
       {WORD.split('').map((c, i) => {
         const vowel = 'AEIOUY'.includes(c);
         const p = vowel ? vp(vi++) : 1;
-        // a vowel flies in from below-front along an arc, then settles into its slot
-        const from = new THREE.Vector3(xs[i] * 0.4 + (i % 2 ? 0.25 : -0.25), -0.55, 0.35);
-        const at = new THREE.Vector3(xs[i], 0.0, 0.012);
         const q = clamp(p);
-        const fly = vowel ? from.clone().lerp(at, ease(q)).add(new THREE.Vector3(0, Math.sin(q * Math.PI) * 0.12, 0)) : at;
+        const from = new THREE.Vector3(xa[i], ansY, 0.0075), at = new THREE.Vector3(xs[i], wordY, 0.0075);
+        const fly = vowel ? from.clone().lerp(at, ease(q)).add(new THREE.Vector3(0, 0, Math.sin(q * Math.PI) * 0.05)) : at;
+        const sizeScale = vowel ? lerp(ansSize / wordSize, 1, ease(q)) : 1;
         return (
-          <SyncText key={i} font={staticFile('fonts/InstrumentSerif-Regular.ttf')} fontSize={size} anchorX="center" anchorY="middle"
-            position={fly} scale={vowel ? lerp(0.4, 1, q) : 1} visible={!vowel || t >= VOWELS + (vi - 1) * 0.26 - 0.05}>
+          <SyncText key={i} font={staticFile(vowel && q < 0.5 ? 'fonts/Inter-Medium.woff' : 'fonts/InstrumentSerif-Regular.ttf')} fontSize={wordSize} anchorX="center" anchorY="middle"
+            position={fly} scale={sizeScale}>
             {c}
             <meshBasicMaterial color={vowel ? GOLD_TEXT.clone().multiplyScalar(1.0 + 0.35 * glowPulse) : new THREE.Color(0.97, 0.97, 0.99)} toneMapped={false} />
           </SyncText>
@@ -228,8 +243,8 @@ const ModeCard: React.FC<{ t: number; t0: number; name: string; spot: THREE.Vect
   const edge = useMemo(() => roundedRectCurve(0.454, 0.569, 0.045, 0.0085), []);
   const k = ease(prog(t, t0, t0 + 0.8));
   const away = io(prog(t, BOARD - 0.5, BOARD + 0.1));
-  const pos = sp(590, 1300, 0.004).lerp(spot, k).add(new THREE.Vector3(0, away * 1.6, 0));
-  pos.z += 0;
+  const from = sp(590 + (spot.x / SW) * TX * 0.75, 1500, 0.004);
+  const pos = from.lerp(spot, k).add(new THREE.Vector3(0, away * 1.6, 0));
   pos.y += Math.sin(t * 2 + t0) * 0.01 * k;
   return (
     <group position={pos} rotation={[lerp(-Math.PI / 2, -0.08, k), turn * k, 0]} scale={lerp(0.5, 1, k)} visible={t >= t0 && away < 1}>
@@ -251,7 +266,7 @@ const Logo: React.FC<{ t: number }> = ({ t }) => {
   const tag = ease(prog(t, END + 2.5, END + 2.9));
   let vi = 0;
   return (
-    <group position={[0, 2.22, -0.62]} visible={t >= END + 0.85}>
+    <group position={[0, 1.94, -0.45]} visible={t >= END + 0.85}>
       {word.split('').map((c, i) => {
         const vowel = 'AEIOU'.includes(c); const p = vowel ? vp(vi++) : 1;
         const shown = vowel ? clamp(p) : clamp((sweep - (xs[i] + 0.9) / 1.8) * 6 + 0.5);
@@ -264,7 +279,7 @@ const Logo: React.FC<{ t: number }> = ({ t }) => {
         );
       })}
       <Neon curve={base} p={sweep} fade={1 - 0.8 * prog(t, END + 1.6, END + 2.3)} radius={0.0045} power={3} light={0.4} />
-      <SyncText font={staticFile('fonts/InstrumentSerif-Italic.ttf')} fontSize={0.09} anchorX="center" anchorY="middle" position={[0, -0.26, 0]} fillOpacity={tag}>
+      <SyncText font={staticFile('fonts/InstrumentSerif-Italic.ttf')} fontSize={0.09} anchorX="center" anchorY="middle" position={[0, -0.22, 0]} fillOpacity={tag}>
         Le mot du jour. Sans ses voyelles.
         <meshBasicMaterial color={new THREE.Color(0.95, 0.95, 0.97)} toneMapped={false} transparent opacity={tag} />
       </SyncText>
@@ -321,13 +336,14 @@ const Contact: React.FC<{ opacity: number }> = ({ opacity }) => {
 // Each key: [seconds, camera position, look-at]. Positions are in world space (phone at the origin).
 const CAM: [number, number[], number[], CurveName?][] = [
   [0.0, [-0.5, 1.0, 0.9], [-0.03, 0.08, -0.42]],
-  [1.2, [-0.12, 0.78, 0.62], [0.0, 0.08, -0.42], 'snap'],          // push in on CHCRT
-  [1.7, [0.0, 1.32, 0.55], [0.0, 0.08, -0.4], 'snap'],              // rise to see the gold slots
-  [2.4, [0.04, 1.25, 0.6], [0.0, 0.08, -0.36], 'glide'],
-  [3.5, [0.2, 0.62, 0.82], [0.0, 0.08, -0.05], 'snap'],            // follow the neon down to the answer
-  [4.4, [-0.12, 0.4, 0.98], [0.0, 0.08, 0.26], 'snap'],            // drop to the keyboard
-  [6.1, [0.1, 0.44, 0.98], [0.0, 0.08, 0.12], 'glide'],
-  [6.9, [0.5, 0.8, 2.05], [0.0, 0.5, -0.12], 'snap'],              // pull back as the card rises
+  [1.1, [-0.12, 0.78, 0.62], [0.0, 0.08, -0.42], 'snap'],          // push in on CHCRT
+  [1.6, [0.0, 1.32, 0.55], [0.0, 0.08, -0.4], 'snap'],              // rise: the gold slots light up
+  [2.3, [0.04, 1.25, 0.6], [0.0, 0.08, -0.36], 'glide'],
+  [2.85, [-0.12, 0.42, 0.98], [0.0, 0.08, 0.2], 'snap'],            // drop to the keyboard, typing
+  [4.5, [0.1, 0.46, 0.98], [0.0, 0.08, 0.1], 'glide'],
+  [5.0, [0.04, 1.85, 0.55], [0.0, 0.08, -0.2], 'snap'],             // top view: the neon goes round word + answer
+  [5.9, [0.0, 1.8, 0.62], [0.0, 0.08, -0.21], 'glide'],
+  [6.9, [0.5, 0.8, 2.05], [0.0, 0.5, -0.12], 'soft'],              // pull back as the card rises
   [8.8, [0.16, 0.66, 1.95], [0.0, 0.5, -0.12], 'glide'],
   [9.6, [0.05, 0.6, 1.62], [0.0, 0.5, -0.12], 'snap'],             // push in on the flip
   [10.3, [0.03, 0.72, 1.8], [0.0, 0.4, -0.15], 'soft'],
@@ -337,15 +353,15 @@ const CAM: [number, number[], number[], CurveName?][] = [
   [14.3, [0.62, 0.8, 1.75], [0.5, 0.48, -0.25], 'snap'],
   [15.3, [0.05, 1.25, 0.85], [0.0, 0.09, -0.25], 'snap'],
   [16.8, [0.1, 0.9, 0.6], [0.0, 0.09, -0.33], 'glide'],
-  [17.7, [0.0, 1.05, 5.6], [0.0, 0.82, -0.5], 'snap'],
-  [21.5, [0.0, 1.0, 5.25], [0.0, 0.8, -0.5], 'glide'],
+  [17.7, [0.0, 0.62, 5.7], [0.0, 0.44, -0.25], 'snap'],
+  [21.5, [0.0, 0.6, 5.4], [0.0, 0.44, -0.25], 'glide'],
 ];
 // Focus point for the depth of field
 const FOCUS: [number, number[]][] = [
-  [0.0, [0.0, 0.09, -0.41]], [1.7, [0.0, 0.09, -0.4]], [2.4, [0.0, 0.09, -0.36]], [3.5, [0.0, 0.09, -0.05]], [4.4, [0.0, 0.09, 0.3]], [6.1, [0.0, 0.09, 0.05]],
-  [6.5, [0.0, 0.45, -0.12]], [7.0, [0.0, 0.5, -0.12]], [10.3, [0.0, 0.45, -0.14]], [10.8, [0.0, 0.09, 0.1]],
+  [0.0, [0.0, 0.09, -0.41]], [1.6, [0.0, 0.09, -0.4]], [2.3, [0.0, 0.09, -0.36]], [2.85, [0.0, 0.09, 0.28]], [4.5, [0.0, 0.09, 0.1]],
+  [5.0, [0.0, 0.09, -0.2]], [5.9, [0.0, 0.09, -0.21]], [6.6, [0.0, 0.4, -0.14]], [7.0, [0.0, 0.5, -0.12]], [10.3, [0.0, 0.45, -0.14]], [10.8, [0.0, 0.09, 0.1]],
   [11.8, [-0.56, 0.48, -0.25]], [13.0, [0.0, 0.48, -0.28]], [14.3, [0.5, 0.48, -0.25]],
-  [15.3, [0.0, 0.09, -0.25]], [16.8, [0.0, 0.09, -0.33]], [17.7, [0.0, 1.0, -0.45]], [21.5, [0.0, 1.05, -0.5]],
+  [15.3, [0.0, 0.09, -0.25]], [16.8, [0.0, 0.09, -0.33]], [17.7, [0.0, 0.85, -0.25]], [21.5, [0.0, 0.85, -0.25]],
 ];
 
 const Rig: React.FC<{ t: number }> = ({ t }) => {
@@ -376,11 +392,12 @@ const Scene: React.FC = () => {
   useAdvances();
   useRoomEnvironment();
   // Neon paths
-  // From the gold slots (where the vowels are missing), down to the answer field, then along its line
-  const underline = useMemo(() => new THREE.CatmullRomCurve3([
-    sp(330, 700, 0.005), sp(530, 708, 0.005), sp(760, 700, 0.005), sp(945, 696, 0.005),
-    sp(1080, 860, 0.008), sp(1040, 1180, 0.008), sp(1050, 1352, 0.005), sp(590, 1356, 0.005), sp(130, 1352, 0.005),
-  ], false, 'centripetal'), []);
+  // A thin loop around the word + answer region (the card about to pop out), starting top-left
+  const regionLoop = useMemo(() => {
+    const c = roundedRectCurve(CW + 0.016, CH + 0.016, 0.04, 0);
+    const pts = c.getSpacedPoints(200).map((v) => new THREE.Vector3(REGION.x + v.x, TOP + 0.005, REGION.z - v.y));
+    return new THREE.CatmullRomCurve3(pts, true);
+  }, []);
   const boardLoop = useMemo(() => {
     const c = roundedRectCurve(0.62, 0.105, 0.05, 0);
     const pts = c.getSpacedPoints(160).map((v) => new THREE.Vector3(v.x, TOP + 0.006, -v.y + sp(0, 700).z));
@@ -388,8 +405,9 @@ const Scene: React.FC = () => {
   }, []);
   // Phone stands up at the end, pivoting on its bottom edge
   const stand = io(prog(t, END, END + 0.9));
-  const phonePos = new THREE.Vector3(0, lerp(0, PH / 2 - 0.05, stand), lerp(0, -0.2, stand));
-  const phoneRot = lerp(0, Math.PI / 2 - 0.12, stand);
+  // pivot so the bottom edge stays on the table: centre rises to half the height, never below the surface
+  const phoneRot = lerp(0, Math.PI / 2, stand);
+  const phonePos = new THREE.Vector3(0, (PH / 2) * Math.sin(phoneRot) + (PD / 2) * Math.cos(phoneRot) * 0 + 0.002, lerp(0, -0.2, stand) + (PH / 2) * (1 - Math.cos(phoneRot)) * 0);
   const focus = track(FOCUS, t, ioSoft);
   const bokeh = trackN([[0, 2.6], [6.2, 2.4], [7, 3.2], [10.5, 2.6], [15, 2.4], [17.0, 2], [17.7, 1.0], [21.5, 1.0]], t);
   const flash = Math.exp(-Math.pow((t - (VOWELS + 1.45)) / 0.18, 2));
@@ -404,9 +422,18 @@ const Scene: React.FC = () => {
       <Backdrop />
       <Table />
       <Contact opacity={1 - stand} />
+      {/* contact shadow under the standing phone */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.0012, -0.2]} visible={stand > 0.6}>
+        <planeGeometry args={[PW * 1.5, 0.22]} />
+        <meshBasicMaterial transparent opacity={0.55 * prog(stand, 0.6, 1)} depthWrite={false} color="#000" alphaMap={useMemo(() => {
+          const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d')!;
+          const rg = g.createRadialGradient(128, 32, 4, 128, 32, 120); rg.addColorStop(0, '#fff'); rg.addColorStop(1, '#000');
+          g.fillStyle = rg; g.fillRect(0, 0, 256, 64); return new THREE.CanvasTexture(c);
+        }, [])} />
+      </mesh>
       <group position={phonePos} rotation-x={phoneRot}>
         <Phone screen={screenTexture(t)} glow={1.0 + 0.25 * flash} over="game_slots.png" mix={slotsMix(t)} />
-        <Neon curve={underline} p={io(prog(t, PATH, ANSWER + 0.15))} fade={1 - prog(t, ANSWER + 0.35, ANSWER + 0.9)} radius={0.0045} power={3.4} />
+        <Neon curve={regionLoop} p={io(prog(t, LOOP, LOOPED))} fade={(1 + 0.8 * Math.exp(-Math.pow((t - LOOPED) / 0.12, 2))) * (1 - prog(t, LIFT + 0.1, LIFT + 0.5))} radius={0.0022} power={2.2} light={0.25} />
         <Neon curve={boardLoop} p={io(prog(t, 15.5, 16.4))} fade={1 - prog(t, 16.9, 17.2)} radius={0.0022} power={2.0} light={0.2} />
       </group>
       <WordCard t={t} />

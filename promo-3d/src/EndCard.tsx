@@ -19,17 +19,17 @@ export const EndCard: React.FC = () => {
     <div style={{ position: 'absolute', inset: 0, fontFamily: 'Inter, sans-serif', color: '#f4f5f8' }}>
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 760, opacity: scrim,
         background: 'linear-gradient(rgba(8,5,3,0), rgba(8,5,3,.82) 42%, rgba(8,5,3,.92))' }} />
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 1395, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 34, ...up(a) }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 1290, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 34, ...up(a) }}>
         <Img src={staticFile('brand/appicon.png')} style={{ width: 190, height: 190, borderRadius: 43, boxShadow: '0 18px 40px rgba(0,0,0,.55), 0 0 0 2px rgba(255,255,255,.12)' }} />
         <div style={{ height: 158, padding: '0 46px 0 34px', borderRadius: 34, background: '#000', border: '3px solid #a6a6a6', display: 'flex', alignItems: 'center', gap: 20 }}>
           <svg width="78" height="78" viewBox="0 0 24 24"><path d={APPLE} fill="#fff" /></svg>
           <div style={{ lineHeight: 1.05 }}>
-            <div style={{ fontSize: 34, fontWeight: 500, letterSpacing: 0.3 }}>Disponible sur</div>
+            <div style={{ fontSize: 34, fontWeight: 500, letterSpacing: 0.3 }}>Télécharger dans</div>
             <div style={{ fontSize: 66, fontWeight: 600, letterSpacing: -1 }}>l’App Store</div>
           </div>
         </div>
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 1630, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 22, ...up(b) }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 1520, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 22, ...up(b) }}>
         <svg width="62" height="62" viewBox="0 0 24 24">
           <path d={TIKTOK} fill="#25F4EE" transform="translate(-0.7,-0.5)" />
           <path d={TIKTOK} fill="#FE2C55" transform="translate(0.7,0.5)" />
@@ -37,7 +37,7 @@ export const EndCard: React.FC = () => {
         </svg>
         <div style={{ fontSize: 54, fontWeight: 700, letterSpacing: 0.5 }}>@jeuCNSNN</div>
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 1735, textAlign: 'center', fontSize: 30, fontWeight: 600, letterSpacing: 6, color: '#ffc65a', opacity: c }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 1625, textAlign: 'center', fontSize: 30, fontWeight: 600, letterSpacing: 6, color: '#ffc65a', opacity: c }}>
         GRATUIT · SANS PUBLICITÉ
       </div>
     </div>

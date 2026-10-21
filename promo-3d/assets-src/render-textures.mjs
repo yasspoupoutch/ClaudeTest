@@ -19,8 +19,8 @@ await shot('game_valid', 'game', { typed: WORD, validDown: true, chrono: '0:38' 
 await shot('game_lifted', 'game', { typed: WORD, lifted: true, chrono: '0:38' }, 1179, 2556);
 await shot('game_result', 'game', { typed: WORD, sheet: true, chrono: '0:38' }, 1179, 2556);
 await shot('board', 'board', {}, 1179, 2556);
-await shot('card_front', 'cardFront', {}, 1200, 900);
-await shot('card_back', 'cardBack', {}, 1200, 900);
+await shot('card_front', 'cardFront', {}, 1200, 1171);
+await shot('card_back', 'cardBack', {}, 1200, 1171);
 for (const k of ['sprint', 'survie', 'double']) await shot(`mode_${k}`, 'mode', { kind: k }, 900, 1125);
 await b.close();
 console.log(fs.readdirSync(out).length, 'textures');
