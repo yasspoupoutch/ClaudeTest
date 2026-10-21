@@ -19,6 +19,9 @@ export function bezier(x1: number, y1: number, x2: number, y2: number) {
 export const ease = bezier(0.2, 0.9, 0.25, 1);       // CNSNN's own ease curve
 export const io = bezier(0.65, 0, 0.35, 1);
 export const ioSoft = bezier(0.45, 0, 0.25, 1);
+/** Camera curves: 'snap' = fast in the middle with hard stops (speed ramp), 'glide' = slow drift. */
+export const CURVES = { snap: bezier(0.8, 0, 0.12, 1), glide: bezier(0.35, 0.1, 0.65, 0.9), soft: ioSoft };
+export type CurveName = keyof typeof CURVES;
 export function spring(t: number, response = 0.42, damping = 0.62) {
   if (t <= 0) return 0;
   const w = (2 * Math.PI) / response, wd = w * Math.sqrt(1 - damping * damping);
@@ -31,6 +34,15 @@ export function track(keys: [number, number[]][], t: number, curve = io): THREE.
   for (let i = 0; i < keys.length - 1; i++) {
     const [ta, a] = keys[i], [tb, b] = keys[i + 1];
     if (t <= tb) return V(a).lerp(V(b), curve(prog(t, ta, tb)));
+  }
+  return V(keys[keys.length - 1][1]);
+}
+/** Like track(), each key naming the curve of the segment that ends on it: [time, value, curve?] */
+export function trackC(keys: [number, number[], CurveName?][], t: number): THREE.Vector3 {
+  if (t <= keys[0][0]) return V(keys[0][1]);
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [ta, a] = keys[i], [tb, b, c] = keys[i + 1];
+    if (t <= tb) return V(a).lerp(V(b), CURVES[c ?? 'soft'](prog(t, ta, tb)));
   }
   return V(keys[keys.length - 1][1]);
 }

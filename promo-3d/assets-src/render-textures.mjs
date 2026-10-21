@@ -12,6 +12,8 @@ async function shot(name, kind, opts, w, h) {
 }
 const WORD = 'CHOUCROUTE';
 await shot('game_00', 'game', { chrono: '0:24' }, 1179, 2556);
+await shot('game_slots', 'game', { chrono: '0:24', slots: true }, 1179, 2556);
+await shot('game_answer', 'game', { chrono: '0:24', answerGlow: true }, 1179, 2556);
 for (let i = 1; i <= WORD.length; i++) await shot(`game_${String(i).padStart(2, '0')}`, 'game', { typed: WORD.slice(0, i), down: WORD[i - 1], chrono: '0:' + (24 + Math.round(i * 1.3)) }, 1179, 2556);
 await shot('game_valid', 'game', { typed: WORD, validDown: true, chrono: '0:38' }, 1179, 2556);
 await shot('game_lifted', 'game', { typed: WORD, lifted: true, chrono: '0:38' }, 1179, 2556);

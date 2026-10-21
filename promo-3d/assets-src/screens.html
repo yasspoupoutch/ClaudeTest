@@ -105,16 +105,16 @@ const keyboard = (down, validDown) => {
     <div id="kbot"><div class="key" id="kspace">espace</div><div class="pill gold-fill${validDown ? ' down' : ''}" id="valider">Valider</div></div></div>`;
 };
 // Mot du jour screen. typed: letters typed so far; down: key pressed; lifted: the consonants left the screen.
-function game({ typed = '', down = '', validDown = false, chrono = '0:24', lifted = false, sheet = false }) {
+function game({ typed = '', down = '', validDown = false, chrono = '0:24', lifted = false, sheet = false, slots = false, answerGlow = false }) {
   const t = typed.split('').map(c => `<span style="color:${isVowel(c) ? 'var(--gold)' : 'var(--fg)'}">${c}</span>`).join('');
   return `<div id="screen">
     <div id="gclose" class="abs glass"><svg viewBox="0 0 24 24" width="108" height="108"><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#f4f5f8" stroke-width="1.6" stroke-linecap="round"/></svg></div>
     <div id="gtitle" class="abs"><b>Mot du jour</b><span>Général · Difficile</span></div>
     <div id="gchrono" class="abs glass pill">${chrono}</div>
-    ${lifted ? '<div id="gslot" class="abs"></div>' : '<div id="gcons" class="abs serif">CHCRT</div>'}
+    ${lifted ? '<div id="gslot" class="abs"></div>' : slots ? slotLine() : '<div id="gcons" class="abs serif">CHCRT</div>'}
     <div id="gdiv" class="abs"></div>
     <div id="gnotice" class="abs">Chrono officiel. 20 essais pour trouver le mot.</div>
-    <div id="gans" class="abs">${typed ? `<span id="gtyped">${t}</span>` : '<span id="gph" class="italic">votre réponse</span>'}${sheet ? '' : '<span id="gcaret"></span>'}</div>
+    <div id="gans" class="abs"${answerGlow ? ' style="border-bottom-color:#ffc65a;box-shadow:0 22px 40px -18px rgba(255,198,90,.9)"' : ''}>${typed ? `<span id="gtyped">${t}</span>` : '<span id="gph" class="italic">votre réponse</span>'}${sheet ? '' : '<span id="gcaret"></span>'}</div>
     <div id="gbtns" class="abs"><div class="pill glass"><b>Indice</b>&nbsp;&nbsp;+1 min</div><div class="pill glass" style="color:var(--fg2)">Passer</div></div>
     ${keyboard(down, validDown)}
     ${sheet ? `<div id="dim" class="abs"></div><div id="sheet" class="abs">
@@ -125,6 +125,10 @@ function game({ typed = '', down = '', validDown = false, chrono = '0:24', lifte
       <div id="roff"><b>Top 3 %</b><span>2e sur 87 aujourd’hui</span></div>
       <div id="rbt"><div class="pill glass" style="flex:1">Partager</div><div class="pill gold-fill" style="flex:1.4">Terminer</div></div></div>` : ''}
     ${statusBar('22:46')}</div>`;
+}
+function slotLine() {
+  const bar = '<span style="display:inline-block;width:52px;height:13px;border-radius:7px;margin:0 7px;background:#ffd36e;box-shadow:0 0 26px 6px rgba(255,198,90,.85);vertical-align:-6px"></span>';
+  return `<div class="abs serif" style="left:0;right:0;top:530px;text-align:center;font-size:150px;line-height:1;letter-spacing:3px;white-space:nowrap">CH${bar}${bar}CR${bar}${bar}T${bar}</div>`;
 }
 function board() {
   const av = ['#f3b94c', '#49d9b9', '#aa99ff', '#f28abd', '#5dc0f6'];

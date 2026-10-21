@@ -1,14 +1,15 @@
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ThreeCanvas } from '@remotion/three';
-import { staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { useThree } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 import * as THREE from 'three';
 import { Post } from './Post';
 import {
-  FPS, clamp, ease, hold, io, ioSoft, lerp, prog, roundedPlane, roundedRectCurve, roundedRectShape, spring, tex, track, trackN,
+  CurveName, FPS, clamp, ease, hold, io, ioSoft, lerp, prog, roundedPlane, roundedRectCurve, roundedRectShape, spring, tex, track, trackC, trackN,
 } from './kit';
+import { EndCard } from './EndCard';
 
 // ---------------------------------------------------------------------------------------------
 // Units: 1 = 10 cm. The phone lies on the table at the origin, screen up (+y), its top towards -z.
@@ -23,24 +24,29 @@ const sp = (px: number, py: number, lift = 0) => new THREE.Vector3((px / TX - 0.
 
 const GOLD = new THREE.Color(1.0, 0.776, 0.353);
 /** Gold for 3D letters: more saturated, so it stays gold through AgX tone mapping. */
-const GOLD_TEXT = new THREE.Color(1.0, 0.66, 0.16);
+const GOLD_TEXT = new THREE.Color(1.0, 0.62, 0.12).multiplyScalar(1.25);
 const T = (s: number) => s * FPS;                            // seconds -> frames
 
 // ----------------------------------- timeline (seconds) -----------------------------------
 const WORD = 'CHOUCROUTE';
 const TYPE0 = 4.0, TSTEP = 0.2, VALID = 6.05;               // typing in the app
 const LIFT = 6.3, VOWELS = 7.3, FLIP = 9.0, BACKDOWN = 10.3, RESULT = 10.75;
-const MODES = 11.0, BOARD = 15.0, END = 17.0;
-export const DURATION = T(20.5);
+const SLOTS = 1.35, PATH = 2.15, ANSWER = 3.35;             // missing-vowel slots, neon to the answer field
+const MODES = 11.1, BOARD = 15.0, END = 17.0;
+export const DURATION = T(21.5);
+export { END };
 
 function screenTexture(t: number) {
   if (t >= BOARD) return t >= END + 0.6 ? 'game_result.png' : 'board.png';
   if (t >= RESULT) return 'game_result.png';
   if (t >= LIFT) return 'game_lifted.png';
   if (t >= VALID - 0.05) return t < VALID + 0.2 ? 'game_valid.png' : 'game_10.png';
+  if (t < TYPE0) return t >= ANSWER ? 'game_answer.png' : 'game_00.png';
   const n = WORD.split('').filter((_, i) => t >= TYPE0 + i * TSTEP).length;
   return `game_${String(n).padStart(2, '0')}.png`;
 }
+/** The gold slots screen fades over the game screen, then away once the neon reaches the answer field. */
+const slotsMix = (t: number) => ease(prog(t, SLOTS, SLOTS + 0.35)) * (1 - ease(prog(t, ANSWER - 0.1, ANSWER + 0.3)));
 
 // ----------------------------------- glyph metrics -----------------------------------
 // Letter advances of Instrument Serif, measured in the page once the font is loaded (fraction of font size).
@@ -87,7 +93,7 @@ const SyncText: React.FC<React.ComponentProps<typeof Text>> = (props) => {
   return <Text ref={ref} {...props} />;
 };
 
-const Phone: React.FC<{ screen: string; glow: number }> = ({ screen, glow }) => {
+const Phone: React.FC<{ screen: string; glow: number; over?: string; mix?: number }> = ({ screen, glow, over, mix = 0 }) => {
   const body = useMemo(() => {
     const g = new THREE.ExtrudeGeometry(roundedRectShape(PW - 0.024, PH - 0.024, 0.105), {
       depth: PD - 0.024, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 6, curveSegments: 32,
@@ -97,8 +103,17 @@ const Phone: React.FC<{ screen: string; glow: number }> = ({ screen, glow }) => 
   const glass = useMemo(() => roundedPlane(PW - 0.02, PH - 0.02, 0.108), []);
   const scr = useMemo(() => roundedPlane(SW, SH, 0.092), []);
   const map = tex(screen);
+  const overMap = over ? tex(over) : null;
+  // Side buttons: action + volume on the left edge, power on the right (iPhone layout)
+  const buttons: [number, number, number][] = [[-1, -0.46, 0.06], [-1, -0.3, 0.13], [-1, -0.14, 0.13], [1, -0.26, 0.2]];
   return (
     <group>
+      {buttons.map(([side, z, len], i) => (
+        <mesh key={i} position={[side * (PW / 2 + 0.002), PD * 0.52, z]} castShadow>
+          <boxGeometry args={[0.012, 0.03, len]} />
+          <meshPhysicalMaterial color="#4a4640" metalness={1} roughness={0.25} envMapIntensity={1.2} />
+        </mesh>
+      ))}
       <mesh geometry={body} castShadow receiveShadow>
         <meshPhysicalMaterial color="#45413c" metalness={1} roughness={0.28} clearcoat={0.4} envMapIntensity={1.1} />
       </mesh>
@@ -108,6 +123,11 @@ const Phone: React.FC<{ screen: string; glow: number }> = ({ screen, glow }) => 
       <mesh geometry={scr} rotation-x={-Math.PI / 2} position-y={TOP}>
         <meshBasicMaterial map={map} toneMapped={false} color={new THREE.Color(glow, glow, glow)} />
       </mesh>
+      {overMap && mix > 0.001 ? (
+        <mesh geometry={scr} rotation-x={-Math.PI / 2} position-y={TOP + 0.0004}>
+          <meshBasicMaterial map={overMap} toneMapped={false} transparent opacity={mix} depthWrite={false} />
+        </mesh>
+      ) : null}
       {/* glass reflection over the screen */}
       <mesh geometry={scr} rotation-x={-Math.PI / 2} position-y={TOP + 0.0008}>
         <meshPhysicalMaterial color="#000" transparent opacity={0.18} roughness={0.05} clearcoat={1} envMapIntensity={2.2} depthWrite={false} />
@@ -151,7 +171,7 @@ const WordCard: React.FC<{ t: number }> = ({ t }) => {
   const up = ease(prog(t, LIFT, LIFT + 1.0)), down = io(prog(t, BACKDOWN, RESULT));
   const k = up * (1 - down);
   const start = sp(590, 600, 0.004);
-  const pos = start.clone().lerp(new THREE.Vector3(0, 0.78, -0.18), k);
+  const pos = start.clone().lerp(new THREE.Vector3(0, 0.5, -0.12), k);
   pos.y += Math.sin(t * 2.1) * 0.012 * k;                                  // gentle float
   const flip = io(prog(t, FLIP, FLIP + 0.55)) * Math.PI * (1 - io(prog(t, BACKDOWN, BACKDOWN + 0.35)));
   const rotX = lerp(-Math.PI / 2, -0.12, k), rotY = flip + Math.sin(t * 1.3) * 0.05 * k;
@@ -170,6 +190,17 @@ const WordCard: React.FC<{ t: number }> = ({ t }) => {
       <mesh geometry={face} position-z={-0.0085} rotation-y={Math.PI}><meshBasicMaterial map={back} toneMapped={false} transparent /></mesh>
       <Neon curve={edge} p={1} fade={0.3 + 0.7 * up + glowPulse} radius={0.0016} light={0.2} power={2.2} />
       {WORD.split('').map((c, i) => {
+        if (!'AEIOUY'.includes(c)) return null;
+        const j = WORD.slice(0, i).split('').filter((x) => 'AEIOUY'.includes(x)).length;
+        const land = VOWELS + j * 0.26 + 0.24, r = prog(t, land, land + 0.32);
+        return (
+          <mesh key={'spark' + i} position={[xs[i], 0, 0.013]} visible={r > 0 && r < 1} scale={0.01 + 0.03 * ease(r)}>
+            <ringGeometry args={[0.86, 1, 48]} />
+            <meshBasicMaterial color={GOLD_TEXT.clone().multiplyScalar(1.6 * (1 - r))} toneMapped={false} transparent opacity={1 - r} depthWrite={false} />
+          </mesh>
+        );
+      })}
+      {WORD.split('').map((c, i) => {
         const vowel = 'AEIOUY'.includes(c);
         const p = vowel ? vp(vi++) : 1;
         // a vowel flies in from below-front along an arc, then settles into its slot
@@ -181,7 +212,7 @@ const WordCard: React.FC<{ t: number }> = ({ t }) => {
           <SyncText key={i} font={staticFile('fonts/InstrumentSerif-Regular.ttf')} fontSize={size} anchorX="center" anchorY="middle"
             position={fly} scale={vowel ? lerp(0.4, 1, q) : 1} visible={!vowel || t >= VOWELS + (vi - 1) * 0.26 - 0.05}>
             {c}
-            <meshBasicMaterial color={vowel ? GOLD_TEXT.clone().multiplyScalar(1.0 + 0.3 * glowPulse) : new THREE.Color(1.0, 1.0, 1.02)} toneMapped={false} />
+            <meshBasicMaterial color={vowel ? GOLD_TEXT.clone().multiplyScalar(1.0 + 0.35 * glowPulse) : new THREE.Color(0.97, 0.97, 0.99)} toneMapped={false} />
           </SyncText>
         );
       })}
@@ -198,6 +229,7 @@ const ModeCard: React.FC<{ t: number; t0: number; name: string; spot: THREE.Vect
   const k = ease(prog(t, t0, t0 + 0.8));
   const away = io(prog(t, BOARD - 0.5, BOARD + 0.1));
   const pos = sp(590, 1300, 0.004).lerp(spot, k).add(new THREE.Vector3(0, away * 1.6, 0));
+  pos.z += 0;
   pos.y += Math.sin(t * 2 + t0) * 0.01 * k;
   return (
     <group position={pos} rotation={[lerp(-Math.PI / 2, -0.08, k), turn * k, 0]} scale={lerp(0.5, 1, k)} visible={t >= t0 && away < 1}>
@@ -211,10 +243,11 @@ const ModeCard: React.FC<{ t: number; t0: number; name: string; spot: THREE.Vect
 /** End: CNSNN in Fraunces, the gold vowels drop in to make CONSONNE. */
 const Logo: React.FC<{ t: number }> = ({ t }) => {
   const size = 0.2, word = 'CONSONNE';
+  const base = useMemo(() => new THREE.CatmullRomCurve3([new THREE.Vector3(-0.98, -0.13, 0.01), new THREE.Vector3(0, -0.13, 0.01), new THREE.Vector3(0.98, -0.13, 0.01)]), []);
   const vp = (i: number) => spring(t - (END + 1.75 + i * 0.16), 0.42, 0.62);
   // Fraunces Black is wider than Instrument Serif: scale the advances
   const xs = layout(word, size * 1.18, 0.01, vp);
-  const sweep = io(prog(t, END + 0.9, END + 1.5));
+  const sweep = io(prog(t, END + 0.9, END + 1.55));
   const tag = ease(prog(t, END + 2.5, END + 2.9));
   let vi = 0;
   return (
@@ -230,13 +263,10 @@ const Logo: React.FC<{ t: number }> = ({ t }) => {
           </SyncText>
         );
       })}
-      <SyncText font={staticFile('fonts/InstrumentSerif-Italic.ttf')} fontSize={0.09} anchorX="center" anchorY="middle" position={[0, -0.2, 0]} fillOpacity={tag}>
+      <Neon curve={base} p={sweep} fade={1 - 0.8 * prog(t, END + 1.6, END + 2.3)} radius={0.0045} power={3} light={0.4} />
+      <SyncText font={staticFile('fonts/InstrumentSerif-Italic.ttf')} fontSize={0.09} anchorX="center" anchorY="middle" position={[0, -0.26, 0]} fillOpacity={tag}>
         Le mot du jour. Sans ses voyelles.
         <meshBasicMaterial color={new THREE.Color(0.95, 0.95, 0.97)} toneMapped={false} transparent opacity={tag} />
-      </SyncText>
-      <SyncText font={staticFile('fonts/Fraunces-Black.ttf')} fontSize={0.05} letterSpacing={0.12} anchorX="center" anchorY="middle" position={[0, -0.33, 0]} fillOpacity={tag}>
-        GRATUIT · SANS PUBLICITÉ
-        <meshBasicMaterial color={GOLD.clone().multiplyScalar(1.0)} toneMapped={false} transparent opacity={tag} />
       </SyncText>
     </group>
   );
@@ -289,37 +319,39 @@ const Contact: React.FC<{ opacity: number }> = ({ opacity }) => {
 
 // ----------------------------------- camera direction -----------------------------------
 // Each key: [seconds, camera position, look-at]. Positions are in world space (phone at the origin).
-const CAM: [number, number[], number[]][] = [
-  [0.0, [-0.36, 0.86, 0.72], [-0.03, 0.08, -0.42]],
-  [1.9, [0.12, 0.72, 0.62], [0.02, 0.08, -0.4]],
-  [3.7, [0.22, 0.55, 0.7], [0.0, 0.08, 0.02]],
-  [4.6, [-0.12, 0.38, 0.95], [0.0, 0.08, 0.26]],
-  [6.1, [0.1, 0.42, 0.95], [0.0, 0.08, 0.12]],
-  [7.0, [0.55, 1.1, 2.15], [0.0, 0.78, -0.18]],
-  [8.8, [0.18, 0.95, 2.0], [0.0, 0.78, -0.18]],
-  [9.7, [0.06, 0.88, 1.8], [0.0, 0.78, -0.18]],
-  [10.3, [0.03, 0.95, 1.85], [0.0, 0.66, -0.2]],
-  [10.95, [0.0, 1.45, 1.75], [0.0, 0.25, -0.1]],
-  [11.7, [-0.72, 1.0, 1.75], [-0.56, 0.72, -0.25]],
-  [13.0, [0.0, 1.0, 1.8], [0.0, 0.72, -0.28]],
-  [14.3, [0.62, 1.0, 1.8], [0.5, 0.72, -0.25]],
-  [15.3, [0.05, 1.25, 0.85], [0.0, 0.09, -0.25]],
-  [16.8, [0.1, 0.9, 0.6], [0.0, 0.09, -0.33]],
-  [17.6, [0.0, 1.3, 3.9], [0.0, 1.28, -0.5]],
-  [20.5, [0.0, 1.3, 3.55], [0.0, 1.3, -0.5]],
+const CAM: [number, number[], number[], CurveName?][] = [
+  [0.0, [-0.5, 1.0, 0.9], [-0.03, 0.08, -0.42]],
+  [1.2, [-0.12, 0.78, 0.62], [0.0, 0.08, -0.42], 'snap'],          // push in on CHCRT
+  [1.7, [0.0, 1.32, 0.55], [0.0, 0.08, -0.4], 'snap'],              // rise to see the gold slots
+  [2.4, [0.04, 1.25, 0.6], [0.0, 0.08, -0.36], 'glide'],
+  [3.5, [0.2, 0.62, 0.82], [0.0, 0.08, -0.05], 'snap'],            // follow the neon down to the answer
+  [4.4, [-0.12, 0.4, 0.98], [0.0, 0.08, 0.26], 'snap'],            // drop to the keyboard
+  [6.1, [0.1, 0.44, 0.98], [0.0, 0.08, 0.12], 'glide'],
+  [6.9, [0.5, 0.8, 2.05], [0.0, 0.5, -0.12], 'snap'],              // pull back as the card rises
+  [8.8, [0.16, 0.66, 1.95], [0.0, 0.5, -0.12], 'glide'],
+  [9.6, [0.05, 0.6, 1.62], [0.0, 0.5, -0.12], 'snap'],             // push in on the flip
+  [10.3, [0.03, 0.72, 1.8], [0.0, 0.4, -0.15], 'soft'],
+  [11.0, [0.0, 1.4, 1.75], [0.0, 0.2, -0.1], 'soft'],
+  [11.8, [-0.68, 0.8, 1.7], [-0.56, 0.48, -0.25], 'snap'],
+  [13.0, [0.0, 0.8, 1.75], [0.0, 0.48, -0.28], 'snap'],
+  [14.3, [0.62, 0.8, 1.75], [0.5, 0.48, -0.25], 'snap'],
+  [15.3, [0.05, 1.25, 0.85], [0.0, 0.09, -0.25], 'snap'],
+  [16.8, [0.1, 0.9, 0.6], [0.0, 0.09, -0.33], 'glide'],
+  [17.7, [0.0, 1.05, 5.6], [0.0, 0.82, -0.5], 'snap'],
+  [21.5, [0.0, 1.0, 5.25], [0.0, 0.8, -0.5], 'glide'],
 ];
 // Focus point for the depth of field
 const FOCUS: [number, number[]][] = [
-  [0.0, [0.0, 0.09, -0.41]], [1.9, [0.0, 0.09, -0.41]], [3.7, [0.0, 0.09, 0.0]], [4.6, [0.0, 0.09, 0.3]], [6.1, [0.0, 0.09, 0.05]],
-  [6.55, [0.0, 0.7, -0.15]], [7.0, [0.0, 0.76, -0.18]], [10.3, [0.0, 0.76, -0.18]], [10.6, [0.0, 0.09, 0.1]],
-  [11.7, [-0.56, 0.72, -0.25]], [13.0, [0.0, 0.72, -0.28]], [14.3, [0.5, 0.72, -0.25]],
-  [15.3, [0.0, 0.09, -0.25]], [16.8, [0.0, 0.09, -0.33]], [17.6, [0.0, 1.0, -0.45]], [20.5, [0.0, 1.05, -0.5]],
+  [0.0, [0.0, 0.09, -0.41]], [1.7, [0.0, 0.09, -0.4]], [2.4, [0.0, 0.09, -0.36]], [3.5, [0.0, 0.09, -0.05]], [4.4, [0.0, 0.09, 0.3]], [6.1, [0.0, 0.09, 0.05]],
+  [6.5, [0.0, 0.45, -0.12]], [7.0, [0.0, 0.5, -0.12]], [10.3, [0.0, 0.45, -0.14]], [10.8, [0.0, 0.09, 0.1]],
+  [11.8, [-0.56, 0.48, -0.25]], [13.0, [0.0, 0.48, -0.28]], [14.3, [0.5, 0.48, -0.25]],
+  [15.3, [0.0, 0.09, -0.25]], [16.8, [0.0, 0.09, -0.33]], [17.7, [0.0, 1.0, -0.45]], [21.5, [0.0, 1.05, -0.5]],
 ];
 
 const Rig: React.FC<{ t: number }> = ({ t }) => {
   const { camera } = useThree();
   useLayoutEffect(() => {
-    const p = track(CAM.map(([s, a]) => [s, a]), t, ioSoft), l = track(CAM.map(([s, , b]) => [s, b]), t, ioSoft);
+    const p = trackC(CAM.map(([s, a, , c]) => [s, a, c]), t), l = trackC(CAM.map(([s, , b, c]) => [s, b, c]), t);
     camera.position.copy(p); camera.lookAt(l);
     camera.updateMatrixWorld();
   }, [t, camera]);
@@ -344,10 +376,11 @@ const Scene: React.FC = () => {
   useAdvances();
   useRoomEnvironment();
   // Neon paths
+  // From the gold slots (where the vowels are missing), down to the answer field, then along its line
   const underline = useMemo(() => new THREE.CatmullRomCurve3([
-    sp(-60, 760, 0.006), sp(260, 760, 0.006), sp(590, 770, 0.006), sp(930, 760, 0.006), sp(1120, 820, 0.01),
-    sp(1000, 1060, 0.012), sp(700, 1130, 0.008), sp(420, 1300, 0.006), sp(120, 1330, 0.006),
-  ]), []);
+    sp(330, 700, 0.005), sp(530, 708, 0.005), sp(760, 700, 0.005), sp(945, 696, 0.005),
+    sp(1080, 860, 0.008), sp(1040, 1180, 0.008), sp(1050, 1352, 0.005), sp(590, 1356, 0.005), sp(130, 1352, 0.005),
+  ], false, 'centripetal'), []);
   const boardLoop = useMemo(() => {
     const c = roundedRectCurve(0.62, 0.105, 0.05, 0);
     const pts = c.getSpacedPoints(160).map((v) => new THREE.Vector3(v.x, TOP + 0.006, -v.y + sp(0, 700).z));
@@ -358,7 +391,7 @@ const Scene: React.FC = () => {
   const phonePos = new THREE.Vector3(0, lerp(0, PH / 2 - 0.05, stand), lerp(0, -0.2, stand));
   const phoneRot = lerp(0, Math.PI / 2 - 0.12, stand);
   const focus = track(FOCUS, t, ioSoft);
-  const bokeh = trackN([[0, 5], [6.2, 4.5], [7, 6], [10.5, 4], [15, 4.5], [17.0, 3], [17.6, 1.2], [20.5, 1.2]], t);
+  const bokeh = trackN([[0, 2.6], [6.2, 2.4], [7, 3.2], [10.5, 2.6], [15, 2.4], [17.0, 2], [17.7, 1.0], [21.5, 1.0]], t);
   const flash = Math.exp(-Math.pow((t - (VOWELS + 1.45)) / 0.18, 2));
   return (
     <>
@@ -372,14 +405,14 @@ const Scene: React.FC = () => {
       <Table />
       <Contact opacity={1 - stand} />
       <group position={phonePos} rotation-x={phoneRot}>
-        <Phone screen={screenTexture(t)} glow={1.0 + 0.25 * flash} />
-        <Neon curve={underline} p={io(prog(t, 2.0, 3.7))} fade={1 - prog(t, 3.9, 4.4)} />
+        <Phone screen={screenTexture(t)} glow={1.0 + 0.25 * flash} over="game_slots.png" mix={slotsMix(t)} />
+        <Neon curve={underline} p={io(prog(t, PATH, ANSWER + 0.15))} fade={1 - prog(t, ANSWER + 0.35, ANSWER + 0.9)} radius={0.0045} power={3.4} />
         <Neon curve={boardLoop} p={io(prog(t, 15.5, 16.4))} fade={1 - prog(t, 16.9, 17.2)} radius={0.0022} power={2.0} light={0.2} />
       </group>
       <WordCard t={t} />
-      <ModeCard t={t} t0={MODES} name="mode_sprint.png" spot={new THREE.Vector3(-0.56, 0.72, -0.25)} turn={0.3} />
-      <ModeCard t={t} t0={MODES + 1.2} name="mode_survie.png" spot={new THREE.Vector3(0, 0.72, -0.28)} turn={0} />
-      <ModeCard t={t} t0={MODES + 2.4} name="mode_double.png" spot={new THREE.Vector3(0.5, 0.72, -0.25)} turn={-0.3} />
+      <ModeCard t={t} t0={MODES} name="mode_sprint.png" spot={new THREE.Vector3(-0.56, 0.48, -0.25)} turn={0.3} />
+      <ModeCard t={t} t0={MODES + 1.2} name="mode_survie.png" spot={new THREE.Vector3(0, 0.48, -0.28)} turn={0} />
+      <ModeCard t={t} t0={MODES + 2.4} name="mode_double.png" spot={new THREE.Vector3(0.5, 0.48, -0.25)} turn={-0.3} />
       <Logo t={t} />
       <Rig t={t} />
       <Post focus={focus} bokeh={bokeh} bloom={0.9 + 0.8 * flash} />
@@ -390,9 +423,12 @@ const Scene: React.FC = () => {
 export const Promo: React.FC = () => {
   const { width, height } = useVideoConfig();
   return (
+    <AbsoluteFill style={{ backgroundColor: '#0b0705' }}>
     <ThreeCanvas width={width} height={height} linear={false} flat={false} gl={{ antialias: false, preserveDrawingBuffer: true }} shadows
       camera={{ fov: 34, near: 0.02, far: 40, position: [0, 1, 1] }}>
       <Scene />
     </ThreeCanvas>
+    <EndCard />
+    </AbsoluteFill>
   );
 };

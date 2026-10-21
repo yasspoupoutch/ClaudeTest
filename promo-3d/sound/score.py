@@ -1,6 +1,6 @@
 # Soundtrack of the 3D promo, timed on the script (src/Promo.tsx). A minor, 120 BPM.
 import sys; from synth import *
-DUR = 20.5
+DUR = 21.5
 M = Mix(DUR, seed=21)
 beat = 0.5; bar = 2.0
 chords = [[57, 60, 64], [53, 57, 60], [48, 52, 55, 60], [55, 59, 62]]   # Am F C G
@@ -41,10 +41,12 @@ while t < 17.0:
 # 0-2: the riddle — chrono ticks
 for tt in (0.25, 1.25): click(tt, 0.08)
 low_hit(0.0, 0.25)
-# 2-3.7: neon runs under CHCRT
-hum(2.0, 1.8, 90, 260, 0.04)
-for i in range(5): zip_(2.25 + i * 0.26)
-swoosh(3.6, 0.5)
+# 1.35: the gold slots light up where the vowels are missing; 2.15-3.5 the neon links them and runs to the answer field
+swoosh(1.2, 0.5, 0.05)
+for i in range(5): M.place(bell(88 + [0, 2, 4, 7, 9][i], 0.25, 0.6), 1.38 + i * 0.07, 0.035, (i - 2) * 0.2)
+hum(2.15, 1.4, 90, 260, 0.04)
+for i in range(5): zip_(2.2 + i * 0.13)
+swoosh(2.9, 0.5); M.place(bell(81, 0.5), 3.35, 0.05)
 # 3.8-6.3: typing CHOUCROUTE, Valider
 for i in range(10): click(4.0 + i * 0.2)
 click(6.05, 0.2); M.place(tone(hz(69), 0.2, ((1, 1),), a=.002, tau=.05), 6.05, 0.06)
@@ -65,8 +67,10 @@ M.place(bell(88, 0.5), 13.9, 0.045); M.place(bell(83, 0.5), 14.15, 0.045)
 # 15-17: leaderboard, neon loop around "Vous"
 swoosh(15.2, 0.6, 0.06); hum(15.5, 0.9, 150, 300, 0.035); M.place(blip(91, dur=0.07), 16.2, 0.05)
 # 17-20.5: phone stands, neon writes the name, vowels drop
-low_hit(17.0, 0.3); hum(17.9, 0.6, 200, 420, 0.035)
+low_hit(17.0, 0.3); hum(17.9, 0.65, 200, 420, 0.04)
 for i, m in enumerate([81, 84, 88]): M.place(bell(m, 0.9), 18.75 + i * 0.16 + 0.15, 0.065)
 for m in [45, 57, 64, 69, 72, 76]: M.place(tone(hz(m), 2.3, ((1, 1), (2, .2), (3, .06)), a=.01, tau=1.3, det=.002), 19.2, 0.045)
-M.write(sys.argv[1], fade_out=0.9)
+# End card: icon and App Store badge, then the TikTok account
+M.place(blip(88, dur=0.08), 19.4, 0.05); M.place(blip(93, dur=0.08), 19.58, 0.045)
+M.write(sys.argv[1], fade_out=1.0)
 print('ok')

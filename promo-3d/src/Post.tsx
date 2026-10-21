@@ -16,15 +16,15 @@ export const Post: React.FC<{ focus: THREE.Vector3; bokeh: number; bloom: number
   const fx = useMemo(() => {
     gl.toneMapping = THREE.NoToneMapping;
     gl.shadowMap.enabled = true; gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    const composer = new EffectComposer(gl, { frameBufferType: THREE.HalfFloatType, multisampling: 0 });
+    const composer = new EffectComposer(gl, { frameBufferType: THREE.HalfFloatType, multisampling: 4 });
     composer.addPass(new RenderPass(scene, camera));
-    const dof = new DepthOfFieldEffect(camera, { worldFocusRange: 0.35, bokehScale: 4 });
+    const dof = new DepthOfFieldEffect(camera, { worldFocusRange: 0.6, bokehScale: 2.5 });
     const bloomFx = new BloomEffect({ intensity: 1, luminanceThreshold: 0.92, luminanceSmoothing: 0.2, mipmapBlur: true, radius: 0.7 });
-    const tone = new ToneMappingEffect({ mode: ToneMappingMode.AGX });
-    const vignette = new VignetteEffect({ darkness: 0.55, offset: 0.32 });
+    const tone = new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL });
+    const vignette = new VignetteEffect({ darkness: 0.45, offset: 0.35 });
     const noise = new NoiseEffect({ blendFunction: BlendFunction.OVERLAY }); noise.blendMode.opacity.value = 0.12;
     composer.addPass(new EffectPass(camera, dof));
-    composer.addPass(new EffectPass(camera, bloomFx, tone, vignette, noise, new SMAAEffect()));
+    composer.addPass(new EffectPass(camera, bloomFx, tone, vignette, new SMAAEffect()));
     return { composer, dof, bloomFx };
   }, [gl, scene, camera]);
   useLayoutEffect(() => { fx.composer.setSize(size.width, size.height); }, [fx, size]);
