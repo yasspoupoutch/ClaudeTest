@@ -24,7 +24,7 @@ const sp = (px: number, py: number, lift = 0) => new THREE.Vector3((px / TX - 0.
 
 const GOLD = new THREE.Color(1.0, 0.776, 0.353);
 /** Gold for 3D letters: more saturated, so it stays gold through AgX tone mapping. */
-const GOLD_TEXT = new THREE.Color(1.0, 0.62, 0.12).multiplyScalar(1.25);
+const GOLD_TEXT = new THREE.Color(1.0, 0.66, 0.16);
 const T = (s: number) => s * FPS;                            // seconds -> frames
 
 // ----------------------------------- timeline (seconds) -----------------------------------
@@ -227,7 +227,7 @@ const WordCard: React.FC<{ t: number }> = ({ t }) => {
           <SyncText key={i} font={staticFile(vowel && q < 0.5 ? 'fonts/Inter-Medium.woff' : 'fonts/InstrumentSerif-Regular.ttf')} fontSize={wordSize} anchorX="center" anchorY="middle"
             position={fly} scale={sizeScale}>
             {c}
-            <meshBasicMaterial color={vowel ? GOLD_TEXT.clone().multiplyScalar(1.0 + 0.35 * glowPulse) : new THREE.Color(0.97, 0.97, 0.99)} toneMapped={false} />
+            <meshBasicMaterial color={vowel ? GOLD_TEXT.clone().multiplyScalar(1.0 + 0.12 * glowPulse) : new THREE.Color(0.97, 0.97, 0.99)} toneMapped={false} />
           </SyncText>
         );
       })}
@@ -353,8 +353,8 @@ const CAM: [number, number[], number[], CurveName?][] = [
   [14.3, [0.62, 0.8, 1.75], [0.5, 0.48, -0.25], 'snap'],
   [15.3, [0.05, 1.25, 0.85], [0.0, 0.09, -0.25], 'snap'],
   [16.8, [0.1, 0.9, 0.6], [0.0, 0.09, -0.33], 'glide'],
-  [17.7, [0.0, 0.62, 5.7], [0.0, 0.44, -0.25], 'snap'],
-  [21.5, [0.0, 0.6, 5.4], [0.0, 0.44, -0.25], 'glide'],
+  [17.7, [0.0, 0.7, 6.5], [0.0, 0.6, -0.25], 'snap'],
+  [21.5, [0.0, 0.68, 6.2], [0.0, 0.59, -0.25], 'glide'],
 ];
 // Focus point for the depth of field
 const FOCUS: [number, number[]][] = [
@@ -440,7 +440,6 @@ const Scene: React.FC = () => {
       <ModeCard t={t} t0={MODES} name="mode_sprint.png" spot={new THREE.Vector3(-0.56, 0.48, -0.25)} turn={0.3} />
       <ModeCard t={t} t0={MODES + 1.2} name="mode_survie.png" spot={new THREE.Vector3(0, 0.48, -0.28)} turn={0} />
       <ModeCard t={t} t0={MODES + 2.4} name="mode_double.png" spot={new THREE.Vector3(0.5, 0.48, -0.25)} turn={-0.3} />
-      <Logo t={t} />
       <Rig t={t} />
       <Post focus={focus} bokeh={bokeh} bloom={0.9 + 0.8 * flash} />
     </>
