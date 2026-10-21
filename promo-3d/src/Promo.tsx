@@ -38,7 +38,7 @@ export const DURATION = T(21.5);
 export { END };
 
 function screenTexture(t: number) {
-  if (t >= BOARD) return t >= END + 0.6 ? 'game_result.png' : 'board.png';
+  if (t >= BOARD) return t >= END + 0.6 ? 'game_result_end.png' : 'board.png';
   if (t >= RESULT) return 'game_result.png';
   if (t >= LIFT) return 'game_lifted.png';
   if (t >= VALID - 0.05) return t < VALID + 0.2 ? 'game_valid.png' : 'game_10.png';
@@ -361,7 +361,7 @@ const FOCUS: [number, number[]][] = [
   [0.0, [0.0, 0.09, -0.41]], [1.6, [0.0, 0.09, -0.4]], [2.3, [0.0, 0.09, -0.36]], [2.85, [0.0, 0.09, 0.28]], [4.5, [0.0, 0.09, 0.1]],
   [5.0, [0.0, 0.09, -0.2]], [5.9, [0.0, 0.09, -0.21]], [6.6, [0.0, 0.4, -0.14]], [7.0, [0.0, 0.5, -0.12]], [10.3, [0.0, 0.45, -0.14]], [10.8, [0.0, 0.09, 0.1]],
   [11.8, [-0.56, 0.48, -0.25]], [13.0, [0.0, 0.48, -0.28]], [14.3, [0.5, 0.48, -0.25]],
-  [15.3, [0.0, 0.09, -0.25]], [16.8, [0.0, 0.09, -0.33]], [17.7, [0.0, 0.85, -0.25]], [21.5, [0.0, 0.85, -0.25]],
+  [15.3, [0.0, 0.09, -0.25]], [16.8, [0.0, 0.09, -0.33]], [17.7, [0.0, 0.754, -0.2]], [21.5, [0.0, 0.754, -0.2]],
 ];
 
 const Rig: React.FC<{ t: number }> = ({ t }) => {
@@ -409,14 +409,14 @@ const Scene: React.FC = () => {
   const phoneRot = lerp(0, Math.PI / 2, stand);
   const phonePos = new THREE.Vector3(0, (PH / 2) * Math.sin(phoneRot) + (PD / 2) * Math.cos(phoneRot) * 0 + 0.002, lerp(0, -0.2, stand) + (PH / 2) * (1 - Math.cos(phoneRot)) * 0);
   const focus = track(FOCUS, t, ioSoft);
-  const bokeh = trackN([[0, 2.6], [6.2, 2.4], [7, 3.2], [10.5, 2.6], [15, 2.4], [17.0, 2], [17.7, 1.0], [21.5, 1.0]], t);
+  const bokeh = trackN([[0, 2.6], [6.2, 2.4], [7, 3.2], [10.5, 2.6], [15, 2.4], [17.0, 2], [17.7, 0], [21.5, 0]], t);
   const flash = Math.exp(-Math.pow((t - (VOWELS + 1.45)) / 0.18, 2));
   return (
     <>
       <color attach="background" args={['#0b0705']} />
       <ambientLight intensity={0.05} />
       {/* warm key light, like a desk lamp off to the left */}
-      <spotLight position={[-2.6, 3.4, -1.2]} angle={0.45} penumbra={0.9} intensity={170} color="#ffb877" castShadow
+      <spotLight position={[-2.6, 3.4, -1.2]} angle={0.45} penumbra={0.9} intensity={170} color="#ffb877" castShadow shadow-intensity={1 - stand}
         shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-bias={-0.0004} shadow-radius={6} target-position={[0, 0, 0]} />
       <pointLight position={[1.8, 1.4, 1.6]} intensity={5} color="#8fb2ff" />
       <Backdrop />
