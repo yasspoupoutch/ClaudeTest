@@ -8,6 +8,6 @@ const opts = { browserExecutable: '/opt/pw-browsers/chromium_headless_shell-1194
 const composition = await selectComposition({ serveUrl, id: 'Promo', ...opts });
 for (const s of process.argv.slice(2)) {
   const t0 = Date.now();
-  await renderStill({ serveUrl, composition, frame: Math.round(Number(s) * 30), output: path.join(root, `out/s_${s}.png`), ...opts });
+  await renderStill({ serveUrl, composition, frame: Math.round(Number(s) * 30), output: path.join(root, `out/s_${s}.png`), scale: Number(process.env.SCALE || 1), ...opts });
   console.log(s, ((Date.now() - t0) / 1000).toFixed(1) + 's');
 }
