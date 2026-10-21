@@ -22,6 +22,8 @@ const TX = 1179, TY = 2556;
 const sp = (px: number, py: number, lift = 0) => new THREE.Vector3((px / TX - 0.5) * SW, TOP + lift, (py / TY - 0.5) * SH);
 
 const GOLD = new THREE.Color(1.0, 0.776, 0.353);
+/** Gold for 3D letters: more saturated, so it stays gold through AgX tone mapping. */
+const GOLD_TEXT = new THREE.Color(1.0, 0.66, 0.16);
 const T = (s: number) => s * FPS;                            // seconds -> frames
 
 // ----------------------------------- timeline (seconds) -----------------------------------
@@ -179,7 +181,7 @@ const WordCard: React.FC<{ t: number }> = ({ t }) => {
           <SyncText key={i} font={staticFile('fonts/InstrumentSerif-Regular.ttf')} fontSize={size} anchorX="center" anchorY="middle"
             position={fly} scale={vowel ? lerp(0.4, 1, q) : 1} visible={!vowel || t >= VOWELS + (vi - 1) * 0.26 - 0.05}>
             {c}
-            <meshBasicMaterial color={vowel ? GOLD.clone().multiplyScalar(1.12 + 0.9 * glowPulse) : new THREE.Color(1.0, 1.0, 1.02)} toneMapped={false} />
+            <meshBasicMaterial color={vowel ? GOLD_TEXT.clone().multiplyScalar(1.0 + 0.3 * glowPulse) : new THREE.Color(1.0, 1.0, 1.02)} toneMapped={false} />
           </SyncText>
         );
       })}
@@ -224,17 +226,17 @@ const Logo: React.FC<{ t: number }> = ({ t }) => {
           <SyncText key={i} font={staticFile('fonts/Fraunces-Black.ttf')} fontSize={size} anchorX="center" anchorY="middle"
             position={[xs[i], vowel ? (1 - clamp(p)) * 0.25 : 0, 0]} scale={vowel ? lerp(0.6, 1, clamp(p)) : 1} fillOpacity={shown} visible={shown > 0.01}>
             {c}
-            <meshBasicMaterial color={vowel ? GOLD.clone().multiplyScalar(2.6) : new THREE.Color(2.2, 2.2, 2.25)} toneMapped={false} transparent opacity={shown} />
+            <meshBasicMaterial color={vowel ? GOLD_TEXT.clone() : new THREE.Color(0.96, 0.96, 0.98)} toneMapped={false} transparent opacity={shown} />
           </SyncText>
         );
       })}
       <SyncText font={staticFile('fonts/InstrumentSerif-Italic.ttf')} fontSize={0.09} anchorX="center" anchorY="middle" position={[0, -0.2, 0]} fillOpacity={tag}>
         Le mot du jour. Sans ses voyelles.
-        <meshBasicMaterial color={new THREE.Color(1.3, 1.3, 1.32)} toneMapped={false} transparent opacity={tag} />
+        <meshBasicMaterial color={new THREE.Color(0.95, 0.95, 0.97)} toneMapped={false} transparent opacity={tag} />
       </SyncText>
       <SyncText font={staticFile('fonts/Fraunces-Black.ttf')} fontSize={0.05} letterSpacing={0.12} anchorX="center" anchorY="middle" position={[0, -0.33, 0]} fillOpacity={tag}>
         GRATUIT · SANS PUBLICITÉ
-        <meshBasicMaterial color={GOLD.clone().multiplyScalar(1.6)} toneMapped={false} transparent opacity={tag} />
+        <meshBasicMaterial color={GOLD.clone().multiplyScalar(1.0)} toneMapped={false} transparent opacity={tag} />
       </SyncText>
     </group>
   );
@@ -296,7 +298,8 @@ const CAM: [number, number[], number[]][] = [
   [7.0, [0.55, 1.1, 2.15], [0.0, 0.78, -0.18]],
   [8.8, [0.18, 0.95, 2.0], [0.0, 0.78, -0.18]],
   [9.7, [0.06, 0.88, 1.8], [0.0, 0.78, -0.18]],
-  [10.6, [0.0, 1.45, 1.75], [0.0, 0.25, -0.1]],
+  [10.3, [0.03, 0.95, 1.85], [0.0, 0.66, -0.2]],
+  [10.95, [0.0, 1.45, 1.75], [0.0, 0.25, -0.1]],
   [11.7, [-0.72, 1.0, 1.75], [-0.56, 0.72, -0.25]],
   [13.0, [0.0, 1.0, 1.8], [0.0, 0.72, -0.28]],
   [14.3, [0.62, 1.0, 1.8], [0.5, 0.72, -0.25]],
@@ -355,7 +358,7 @@ const Scene: React.FC = () => {
   const phonePos = new THREE.Vector3(0, lerp(0, PH / 2 - 0.05, stand), lerp(0, -0.2, stand));
   const phoneRot = lerp(0, Math.PI / 2 - 0.12, stand);
   const focus = track(FOCUS, t, ioSoft);
-  const bokeh = trackN([[0, 5], [6.2, 4.5], [7, 6], [10.5, 4], [15, 4.5], [17.6, 6.5], [20.5, 6.5]], t);
+  const bokeh = trackN([[0, 5], [6.2, 4.5], [7, 6], [10.5, 4], [15, 4.5], [17.0, 3], [17.6, 1.2], [20.5, 1.2]], t);
   const flash = Math.exp(-Math.pow((t - (VOWELS + 1.45)) / 0.18, 2));
   return (
     <>
@@ -371,7 +374,7 @@ const Scene: React.FC = () => {
       <group position={phonePos} rotation-x={phoneRot}>
         <Phone screen={screenTexture(t)} glow={1.0 + 0.25 * flash} />
         <Neon curve={underline} p={io(prog(t, 2.0, 3.7))} fade={1 - prog(t, 3.9, 4.4)} />
-        <Neon curve={boardLoop} p={io(prog(t, 15.5, 16.4))} fade={1 - prog(t, 16.9, 17.2)} radius={0.005} />
+        <Neon curve={boardLoop} p={io(prog(t, 15.5, 16.4))} fade={1 - prog(t, 16.9, 17.2)} radius={0.0022} power={2.0} light={0.2} />
       </group>
       <WordCard t={t} />
       <ModeCard t={t} t0={MODES} name="mode_sprint.png" spot={new THREE.Vector3(-0.56, 0.72, -0.25)} turn={0.3} />
