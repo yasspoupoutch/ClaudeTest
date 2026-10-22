@@ -35,7 +35,12 @@
 #mark .v { text-shadow: 0 0 40px rgba(255,198,90,.55); }
 #markGlow { left: 40px; right: 40px; top: 530px; height: 420px; background: radial-gradient(closest-side, rgba(255,198,90,.35), rgba(255,198,90,0)); }
 #tag { top: 960px; font-size: 92px; line-height: 1.1; }
-#free { left: 50%; top: 1270px; height: 120px; padding: 0 60px; font-size: 44px; font-weight: 700; transform: translateX(-50%); }
+#free { left: 50%; top: 1250px; height: 120px; padding: 0 60px; font-size: 44px; font-weight: 700; transform: translateX(-50%); }
+#store { left: 0; right: 0; top: 1470px; display: flex; justify-content: center; align-items: center; gap: 30px; }
+#store img { width: 170px; height: 170px; border-radius: 38px; box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 0 0 2px rgba(255,255,255,.12); }
+#store .badge { height: 150px; padding: 0 44px 0 32px; border-radius: 32px; background: #000; border: 3px solid #a6a6a6; display: flex; align-items: center; gap: 18px; }
+#store .badge small { display: block; font-size: 32px; font-weight: 500; letter-spacing: .3px; }
+#store .badge b { display: block; font-size: 62px; font-weight: 600; letter-spacing: -1px; line-height: 1.05; }
 </style>
 </head>
 <body>
@@ -60,6 +65,11 @@
     <div class="abs mark" id="mark"></div>
     <div class="abs center-x italic" id="tag"><span>Ton score ?</span><br><span style="color:var(--gold)">Dis-le en commentaire.</span></div>
     <div class="abs pill gold-fill" id="free">Gratuit, sans publicité.</div>
+    <div class="abs" id="store">
+      <img src="appicon.png" alt="">
+      <div class="badge"><svg width="74" height="74" viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="#fff"/></svg>
+        <div><small>Disponible sur</small><b>l’App Store</b></div></div>
+    </div>
   </div>
 </div>
 <script src="lib.js"></script>
@@ -147,6 +157,8 @@ window.render = (t) => {
   set($('tag'), tg, `translateY(${(1 - tg) * 30}px)`);
   const fr = spring(t - 21.0, 0.5, 0.7);
   set($('free'), clamp(fr), `translateX(-50%) scale(${lerp(0.8, 1, fr)})`);
+  const st = spring(t - 21.5, 0.5, 0.75);
+  set($('store'), clamp(st * 1.4), `translateY(${(1 - st) * 50}px)`);
   return true;
 };
 </script>

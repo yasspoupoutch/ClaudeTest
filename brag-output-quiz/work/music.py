@@ -1,6 +1,6 @@
 # Soundtrack for the "3 secondes" quiz: E minor, 120 BPM, a ticking clock under each round.
 import sys; from synth import *
-M = Mix(22.5)
+M = Mix(24.0)
 beat = 0.5; bar = 2.0
 chords = [[64, 67, 71], [60, 64, 67], [55, 59, 62, 67], [62, 66, 69]]  # Em C G D
 roots = [40, 36, 43, 38]
@@ -40,5 +40,8 @@ M.place(kick(0.6, 42, 80, 0.3), 19.0, 0.38)
 for i, m in enumerate([76, 79, 83]): M.place(bell(m), 19.7 + i * 0.16, 0.07)
 for m in [52, 64, 71, 76, 78, 79]: M.place(tone(hz(m), 2.6, ((1, 1), (2, .2), (3, .06)), a=.01, tau=1.4, det=.002), 20.2, 0.045)
 M.place(bell(88, 0.6), 21.0, 0.035)
+# App Store badge
+M.place(blip(88, dur=0.08), 21.5, 0.05); M.place(blip(93, dur=0.08), 21.66, 0.045)
+for m in [52, 64, 71, 76, 79]: M.place(tone(hz(m), 2.4, ((1, 1), (2, .2)), a=.05, tau=1.6, det=.002), 21.5, 0.03)
 M.write(sys.argv[1])
 print('ok')
