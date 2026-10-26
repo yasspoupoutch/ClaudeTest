@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>CNSNN brag — Halloween</title>
+<link rel="stylesheet" href="base.css">
+<style>
+:root { --pk: #ff8a1e; --pk-hot: #ffc35a; --pk-deep: #c24a00; --night: #0b0614; --violet: #3a1a6e; }
+#stage { background: radial-gradient(1400px 1500px at 50% 30%, #3b1b72 0%, #1d0d3d 45%, var(--night) 100%); }
+#world { position: absolute; inset: 0; perspective: 1400px; perspective-origin: 50% 45%; transform-origin: 50% 50%; }
+#stars { position: absolute; inset: 0; }
+#moon { position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fffaf0 0%, #f6ebcf 45%, #e7d3a6 100%);
+  box-shadow: 0 0 60px 20px rgba(255,236,190,.35), 0 0 220px 90px rgba(190,150,255,.22); }
+#moon i { position: absolute; border-radius: 50%; background: rgba(170,140,95,.22); }
+.bat { position: absolute; left: 0; top: 0; width: 120px; height: 60px; margin: -30px 0 0 -60px; }
+.bat svg { overflow: visible; }
+#ground { position: absolute; left: -60px; right: -60px; bottom: -40px; height: 520px; }
+.bokeh { position: absolute; border-radius: 50%; filter: blur(28px); }
+.pump { position: absolute; left: 0; top: 0; }
+#fog { position: absolute; inset: 0; pointer-events: none; }
+#fog i { position: absolute; border-radius: 50%; background: radial-gradient(closest-side, rgba(225,210,255,.55), rgba(225,210,255,0)); }
+svg.neon { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible;
+  filter: drop-shadow(0 0 5px #ffb050) drop-shadow(0 0 16px #ff7a10) drop-shadow(0 0 40px rgba(255,100,0,.7)); }
+svg.neon path, svg.neon circle { fill: none; stroke: #ffe2b0; stroke-linecap: round; }
+.layer { position: absolute; inset: 0; transform-style: preserve-3d; }
+.k { position: absolute; left: 50%; top: 0; white-space: nowrap; font-family: "Fraunces", serif; font-weight: 900; transform-style: preserve-3d; }
+.ext { color: #ffd9a0; }
+.title { font-size: 210px; line-height: 1; letter-spacing: 4px; }
+.sub { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; font-size: 84px; color: #f4ecff; text-shadow: 0 0 24px rgba(200,160,255,.7); }
+.word3d { font-size: 170px; color: #fff4e6; }
+.pill2 { position: absolute; left: 50%; top: 440px; white-space: nowrap; height: 92px; padding: 0 42px; border-radius: 999px; display: flex; align-items: center;
+  font-size: 34px; font-weight: 700; letter-spacing: 4px; color: #fff; background: rgba(20,8,40,.55); border: 2px solid rgba(255,170,80,.55);
+  box-shadow: 0 0 30px rgba(255,120,20,.35), inset 0 2px 0 rgba(255,255,255,.15); }
+.pill2 i { width: 22px; height: 22px; border-radius: 50%; margin-right: 18px; display: inline-block; }
+.rword { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font-family: "Fraunces", serif; font-weight: 900; font-size: 200px; line-height: 1;
+  white-space: nowrap; color: #fff6ea; letter-spacing: 6px; }
+.rword .v { color: var(--pk-hot); }
+.rhint { position: absolute; left: 100px; right: 100px; top: 930px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 66px; line-height: 1.15; color: #f1e8ff; }
+.ridx { position: absolute; left: 0; right: 0; top: 380px; text-align: center; font-size: 30px; font-weight: 600; letter-spacing: 4px; color: rgba(241,232,255,.6); }
+.count { position: absolute; left: 0; right: 0; top: 1330px; text-align: center; font-family: "Fraunces", serif; font-weight: 900; font-size: 120px; color: #fff3e0; line-height: 1;
+  text-shadow: 0 0 20px rgba(255,140,30,.9); font-variant-numeric: tabular-nums; }
+.verdict { position: absolute; left: 0; right: 0; top: 1350px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 92px; color: var(--pk-hot); text-shadow: 0 0 30px rgba(255,140,30,.8); }
+.phone { position: absolute; left: 50%; top: 50%; width: 560px; height: 1180px; margin: -590px 0 0 -280px; border-radius: 86px; padding: 16px;
+  background: linear-gradient(135deg, #3a3550, #0d0b14 40%, #2b2740 70%, #0a0910); box-shadow: 0 60px 120px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.08);
+  transform-style: preserve-3d; }
+.phone .scr { position: relative; width: 100%; height: 100%; border-radius: 72px; overflow: hidden; background: #05040a; }
+.phone .scr img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.phone .glare { position: absolute; inset: 0; border-radius: 72px; background: linear-gradient(115deg, rgba(255,255,255,.16), rgba(255,255,255,0) 35%, rgba(255,255,255,0) 70%, rgba(255,255,255,.06)); }
+#lock .scr { background: radial-gradient(700px 900px at 50% 70%, #5a2a0a 0%, #2a0f3a 55%, #0a0512 100%); }
+#lock .date { position: absolute; left: 0; right: 0; top: 120px; text-align: center; font-size: 30px; font-weight: 600; color: rgba(255,255,255,.85); }
+#lock .time { position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-size: 168px; font-weight: 700; color: #fff; letter-spacing: -4px; }
+#lock .notif { position: absolute; left: 18px; right: 18px; top: 720px; border-radius: 40px; padding: 26px 26px; background: rgba(40,30,55,.72);
+  border: 1px solid rgba(255,255,255,.14); box-shadow: 0 20px 40px rgba(0,0,0,.4); display: flex; gap: 22px; color: #fff; }
+#lock .notif img { position: static; width: 76px; height: 76px; border-radius: 18px; flex: none; }
+#lock .notif b { font-size: 31px; } #lock .notif small { float: right; font-size: 24px; color: rgba(255,255,255,.55); font-weight: 500; }
+#lock .notif p { font-size: 29px; line-height: 1.25; margin-top: 4px; color: rgba(255,255,255,.88); }
+#end { position: absolute; inset: 0; }
+#mark { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font-family: "Fraunces", serif; font-weight: 900; line-height: 1; white-space: nowrap; color: #ffe1b0; }
+#mark .v { color: var(--pk-hot); }
+.tagw { position: absolute; font-family: "Fraunces", serif; font-weight: 900; font-size: 54px; color: #ffcf8a; text-shadow: 0 0 18px rgba(255,130,20,.9); white-space: nowrap; }
+#store { position: absolute; left: 0; right: 0; top: 1300px; display: flex; justify-content: center; align-items: center; gap: 30px; }
+#store img { width: 170px; height: 170px; border-radius: 38px; box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 0 40px rgba(255,130,20,.35); }
+#store .badge { height: 150px; padding: 0 44px 0 32px; border-radius: 32px; background: #000; border: 3px solid #a6a6a6; display: flex; align-items: center; gap: 18px; color: #fff; }
+#store .badge small { display: block; font-size: 32px; font-weight: 500; }
+#store .badge b { display: block; font-size: 62px; font-weight: 600; letter-spacing: -1px; line-height: 1.05; }
+#tiktok { position: absolute; left: 0; right: 0; top: 1520px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 52px; font-weight: 700; color: #fff; }
+#happy { position: absolute; left: 0; right: 0; top: 1630px; text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 7px; color: var(--pk-hot); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="stars" width="1080" height="1920"></canvas>
+    <div id="moon"><i style="left:22%;top:30%;width:18%;height:18%"></i><i style="left:58%;top:55%;width:24%;height:24%"></i><i style="left:40%;top:72%;width:10%;height:10%"></i><i style="left:64%;top:22%;width:9%;height:9%"></i></div>
+    <div id="bats"></div>
+    <div id="bokehs"></div>
+    <svg id="ground" viewBox="0 0 1200 520" preserveAspectRatio="none">
+      <defs><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0b2e"/><stop offset="1" stop-color="#05020a"/></linearGradient></defs>
+      <path d="M0 210 C 160 140 300 170 430 200 C 560 230 640 150 800 140 C 950 130 1060 190 1200 160 L1200 520 L0 520 Z" fill="url(#gg)"/>
+      <path d="M0 300 C 200 250 380 290 560 300 C 760 310 900 250 1200 270 L1200 520 L0 520 Z" fill="#07030d"/>
+    </svg>
+    <div id="pumps"></div>
+    <div id="fog"></div>
+    <svg class="neon" id="neonBack"></svg>
+
+    <!-- 1. Title -->
+    <div class="layer" id="s1">
+      <div class="k ext title" id="t1">CNSNN</div>
+      <div class="k sub" id="t1b">édition Halloween</div>
+    </div>
+    <!-- 2. Kinetic words -->
+    <div class="layer" id="s2"></div>
+    <!-- 3. Rounds -->
+    <div class="layer" id="rounds"></div>
+    <!-- 4. Floating phone -->
+    <div class="layer" id="s4">
+      <div class="phone" id="ph"><div class="scr"><img id="phA" src="img/game_slots.png"><img id="phB" src="img/game_result.png"><img id="phC" src="img/board.png"><div class="glare"></div></div></div>
+    </div>
+    <!-- 5. Lock screen -->
+    <div class="layer" id="s5">
+      <div class="phone" id="lock"><div class="scr">
+        <svg id="wall" viewBox="-200 -200 400 400" style="position:absolute;left:-40px;top:300px;width:620px;height:620px"></svg>
+        <div class="date">samedi 31 octobre</div><div class="time">20:31</div>
+        <div class="notif" id="notif"><img src="appicon.png"><div><b>CNSNN</b><small>maintenant</small><p><b style="font-size:29px">Le mot du jour vous attend</b><br>Nouveau mot, nouveau classement. Serez-vous le numéro 1 aujourd’hui ?</p></div></div>
+        <div class="glare"></div></div></div>
+    </div>
+    <svg class="neon" id="neonFront"></svg>
+    <!-- 6. End card -->
+    <div id="end">
+      <div id="mark"></div>
+      <div class="tagw" id="tw1">Le mot du jour.</div>
+      <div class="tagw" id="tw2">Sans ses voyelles.</div>
+      <div class="tagw" id="tw3">Sans pitié.</div>
+      <div id="store"><img src="appicon.png"><div class="badge"><svg width="74" height="74" viewBox="0 0 24 24"><path id="apple" fill="#fff"/></svg><div><small>Disponible sur</small><b>l’App Store</b></div></div></div>
+      <div id="tiktok"><svg width="58" height="58" viewBox="0 0 24 24"><path class="tt" fill="#25F4EE" transform="translate(-0.7,-0.5)"/><path class="tt" fill="#FE2C55" transform="translate(0.7,0.5)"/><path class="tt" fill="#fff"/></svg>@jeuCNSNN</div>
+      <div id="happy">JOYEUX HALLOWEEN</div>
+    </div>
+  </div>
+</div>
+<script src="lib.js"></script>
+<script>
+// ---------------------------------------------------------------- helpers
+const APPLE = 'M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701';
+const TIKTOK = 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z';
+let seed = 31; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const NS = 'http://www.w3.org/2000/svg';
+const svgEl = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+// keyframes: [[t, value], ...] eased per segment
+const kf = (keys, t, f = io) => { if (t <= keys[0][0]) return keys[0][1]; for (let i = 0; i < keys.length - 1; i++) { const [a, va] = keys[i], [b, vb] = keys[i + 1];
+  if (t <= b) return Array.isArray(va) ? va.map((v, j) => lerp(v, vb[j], f(prog(t, a, b)))) : lerp(va, vb, f(prog(t, a, b))); } return keys[keys.length - 1][1]; };
+// Extruded glowing letters: a stack of darker copies behind, then an orange glow
+const extrude = (depth, glow) => { const s = []; for (let i = 1; i <= depth; i++) { const c = Math.round(lerp(200, 70, i / depth)); s.push(`0 ${i * 1.6}px 0 rgb(${c},${Math.round(c * 0.38)},0)`); }
+  s.push(`0 0 ${30 * glow}px rgba(255,150,40,${0.9 * glow})`, `0 0 ${90 * glow}px rgba(255,100,0,${0.6 * glow})`); return s.join(','); };
+
+// ---------------------------------------------------------------- scenery
+const stars = Array.from({ length: 260 }, () => ({ x: rnd() * 1080, y: rnd() * 1500, r: 0.6 + rnd() * 1.8, ph: rnd() * 6.28, sp: 0.6 + rnd() * 2 }));
+function drawStars(t, shift) {
+  const g = $('stars').getContext('2d'); g.clearRect(0, 0, 1080, 1920);
+  stars.forEach(s => { g.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * s.sp + s.ph)); g.fillStyle = '#fff';
+    g.beginPath(); g.arc(s.x, (s.y + shift) % 1500, s.r, 0, 7); g.fill(); });
+}
+// Bats: wings flap around the body
+const BAT_WING = 'M0 0 C -8 -16 -26 -22 -52 -14 C -46 -8 -44 -2 -44 4 C -38 -2 -30 -1 -26 5 C -22 -1 -14 -1 -10 6 Z';
+function makeBat() {
+  const d = document.createElement('div'); d.className = 'bat';
+  const s = svgEl('svg', { width: 120, height: 60, viewBox: '-60 -30 120 60' }, d);
+  const wl = svgEl('path', { d: BAT_WING, fill: '#0a0510' }, s), wr = svgEl('path', { d: BAT_WING, fill: '#0a0510', transform: 'scale(-1,1)' }, s);
+  svgEl('ellipse', { cx: 0, cy: 2, rx: 7, ry: 11, fill: '#0a0510' }, s);
+  svgEl('path', { d: 'M-6 -6 L-8 -16 L-2 -9 Z M6 -6 L8 -16 L2 -9 Z', fill: '#0a0510' }, s);
+  $('bats').appendChild(d); return { d, wl, wr };
+}
+// [start, duration, from [x,y,scale], to [x,y,scale], flap speed]
+const BATS = [
+  [0.2, 3.2, [1200, 420, 0.6], [-150, 250, 0.9], 9], [0.6, 3.6, [1180, 300, 0.4], [-120, 520, 0.55], 11], [1.0, 3.0, [-120, 520, 0.5], [1200, 280, 0.7], 10],
+  [5.0, 4.0, [1200, 200, 0.45], [-100, 420, 0.5], 10], [9.2, 3.5, [-120, 300, 0.5], [1200, 180, 0.6], 11], [15.0, 3.8, [1180, 360, 0.5], [-120, 200, 0.7], 10],
+  [20.6, 3.6, [-140, 300, 0.7], [1220, 420, 0.9], 9], [21.0, 3.9, [1200, 220, 0.5], [-140, 380, 0.6], 11], [21.6, 3.4, [-120, 460, 0.45], [1200, 320, 0.55], 12],
+].map(b => ({ b, el: makeBat() }));
+// Swarm for round 3, bursting out from behind the word towards the camera
+const SWARM = Array.from({ length: 16 }, (_, i) => ({ a: (i / 16) * 6.28 + rnd() * 0.3, sp: 0.8 + rnd() * 0.6, dy: rnd() * 0.4 - 0.2, f: 9 + rnd() * 5, el: makeBat() }));
+function placeBat(bat, x, y, sc, flap, op = 1) {
+  const w = Math.sin(flap); bat.el.d.style.transform = `translate(${x}px, ${y}px) scale(${sc})`; bat.el.d.style.opacity = op;
+  bat.el.wl.setAttribute('transform', `rotate(${w * 28}) scale(1, ${0.55 + 0.45 * Math.abs(w)})`);
+  bat.el.wr.setAttribute('transform', `scale(-1,1) rotate(${w * 28}) scale(1, ${0.55 + 0.45 * Math.abs(w)})`);
+}
+// Jack-o'-lanterns
+function pumpkinSVG(size, faceId) {
+  return `<svg width="${size}" height="${size}" viewBox="-60 -60 120 120" style="overflow:visible">
+    <path d="M-2 -40 C -2 -52 6 -58 12 -60 L 14 -54 C 8 -52 5 -47 5 -40 Z" fill="#3e5a1e"/>
+    <ellipse cx="-30" cy="5" rx="30" ry="42" fill="#d4560a"/><ellipse cx="30" cy="5" rx="30" ry="42" fill="#d4560a"/>
+    <ellipse cx="-14" cy="3" rx="26" ry="45" fill="#ee6d12"/><ellipse cx="14" cy="3" rx="26" ry="45" fill="#ee6d12"/><ellipse cx="0" cy="2" rx="20" ry="46" fill="#ff8424"/>
+    <g class="face" fill="#ffd45e"><path d="M-30 -12 L-12 -12 L-21 -28 Z M12 -12 L30 -12 L21 -28 Z M-5 2 L5 2 L0 -8 Z"/>
+    <path d="M-34 14 C -20 34 20 34 34 14 L 26 18 L 22 12 L 14 20 L 8 14 L 0 22 L -8 14 L -14 20 L -22 12 L -26 18 Z"/></g></svg>`;
+}
+const PUMPS = [[90, 1600, 120, 3], [300, 1700, 70, 6], [820, 1640, 110, 3], [980, 1560, 60, 7], [620, 1740, 56, 8], [180, 1500, 46, 9], [720, 1500, 40, 10]]
+  .map(([x, y, s, blur], i) => { const d = document.createElement('div'); d.className = 'pump'; d.innerHTML = pumpkinSVG(s);
+    d.style.filter = `blur(${blur * 0.6}px) drop-shadow(0 0 ${s * 0.3}px rgba(255,120,20,.6))`; $('pumps').appendChild(d); return { d, x, y, s, ph: i * 1.7 }; });
+const BOKEH = Array.from({ length: 12 }, (_, i) => { const d = document.createElement('div'); d.className = 'bokeh'; const s = 90 + rnd() * 160;
+  d.style.width = d.style.height = s + 'px'; d.style.background = i % 3 ? 'rgba(170,120,255,.35)' : 'rgba(255,140,40,.45)'; $('bokehs').appendChild(d);
+  return { d, x: rnd() * 1080, y: 1250 + rnd() * 600, s, ph: rnd() * 6 }; });
+const FOG = Array.from({ length: 9 }, (_, i) => { const d = document.createElement('i'); $('fog').appendChild(d); const w = 700 + rnd() * 600;
+  d.style.width = w + 'px'; d.style.height = w * 0.42 + 'px'; return { d, y: 520 + rnd() * 700, w, sp: 160 + rnd() * 160, dir: i % 2 ? 1 : -1, x0: rnd() * 1600 - 300 }; });
+// Lock screen wallpaper: one big lantern
+$('wall').innerHTML = pumpkinSVG(400).replace(/^<svg[^>]*>|<\/svg>$/g, '');
+
+// ---------------------------------------------------------------- neon
+const NEON = {};
+function neonPath(id, d, width, front = true) { NEON[id] = svgEl('path', { d, 'stroke-width': width }, $(front ? 'neonFront' : 'neonBack')); NEON[id].L = NEON[id].getTotalLength(); return NEON[id]; }
+// draw a path from 0..p, or a comet of length seg travelling along it
+function neon(id, p, op = 1, seg = 0) {
+  const e = NEON[id], L = e.L; e.style.opacity = op;
+  if (seg) { e.style.strokeDasharray = `${seg * L} ${L * 2}`; e.style.strokeDashoffset = `${-(p * (1 + seg) - seg) * L}`; }
+  else { e.style.strokeDasharray = `${L} ${L}`; e.style.strokeDashoffset = `${L * (1 - p)}`; }
+}
+neonPath('road1', 'M -60 1960 C 200 1500 380 1200 520 960', 7, false);
+neonPath('road2', 'M 1140 1960 C 880 1500 700 1200 560 960', 7, false);
+neonPath('sweep', 'M -80 1080 C 300 1010 780 1010 1160 1080', 6, false);
+neonPath('ring', 'M 540 1255 a 135 135 0 1 1 -0.1 0', 8);
+neonPath('wrap', 'M -60 1500 C 150 1450 200 1700 330 1520 C 420 1390 260 1120 360 860 C 450 640 650 520 760 700 C 860 860 700 1150 860 1260 C 960 1330 1060 1240 1160 1180', 8);
+neonPath('arc', 'M -60 640 C 200 480 880 480 1140 640', 7);
+neonPath('under', 'M 140 880 L 940 880', 6);
+
+// ---------------------------------------------------------------- kinetic words
+const KIN = [['3 mots', 2.7], ['qui font', 3.35], ['PEUR.', 4.0]].map(([w, t0], i) => { const d = document.createElement('div'); d.className = 'k ext word3d'; d.textContent = w;
+  if (i === 2) { d.style.fontSize = '300px'; d.style.color = '#ffb36a'; } $('s2').appendChild(d); return { d, t0, i }; });
+
+// ---------------------------------------------------------------- rounds (real Classique cards, Shared/cards.tsv)
+const DIFF = { Facile: '#5ae6c6', Moyen: '#ffc65a', Difficile: '#ff8785' };
+const ROUNDS = [
+  { t: 5.2, diff: 'Facile', word: 'ARAIGNÉE', hint: '« Elle tisse sa toile pour piéger les insectes. »', fx: 'spider' },
+  { t: 8.6, diff: 'Moyen', word: 'BROUILLARD', hint: '« Un nuage au ras du sol qui cache la vue. »', fx: 'fog' },
+  { t: 12.0, diff: 'Difficile', word: 'NOSFERATU', hint: '« Un vampire du cinéma muet allemand. »', fx: 'bats' },
+];
+const RLEN = 3.4, THINK = 1.9, START = 0.5;   // 3 seconds on the clock, played faster for the edit
+ROUNDS.forEach((r, i) => {
+  const el = document.createElement('div'); el.className = 'layer';
+  el.innerHTML = `<div class="pill2"><i style="background:${DIFF[r.diff]}"></i>MOT ${i + 1} / 3 · ${r.diff.toUpperCase()}</div>
+    <div class="rword"></div><div class="rhint">${r.hint}</div><div class="count"></div>
+    <div class="verdict">${r.word.charAt(0) + r.word.slice(1).toLowerCase()} !</div>
+    ${r.fx === 'spider' ? `<svg class="spider" width="1080" height="1920" style="position:absolute;left:0;top:0;overflow:visible">
+      <line class="thread" x1="170" y1="-10" x2="170" y2="200" stroke="rgba(255,255,255,.7)" stroke-width="2"/>
+      <g class="sp" fill="#0a0510" stroke="#0a0510" stroke-width="5" stroke-linecap="round">
+        <path d="M-10 -6 L-40 -30 L-56 -6 M-10 0 L-46 -8 L-62 16 M-10 6 L-42 18 L-52 44 M-8 10 L-30 34 L-34 60 M10 -6 L40 -30 L56 -6 M10 0 L46 -8 L62 16 M10 6 L42 18 L52 44 M8 10 L30 34 L34 60" fill="none"/>
+        <ellipse cx="0" cy="12" rx="22" ry="26"/><circle cx="0" cy="-16" r="14"/>
+        <circle cx="-5" cy="-18" r="3.5" fill="#ff3b2a" stroke="none"/><circle cx="5" cy="-18" r="3.5" fill="#ff3b2a" stroke="none"/></g></svg>` : ''}`;
+  $('rounds').appendChild(el); r.el = el; r.q = s => el.querySelector(s);
+});
+
+let OUT;
+window.setup = async () => {
+  await document.fonts.ready;
+  $('apple').setAttribute('d', APPLE); document.querySelectorAll('.tt').forEach(p => p.setAttribute('d', TIKTOK));
+  $('t1').style.textShadow = extrude(16, 1);
+  KIN.forEach(k => { k.d.style.textShadow = extrude(12, 1); });
+  ROUNDS.forEach(r => { fitFont(r.q('.rword'), r.word, 960, 200); r.L = buildWord(r.q('.rword'), r.word); measure(r.L); });
+  fitFont($('mark'), 'CONSONNE', 980, 200); OUT = buildWord($('mark'), 'CONSONNE'); measure(OUT);
+  $('mark').style.textShadow = extrude(14, 1);
+  return true;
+};
+
+// ---------------------------------------------------------------- frame
+window.render = (t) => {
+  // camera: slow push with a punch at each scene change
+  const punches = [2.6, 5.2, 8.6, 12.0, 15.4, 18.6, 21.0];
+  const punch = punches.reduce((a, p) => a + 0.06 * Math.exp(-Math.max(0, t - p) * 5) * (t >= p ? 1 : 0), 0);
+  $('world').style.transform = `scale(${1 + punch + 0.012 * Math.sin(t * 0.7)}) rotate(${0.4 * Math.sin(t * 0.5)}deg)`;
+  drawStars(t, t * 6);
+  // moon: top right during the game, centred behind the logo at the end
+  const [mx, my, mr] = kf([[0, [830, 250, 125]], [20.4, [830, 250, 125]], [21.2, [540, 330, 210]]], t, ease);
+  const moon = $('moon'); moon.style.left = mx - mr + 'px'; moon.style.top = my - mr + 'px'; moon.style.width = moon.style.height = 2 * mr + 'px';
+  // bats
+  BATS.forEach(bt => { const [t0, d, a, b, f] = bt.b; const p = (t - t0) / d; if (p < 0 || p > 1) { bt.el.d.style.opacity = 0; return; }
+    placeBat(bt, lerp(a[0], b[0], p), lerp(a[1], b[1], p) + Math.sin(p * 9) * 30, lerp(a[2], b[2], p), t * f); });
+  // ground, pumpkins, bokeh, fog
+  PUMPS.forEach(pm => { pm.d.style.transform = `translate(${pm.x - pm.s / 2}px, ${pm.y - pm.s / 2 + Math.sin(t * 0.8 + pm.ph) * 4}px)`;
+    const fl = 0.75 + 0.25 * Math.sin(t * 13 + pm.ph) * Math.sin(t * 7.3 + pm.ph * 2); pm.d.querySelector('.face').style.opacity = fl; });
+  BOKEH.forEach(b => { b.d.style.transform = `translate(${b.x - b.s / 2 + Math.sin(t * 0.4 + b.ph) * 40}px, ${b.y - b.s / 2 + Math.cos(t * 0.3 + b.ph) * 30}px)`; });
+  const r2 = ROUNDS[1], fogK = t >= r2.t && t < r2.t + RLEN ? (1 - ease(prog(t - r2.t, START + THINK, START + THINK + 0.6))) * ease(prog(t - r2.t, 0, 0.5)) : 0;
+  const fogBase = 0.18 + 0.82 * fogK;
+  FOG.forEach(f => { const x = ((f.x0 + f.dir * t * f.sp * (0.4 + 1.2 * fogK)) % 1900 + 1900) % 1900 - 500;
+    f.d.style.transform = `translate(${x}px, ${f.y}px)`; f.d.style.opacity = fogBase; });
+  $('ground').style.transform = `translateY(${kf([[0, 0], [15.2, 0], [15.6, 120], [20.4, 120], [21.0, 0]], t)}px)`;
+
+  // ---- 1. title 0–2.6: neon roads draw to the horizon, CNSNN rises out of the dark
+  neon('road1', ease(prog(t, 0.0, 0.9)), 1 - prog(t, 2.2, 2.6));
+  neon('road2', ease(prog(t, 0.15, 1.05)), 1 - prog(t, 2.2, 2.6));
+  neon('sweep', prog(t, 0.6, 1.5), t < 2.6 ? 1 : 0, 0.35);
+  const ti = ease(prog(t, 0.5, 1.3)), tout = io(prog(t, 2.2, 2.65));
+  set($('t1'), t < 2.65 ? ti * (1 - tout) : 0, `translate(-50%, 780px) translateZ(${lerp(-900, 0, ti) + tout * 700}px) rotateX(${lerp(40, 8, ti)}deg)`);
+  $('t1').style.filter = tout > 0.01 ? `blur(${tout * 10}px)` : 'none';
+  const tb = ease(prog(t, 1.25, 1.65));
+  set($('t1b'), t < 2.65 ? tb * (1 - tout) : 0, `translate(-50%, 1020px) translateZ(${tout * 700}px) translateY(${(1 - tb) * 30}px)`);
+
+  // ---- 2. kinetic words 2.6–5.2: each flies in from the depth, the last one shakes
+  KIN.forEach(k => { const lt = t - k.t0; const live = lt >= 0 && t < 5.25;
+    const inn = ease(prog(lt, 0, 0.35)), past = k.i < 2 ? io(prog(lt, 0.55, 0.85)) : io(prog(t, 4.95, 5.25));
+    const y = [700, 900, 1120][k.i], sh = k.i === 2 ? Math.sin(t * 60) * 8 * Math.exp(-Math.max(0, lt - 0.3) * 3) : 0;
+    set(k.d, live ? inn * (1 - past) * (1 - past) : 0, `translate(calc(-50% + ${sh}px), ${y}px) translateZ(${lerp(-2200, 0, inn) + past * 750}px) rotateY(${(1 - inn) * (k.i % 2 ? -35 : 35)}deg)`);
+    k.d.style.filter = (1 - inn) + past > 0.02 ? `blur(${(1 - inn) * 8 + past * 10}px)` : 'none'; });
+
+  // ---- 3. rounds: consonants, neon ring clock, themed scare, vowels drop in
+  ROUNDS.forEach((r, i) => {
+    const lt = t - r.t, on = lt >= 0 && lt < RLEN, out = prog(lt, RLEN - 0.25, RLEN);
+    set(r.el, on ? 1 - out : 0, `translateZ(${io(out) * 500}px)`);
+    if (!on) return;
+    const inn = ease(prog(lt, 0, 0.35)), rv = START + THINK;
+    set(r.q('.pill2'), inn, `translateX(-50%) translateY(${(1 - inn) * -30}px)`);
+    const w = r.q('.rword'); set(w, inn, `translateZ(${lerp(-700, 0, inn)}px) rotateX(${(1 - inn) * 25}deg)`);
+    const hot = Math.exp(-Math.max(0, lt - rv) * 2.5) * (lt >= rv ? 1 : 0);
+    w.style.textShadow = extrude(12, 0.55 + 0.6 * hot);
+    const hi = ease(prog(lt, 0.25, 0.6)); set(r.q('.rhint'), hi, `translateY(${(1 - hi) * 20}px)`);
+    const sec = clamp(Math.ceil((START + THINK - lt) / (THINK / 3)), 1, 3), tick = (lt - START) % (THINK / 3);
+    r.q('.count').textContent = sec;
+    set(r.q('.count'), lt >= START && lt < rv ? 1 : 0, `scale(${1 + 0.25 * Math.exp(-tick * 12)})`);
+    set(r.q('.verdict'), ease(prog(lt, rv + 0.5, rv + 0.8)), `scale(${lerp(0.7, 1, spring(lt - rv - 0.5))})`);
+    reveal(r.L, j => spring(lt - rv - j * 0.09));
+    if (r.fx === 'spider') {   // drops on its thread during the countdown, swings, climbs back at the answer
+      const y = lt < rv ? lerp(-120, 560, ease(prog(lt, 0.3, 1.4))) : lerp(560, -160, io(prog(lt, rv + 0.2, rv + 0.9)));
+      const sw = Math.sin(lt * 3) * 6; r.q('.sp').setAttribute('transform', `translate(170 ${y}) rotate(${sw})`);
+      r.q('.thread').setAttribute('y2', y - 28);
+    }
+    if (r.fx === 'bats') SWARM.forEach(s => { const p = prog(lt, rv + 0.05, rv + 1.1);
+      placeBat({ el: s.el }, 540 + Math.cos(s.a) * p * 900 * s.sp, 760 + (Math.sin(s.a) * 0.6 + s.dy) * p * 900 * s.sp, lerp(0.3, 2.2, p), lt * s.f, p > 0 && p < 1 ? 1 : 0); });
+  });
+  neon('ring', 1 - (() => { for (const r of ROUNDS) { const lt = t - r.t; if (lt >= 0 && lt < RLEN) return prog(lt, START, START + THINK); } return 1; })(),
+    ROUNDS.some(r => t - r.t >= 0.2 && t - r.t < START + THINK + 0.15) ? 1 : 0);
+  if (!(t >= ROUNDS[2].t && t < ROUNDS[2].t + RLEN)) SWARM.forEach(s => { s.el.d.style.opacity = 0; });
+
+  // ---- 4. floating phone 15.4–18.6: the game, then the leaderboard; neon wraps it
+  const s4 = t >= 15.4 && t < 18.7, p4 = ease(prog(t, 15.4, 16.0)), o4 = io(prog(t, 18.35, 18.7));
+  set($('s4'), s4 ? 1 : 0);
+  $('ph').style.transform = `translateY(${lerp(500, 60, p4) - o4 * 300}px) translateZ(${lerp(-600, -120, p4) - o4 * 900}px) rotateY(${lerp(-38, 14, prog(t, 15.4, 18.6))}deg) rotateX(${8 + Math.sin(t * 1.2) * 3}deg) rotateZ(${lerp(-10, 3, p4)}deg)`;
+  $('ph').style.opacity = 1 - o4;
+  $('phB').style.opacity = ease(prog(t, 16.3, 16.5)); $('phC').style.opacity = ease(prog(t, 17.3, 17.5));
+  neon('wrap', io(prog(t, 15.8, 17.0)), s4 ? 1 - o4 : 0);
+  // ---- 5. lock screen 18.6–21.0: the real reminder lands
+  const s5 = t >= 18.6 && t < 21.1, p5 = ease(prog(t, 18.6, 19.1)), o5 = io(prog(t, 20.7, 21.1));
+  set($('s5'), s5 ? 1 : 0);
+  $('lock').style.transform = `translateY(${lerp(-700, 40, p5)}px) translateZ(${-200 + o5 * 650}px) rotateY(${lerp(25, -6, p5)}deg) rotateX(6deg)`;
+  $('lock').style.opacity = 1 - o5; $('lock').style.filter = o5 > 0.01 ? `blur(${o5 * 12}px)` : 'none';
+  const nt = spring(t - 19.3, 0.5, 0.7); set($('notif'), clamp(nt * 2), `translateY(${(1 - nt) * -120}px) scale(${lerp(0.9, 1, clamp(nt))})`);
+  $('wall').querySelector('.face').style.opacity = 0.75 + 0.25 * Math.sin(t * 13) * Math.sin(t * 7.3);
+  // shared floating headline words in scenes 4–5 (neon orange like the reference)
+  // ---- 6. end 21.0–26
+  const e = t >= 20.9; set($('end'), e ? 1 : 0);
+  const mk = ease(prog(t, 21.0, 21.5));
+  set($('mark'), mk, `translateZ(${lerp(-800, 0, mk)}px) scale(${lerp(1.2, 1, mk)})`);
+  reveal(OUT, i => spring(t - (21.7 + i * 0.15)));
+  neon('arc', io(prog(t, 21.1, 21.9)), e ? 1 : 0);
+  neon('under', io(prog(t, 21.6, 22.1)), e ? 0.9 : 0);
+  [['tw1', 22.5, 130, 960], ['tw2', 22.85, 420, 1050], ['tw3', 23.2, 640, 1140]].forEach(([id, t0, x, y]) => {
+    const p = spring(t - t0, 0.45, 0.6); const el = $(id); el.style.left = x + 'px'; el.style.top = y + 'px';
+    set(el, clamp(p * 1.5), `translateY(${(1 - p) * 40}px) rotate(${(1 - clamp(p)) * -8}deg)`); });
+  const st = spring(t - 23.6, 0.5, 0.75); set($('store'), clamp(st * 1.4), `translateY(${(1 - st) * 50}px)`);
+  const tk = spring(t - 23.85, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
+  set($('happy'), ease(prog(t, 24.2, 24.6)));
+  return true;
+};
+</script>
+</body>
+</html>
