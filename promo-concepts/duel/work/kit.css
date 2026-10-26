@@ -1,0 +1,51 @@
+/* Shared by the CNSNN promo concepts: the app's game screen, countdown ring, App Store end card. */
+.phone { position: absolute; width: 560px; height: 1180px; border-radius: 86px; padding: 16px;
+  background: linear-gradient(135deg, #3a3550, #0d0b14 40%, #2b2740 70%, #0a0910); box-shadow: 0 0 0 2px rgba(255,255,255,.08), 0 50px 100px rgba(0,0,0,.55); }
+.phone .scr { position: relative; width: 100%; height: 100%; border-radius: 72px; overflow: hidden; }
+.app { background: radial-gradient(500px 600px at 20% 25%, rgba(89,62,199,.55), rgba(89,62,199,0)), radial-gradient(500px 500px at 90% 85%, rgba(0,125,134,.45), rgba(0,125,134,0)), linear-gradient(#121426, #06070c); color: #f4f5f8; }
+.app .sb { position: absolute; left: 44px; right: 44px; top: 30px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 600; }
+.app .isl { position: absolute; left: 50%; top: 18px; width: 150px; height: 44px; margin-left: -75px; border-radius: 22px; background: #000; }
+.app .hd { position: absolute; left: 0; right: 0; top: 104px; text-align: center; }
+.app .hd b { display: block; font-size: 27px; } .app .hd small { font-size: 19px; color: rgba(244,245,248,.56); }
+.app .chr { position: absolute; right: 30px; top: 108px; height: 46px; padding: 0 16px; border-radius: 23px; background: rgba(255,255,255,.1); display: flex; align-items: center; font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.app .xb { position: absolute; left: 30px; top: 108px; width: 46px; height: 46px; border-radius: 23px; background: rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; font-size: 22px; color: rgba(255,255,255,.7); }
+.app .hw { position: absolute; left: 0; right: 0; top: 240px; text-align: center; font-family: "Instrument Serif", serif; font-size: 96px; line-height: 1; white-space: nowrap; }
+.slots span { display: inline-block; position: relative; text-align: center; vertical-align: bottom; }
+.slots .v { color: #ffc65a; text-shadow: 0 0 24px rgba(255,198,90,.7); }
+.slots .v b { font-weight: inherit; }
+.slots .v i { position: absolute; left: 8%; right: 8%; bottom: 0.1em; height: 0.07em; border-radius: 4px; background: #ffc65a; box-shadow: 0 0 14px rgba(255,198,90,.9); }
+.app .rule { position: absolute; left: 232px; width: 64px; height: 3px; top: 380px; background: rgba(244,245,248,.35); }
+.app .hint { position: absolute; left: 34px; right: 34px; top: 404px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 25px; line-height: 1.25; color: rgba(244,245,248,.7); }
+.app .ans { position: absolute; left: 60px; right: 60px; top: 560px; height: 62px; text-align: center; border-bottom: 2px solid rgba(255,255,255,.16);
+  font-family: "Instrument Serif", serif; font-size: 46px; letter-spacing: 2px; color: #f4f5f8; white-space: nowrap; }
+.app .ans em { font-style: italic; font-size: 36px; letter-spacing: 0; color: rgba(244,245,248,.45); }
+.app .msg { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font-size: 25px; font-weight: 600; }
+.app .kb { position: absolute; left: 18px; right: 18px; bottom: 50px; padding: 16px 10px; border-radius: 34px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+.app .kr { display: flex; justify-content: center; gap: 7px; margin: 9px 0; }
+.app .kr i { width: 41px; height: 58px; border-radius: 10px; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 25px; font-weight: 600; }
+.app .kr i.g { background: linear-gradient(#ffd673, #f6b84d); color: #1a1406; }
+.app .val { margin: 14px 40px 4px; height: 66px; border-radius: 33px; background: linear-gradient(#ffd673, #f6b84d); color: #1a1406; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; }
+/* countdown ring */
+.ring { position: absolute; left: 50%; width: 220px; height: 220px; margin-left: -110px; }
+.ring circle { fill: none; stroke-width: 10; }
+.ring b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: "Fraunces", serif; font-weight: 900; font-size: 96px; color: #fff3e0; font-variant-numeric: tabular-nums; }
+/* end card */
+#end { position: absolute; inset: 0; }
+#e-mark { position: absolute; left: 0; right: 0; top: 430px; text-align: center; font-family: "Fraunces", serif; font-weight: 900; line-height: 1; white-space: nowrap; color: #f4f5f8; letter-spacing: 4px;
+  text-shadow: 0 0 40px rgba(255,198,90,.35); }
+#e-mark .v { color: #ffc65a; text-shadow: 0 0 34px rgba(255,198,90,.7); }
+#e-tag { position: absolute; left: 0; right: 0; top: 670px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 64px; color: #f4f5f8; }
+#e-cap { position: absolute; left: 0; right: 0; top: 820px; text-align: center; font-size: 46px; font-weight: 700; color: #ffc65a; }
+#search { position: absolute; left: 90px; right: 90px; top: 930px; height: 120px; border-radius: 30px; background: #1c1c1e; border: 2px solid rgba(255,255,255,.1);
+  display: flex; align-items: center; padding: 0 34px; gap: 22px; font-size: 56px; font-weight: 600; color: #fff; letter-spacing: 2px; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+#search { position: absolute; }
+#search em { font-style: normal; font-weight: 400; font-size: 44px; color: #8e8e93; letter-spacing: 0; position: absolute; left: 112px; top: 50%; transform: translateY(-50%); }
+#caret { width: 4px; height: 60px; background: #0a84ff; border-radius: 2px; margin-left: -18px; }
+#result { position: absolute; left: 90px; right: 90px; top: 1090px; height: 190px; border-radius: 34px; background: rgba(28,28,30,.92); border: 2px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; padding: 0 30px; gap: 26px; color: #fff; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+#result img { width: 130px; height: 130px; border-radius: 30px; }
+#result .ri { flex: 1; } #result .ri b { display: block; font-size: 46px; } #result .ri small { font-size: 28px; color: #8e8e93; }
+#get { height: 70px; padding: 0 34px; border-radius: 35px; background: #2c2c2e; color: #0a84ff; font-size: 34px; font-weight: 700; display: flex; align-items: center; }
+#free { position: absolute; left: 0; right: 0; top: 1330px; text-align: center; }
+#free span { display: inline-block; padding: 18px 54px; border-radius: 999px; background: linear-gradient(#ffd673, #f6b84d); color: #1a1406; font-size: 48px; font-weight: 800; letter-spacing: 3px; box-shadow: 0 0 50px rgba(255,198,90,.45); }
+#tiktok { position: absolute; left: 0; right: 0; top: 1500px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 52px; font-weight: 700; color: #fff; }

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>CNSNN — seuls les vrais fans de foot</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="kit.css">
+<style>
+#stage { background: radial-gradient(1400px 900px at 50% 38%, #12304a 0%, #0a1726 45%, #04070d 100%); }
+/* the stadium: floodlights, stands with camera flashes, the pitch in perspective */
+.flood { position: absolute; top: -120px; width: 900px; height: 1100px; background: radial-gradient(closest-side, rgba(255,255,240,.28), rgba(255,255,240,0)); }
+.flood i { position: absolute; top: 120px; width: 120px; height: 60px; border-radius: 10px; background: radial-gradient(closest-side, #fffef0, rgba(255,255,230,.5)); box-shadow: 0 0 80px 40px rgba(255,255,230,.45); }
+#stands { position: absolute; left: 0; right: 0; top: 1420px; height: 160px; background: linear-gradient(#0b1422, #101b2c); }
+#stands canvas { position: absolute; inset: 0; }
+#pitchWrap { position: absolute; left: 0; right: 0; top: 1560px; bottom: 0; perspective: 900px; perspective-origin: 50% 0; overflow: hidden; }
+#pitch { position: absolute; left: -1100px; right: -1100px; top: 0; height: 2600px; transform-origin: 50% 0; transform: rotateX(62deg);
+  background: repeating-linear-gradient(#1f7a3a 0 200px, #238443 200px 400px); }
+#pitch svg { position: absolute; inset: 0; }
+#shade { position: absolute; left: 0; right: 0; top: 1390px; bottom: 0; background: linear-gradient(rgba(4,7,13,.85), rgba(4,7,13,.15) 30%, rgba(4,7,13,.55)); }
+.c { position: absolute; left: 0; right: 0; text-align: center; }
+#h1 { top: 520px; font-size: 80px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+#h2 { top: 720px; font-family: "Instrument Serif", serif; font-style: italic; font-size: 110px; color: #ffc65a; }
+#h3 { top: 910px; font-size: 40px; font-weight: 700; letter-spacing: 6px; color: rgba(244,245,248,.7); }
+.round { position: absolute; inset: 0; }
+.pill { position: absolute; left: 50%; top: 420px; height: 96px; padding: 0 44px; border-radius: 999px; transform: translateX(-50%); display: flex; align-items: center; gap: 18px;
+  font-size: 36px; font-weight: 700; letter-spacing: 4px; white-space: nowrap; background: rgba(4,10,20,.6); border: 2px solid rgba(255,255,255,.16); }
+.pill i { width: 22px; height: 22px; border-radius: 50%; }
+.word { position: absolute; left: 0; right: 0; top: 630px; text-align: center; font-family: "Instrument Serif", serif; line-height: 1; white-space: nowrap; text-shadow: 0 6px 30px rgba(0,0,0,.6); }
+.hint { position: absolute; left: 100px; right: 100px; top: 880px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 66px; line-height: 1.15; color: rgba(244,245,248,.88); text-shadow: 0 4px 20px rgba(0,0,0,.7); }
+.ring { top: 1110px; }
+.verdict { position: absolute; left: 0; right: 0; top: 1160px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 100px; color: #5ae6c6; text-shadow: 0 0 30px rgba(90,230,198,.5); }
+#card { position: absolute; left: 880px; top: 330px; width: 110px; height: 150px; border-radius: 12px; background: linear-gradient(#ffe25a, #f5c518); box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+#ask1 { top: 640px; font-size: 92px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+#ask2 { top: 880px; font-family: "Instrument Serif", serif; font-style: italic; font-size: 84px; color: #ffc65a; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="flood" style="left:-420px"><i style="left:390px"></i></div><div class="flood" style="right:-420px"><i style="left:390px"></i></div>
+  <div id="stands"><canvas id="crowd" width="1080" height="160"></canvas></div>
+  <div id="pitchWrap"><div id="pitch"><svg viewBox="0 0 3280 2600" preserveAspectRatio="none">
+    <g fill="none" stroke="rgba(255,255,255,.75)" stroke-width="10"><path d="M140 20 H3140 V2580 H140 Z"/><path d="M140 1300 H3140"/><circle cx="1640" cy="1300" r="300"/>
+    <path d="M1040 20 V420 H2240 V20"/></g><circle cx="1640" cy="1300" r="14" fill="#fff"/></svg></div></div>
+  <div id="shade"></div>
+  <div class="c" id="h1">Seuls les vrais fans<br>de foot</div>
+  <div class="c" id="h2">trouvent ces 3 mots.</div>
+  <div class="c" id="h3">3 SECONDES CHACUN</div>
+  <div id="rounds"></div>
+  <div id="card"></div>
+  <div class="ring" id="ring"></div>
+  <div class="c" id="ask1">T’en as trouvé<br>combien ?</div>
+  <div class="c" id="ask2">Dis-le en commentaire ↓</div>
+</div>
+<script src="lib.js"></script>
+<script src="kit.js"></script>
+<script>
+// Real Football cards from Shared/cards.tsv, easy to hard
+const DIFF = { FACILE: '#5ae6c6', MOYEN: '#ffc65a', DIFFICILE: '#ff8785' };
+const ROUNDS = [
+  { t: 2.6, diff: 'FACILE', word: 'CARTON JAUNE', hint: '« Un avertissement de l’arbitre. »' },
+  { t: 7.1, diff: 'MOYEN', word: 'MARADONA', hint: '« L’Argentin de la “main de Dieu”. »' },
+  { t: 11.6, diff: 'DIFFICILE', word: 'LIZARAZU', hint: '« Un latéral gauche basque champion du monde en 1998. »' },
+];
+const RLEN = 4.5, ASK = 16.1, END = 18.6;
+ROUNDS.forEach((r, i) => {
+  const el = document.createElement('div'); el.className = 'round';
+  el.innerHTML = `<div class="pill"><i style="background:${DIFF[r.diff]}"></i>MOT ${i + 1} / 3 · ${r.diff}</div><div class="word"></div>
+    <div class="hint">${r.hint}</div><div class="verdict">${r.word.charAt(0) + r.word.slice(1).toLowerCase()} !</div>`;
+  $('rounds').appendChild(el); r.el = el; r.q = s => el.querySelector(s);
+});
+// stands: rows of heads, camera flashes
+const heads = Array.from({ length: 420 }, (_, i) => ({ x: (i * 37.3) % 1080, y: 20 + Math.floor(i / 29) * 9.5 + ((i * 7) % 5), r: 4 + (i % 3) }));
+const flashes = Array.from({ length: 60 }, (_, i) => ({ x: (i * 173.7) % 1080, y: 18 + (i * 53) % 130, t: (i * 0.613) % 24 }));
+window.setup = async () => {
+  await document.fonts.ready;
+  ROUNDS.forEach(r => { fitFont(r.q('.word'), r.word, 960, 190); r.L = buildSlots(r.q('.word'), r.word); measureSlots(r.L); });
+  makeRing($('ring')); buildEnd();
+  return true;
+};
+window.render = (t) => {
+  // stands and flashes
+  const g = $('crowd').getContext('2d'); g.clearRect(0, 0, 1080, 160);
+  heads.forEach(h => { g.fillStyle = 'rgba(30,45,70,.9)'; g.beginPath(); g.arc(h.x, h.y + Math.sin(t * 6 + h.x) * (t > 2.6 ? 1.5 : 0.5), h.r, 0, 7); g.fill(); });
+  const roar = ROUNDS.some(r => t - r.t > 3.0 && t - r.t < 4.3);
+  flashes.forEach(f => { const k = Math.exp(-Math.pow(((t - f.t) % (roar ? 1.2 : 3.5)) / 0.05, 2)); if (k > 0.02) { g.fillStyle = `rgba(255,255,255,${k})`; g.beginPath(); g.arc(f.x, f.y, 6, 0, 7); g.fill(); } });
+  $('pitch').style.backgroundPosition = `0 ${t * 40}px`;
+  // ---- hook 0–2.6
+  const a1 = ease(prog(t, 0.0, 0.3)), a2 = ease(prog(t, 0.45, 0.8)), a3 = ease(prog(t, 1.1, 1.4)), out = prog(t, 2.3, 2.6);
+  set($('h1'), a1 * (1 - out), `scale(${lerp(1.15, 1, a1)})`); set($('h2'), a2 * (1 - out), `translateY(${(1 - a2) * 30}px)`); set($('h3'), a3 * (1 - out));
+  // ---- rounds: 3 s on the clock, then the vowels drop in and the crowd goes up
+  ROUNDS.forEach((r, i) => {
+    const lt = t - r.t, on = lt >= 0 && lt < RLEN, o = prog(lt, RLEN - 0.25, RLEN);
+    set(r.el, on ? 1 - o : 0, `translateX(${-80 * io(o)}px)`); if (!on) return;
+    const inn = ease(prog(lt, 0, 0.35));
+    set(r.q('.pill'), inn, `translateX(-50%) translateY(${(1 - inn) * -30}px)`);
+    set(r.q('.word'), inn, `scale(${lerp(1.15, 1, inn)})`);
+    const hi = ease(prog(lt, 0.25, 0.6)); set(r.q('.hint'), hi, `translateY(${(1 - hi) * 20}px)`);
+    fill(r.L, j => spring(lt - 3.45 - j * 0.09, 0.4, 0.62));
+    set(r.q('.verdict'), ease(prog(lt, 3.75, 4.0)), `scale(${lerp(0.7, 1, spring(lt - 3.75))})`);
+  });
+  const cur = ROUNDS.find(r => t - r.t >= 0 && t - r.t < RLEN), rt = cur ? t - cur.t : -1, on = cur && rt >= 0.4 && rt < 3.45;
+  set($('ring'), on ? 1 : 0, `scale(${1 + 0.12 * Math.exp(-((rt - 0.4) % 1) * 10)})`);
+  ring($('ring'), prog(rt, 0.4, 3.4), clamp(3 - Math.floor(rt - 0.4), 1, 3));
+  // the referee's yellow card for the first word
+  const cy = spring(t - (ROUNDS[0].t + 3.5), 0.45, 0.6), lt0 = t - ROUNDS[0].t;
+  set($('card'), lt0 > 3.5 && lt0 < RLEN - 0.2 ? clamp(cy * 2) : 0, `rotate(${lerp(-40, 12, clamp(cy))}deg) translateY(${(1 - clamp(cy)) * 120}px)`);
+  // ---- how many did you get? (16.1–18.6)
+  const k1 = ease(prog(t, ASK, ASK + 0.3)), k2 = ease(prog(t, ASK + 0.6, ASK + 0.9)), ko = prog(t, END - 0.3, END);
+  set($('ask1'), k1 * (1 - ko), `scale(${lerp(1.15, 1, k1)})`); set($('ask2'), k2 * (1 - ko), `translateY(${(1 - k2) * 20}px)`);
+  renderEnd(t, END);
+  // the stadium stays behind the end card, dimmed
+  $('end').style.background = t >= END ? `rgba(4,7,13,${0.75 * ease(prog(t, END, END + 0.4))})` : 'none';
+  return true;
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+**/work/frames/
+**/work/stills/
+**/work/*.jpg
+**/work/audio.wav
+__pycache__/

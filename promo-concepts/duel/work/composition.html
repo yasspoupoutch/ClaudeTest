@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>CNSNN — le duel</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="kit.css">
+<style>
+.c { position: absolute; left: 0; right: 0; text-align: center; }
+#h1 { top: 560px; font-size: 92px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+#h2 { top: 800px; font-family: "Instrument Serif", serif; font-style: italic; font-size: 150px; color: #ffc65a; }
+.who { position: absolute; top: 200px; width: 482px; display: flex; align-items: center; justify-content: center; gap: 18px; font-size: 46px; font-weight: 800; letter-spacing: 2px; }
+.who i { width: 74px; height: 74px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 38px; color: #1a1406; }
+#vs { position: absolute; left: 50%; top: 190px; width: 110px; height: 110px; margin-left: -55px; border-radius: 50%; background: #ff8785; color: #1a0606; display: flex; align-items: center; justify-content: center;
+  font-family: "Fraunces", serif; font-weight: 900; font-size: 48px; box-shadow: 0 0 40px rgba(255,135,133,.6); }
+.ph { position: absolute; top: 330px; transform-origin: 0 0; }
+.bub { position: absolute; top: 300px; width: 482px; text-align: center; }
+.bub span { display: inline-block; padding: 14px 34px; border-radius: 999px; font-size: 44px; font-weight: 800; }
+#board { position: absolute; left: 110px; right: 110px; top: 560px; padding: 34px 30px; border-radius: 44px; background: rgba(255,255,255,.08); border: 2px solid rgba(255,255,255,.14);
+  box-shadow: 0 40px 80px rgba(0,0,0,.45); }
+#board h3 { font-size: 50px; font-weight: 800; margin: 0 10px 6px; } #board h4 { font-size: 26px; font-weight: 500; color: rgba(244,245,248,.56); margin: 0 10px 24px; }
+.row { display: flex; align-items: center; gap: 22px; height: 104px; padding: 0 24px; border-radius: 26px; font-size: 38px; font-weight: 600; }
+.row .n { width: 34px; color: rgba(244,245,248,.5); } .row i { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 32px; color: #1a1406; }
+.row b { flex: 1; } .row em { font-style: normal; font-variant-numeric: tabular-nums; }
+#defi { margin: 30px 70px 6px; height: 104px; border-radius: 52px; background: linear-gradient(#ffd673, #f6b84d); color: #1a1406; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; }
+#q2 { top: 330px; font-family: "Instrument Serif", serif; font-style: italic; font-size: 104px; color: #ffc65a; }
+#confetti { position: absolute; inset: 0; pointer-events: none; }
+#com { position: absolute; left: 0; right: 0; top: 1420px; height: 200px; }
+#com span { position: absolute; left: 60px; right: 60px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 76px; line-height: 1.1; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="blob" id="b1"></div><div class="blob" id="b2"></div>
+  <div class="who" id="wa" style="left:40px"><i style="background:#ffc65a">L</i>LÉA</div>
+  <div class="who" id="wb" style="left:558px"><i style="background:#5ae6c6">M</i>MALIK</div>
+  <div id="vs">VS</div>
+  <div class="phone ph" id="pa" style="left:40px"></div>
+  <div class="phone ph" id="pb" style="left:558px"></div>
+  <div class="bub" id="ba" style="left:40px"><span style="background:#5ae6c6;color:#05231c">Trouvé ! 🏆</span></div>
+  <div class="bub" id="bb" style="left:558px"><span style="background:#ff8785;color:#2a0505">Raté !</span></div>
+  <canvas id="confetti" width="1080" height="1920"></canvas>
+  <div id="com"></div>
+  <div class="c" id="h1">Même mot.<br>Même chrono.</div>
+  <div class="c" id="h2">Qui gagne ?</div>
+  <div class="c" id="q2">Et toi, tu bats qui ?</div>
+  <div id="board"><h3>Classement</h3><h4>Mot du jour · Aujourd’hui</h4>
+    <div class="row" style="background:rgba(255,198,90,.14);border:2px solid rgba(255,198,90,.45)"><span class="n">1</span><i style="background:#ffc65a">L</i><b>Léa</b><em style="color:#ffc65a">0:38</em></div>
+    <div class="row"><span class="n">2</span><i style="background:#5ae6c6">M</i><b>Malik</b><em>0:41</em></div>
+    <div class="row"><span class="n">3</span><i style="background:#a99bff">T</i><b>Toi ?</b><em style="color:rgba(244,245,248,.5)">—</em></div>
+    <div id="defi">Défier un ami</div></div>
+</div>
+<script src="lib.js"></script>
+<script src="kit.js"></script>
+<script>
+// A real card (Shared/cards.tsv, Général, difficile); Léa and Malik are the names of the app's own leaderboard screen.
+const WORD = 'CASSOULET', HINT = '« Des haricots blancs et des saucisses, spécialité de Castelnaudary. »';
+const GO = 2.3, END = 17.8;                         // the race starts at 0:30 on both clocks
+const P = {                                          // what each player does, in seconds of video
+  pa: { tries: [[7.9, 'CASSOULET', 0.22, 10.3]], win: 10.3 },                         // Léa takes her time, then finds it: 0:38
+  pb: { tries: [[2.6, 'CASSOLET', 0.22, 4.7], [11.3, 'CASSOULET', 0.2, 13.3]], win: 13.3 },  // Malik rushes, misses, then 0:41
+};
+const SC = 482 / 560;
+const conf = Array.from({ length: 90 }, (_, i) => ({ x: 280 + Math.cos(i * 2.39) * 30, vx: Math.cos(i * 1.7) * 380, vy: -500 - (i * 37) % 600, c: ['#ffc65a', '#5ae6c6', '#ff8785', '#a99bff', '#fff'][i % 5], r: i * 0.7 }));
+window.setup = async () => {
+  await document.fonts.ready;
+  for (const id of ['pa', 'pb']) { $(id).innerHTML = appScreen(id, { hint: HINT }); P[id].L = buildSlots($(id + '-hw'), WORD); measureSlots(P[id].L); }
+  buildEnd();
+  return true;
+};
+function phone(id, t) {
+  const p = P[id], ans = $(id + '-ans'), msg = $(id + '-msg'), val = $(id + '-val');
+  const stop = t >= p.win ? p.win : t;
+  $(id + '-chr').textContent = chrono(30 + Math.max(0, stop - GO));
+  let state = 'idle', shake = 0;
+  ans.style.color = '#f4f5f8'; msg.textContent = ''; val.style.transform = '';
+  for (const [t0, w, dt, tv] of p.tries) {
+    if (t < t0) continue;
+    const ok = w === WORD;
+    if (!ok && t > tv + 1.2) continue;                                              // the wrong try is cleared
+    typeInto(id, w, t, t0, dt); state = 'typing';
+    if (t >= tv) {
+      state = ok ? 'won' : 'miss';
+      if (!ok) { ans.style.color = '#ff8785'; shake = Math.sin((t - tv) * 60) * 16 * Math.exp(-(t - tv) * 5); msg.style.color = '#ff8785'; msg.textContent = 'Pas le bon mot · 19 essais restants'; }
+      else { ans.style.color = '#5ae6c6'; msg.style.color = '#5ae6c6'; msg.textContent = `Trouvé en ${chrono(30 + p.win - GO)} !`; }
+    }
+    const press = Math.exp(-Math.pow((t - tv) / 0.06, 2)); val.style.transform = `scale(${1 - 0.06 * press})`; val.style.filter = `brightness(${1 + 0.4 * press})`;
+  }
+  if (state === 'idle') { ans.innerHTML = '<em>votre réponse</em>'; document.querySelectorAll(`#${id} .kr i`).forEach(k => { k.style.filter = ''; k.style.transform = ''; }); }
+  if (state === 'won') document.querySelectorAll(`#${id} .kr i`).forEach(k => { k.style.filter = ''; k.style.transform = ''; });
+  fill(p.L, j => spring(t - p.win - j * 0.09, 0.4, 0.62));
+  ans.style.transform = `translateX(${shake}px)`;
+  return state;
+}
+window.render = (t) => {
+  ambient(t, 0.6);
+  // ---- hook: "same word, same clock — who wins?"
+  const a1 = ease(prog(t, 0.0, 0.3)), a2 = ease(prog(t, 0.5, 0.85)), out = prog(t, 2.0, 2.3);
+  set($('h1'), a1 * (1 - out), `scale(${lerp(1.15, 1, a1)})`); set($('h2'), a2 * (1 - out), `scale(${lerp(0.7, 1, spring(t - 0.5))})`);
+  // ---- the race (2.3–14)
+  const inA = spring(t - 1.9, 0.6, 0.75), inB = spring(t - 2.05, 0.6, 0.75), away = io(prog(t, 14.0, 14.6));
+  set($('pa'), t > 1.9 ? clamp(inA * 1.5) * (1 - away) : 0, `scale(${SC}) translateX(${(1 - inA) * -700 - away * 300}px)`);
+  set($('pb'), t > 2.05 ? clamp(inB * 1.5) * (1 - away) : 0, `scale(${SC}) translateX(${(1 - inB) * 700 + away * 300}px)`);
+  const lab = ease(prog(t, 2.0, 2.4)) * (1 - away);
+  set($('wa'), lab, `translateY(${(1 - lab) * -30}px)`); set($('wb'), lab, `translateY(${(1 - lab) * -30}px)`);
+  set($('vs'), lab, `scale(${lerp(0.4, 1, spring(t - 2.1)) * (1 + 0.08 * Math.sin(t * 6))})`);
+  phone('pa', t); phone('pb', t);
+  // bubbles: Malik misses, Léa wins; the winner's phone glows
+  const bb = spring(t - 4.75, 0.45, 0.6); set($('bb'), t > 4.75 && t < 6.3 ? clamp(bb * 1.5) * (1 - prog(t, 6.0, 6.3)) : 0, `scale(${lerp(0.5, 1, clamp(bb))})`);
+  const ba = spring(t - 10.35, 0.45, 0.6); set($('ba'), t > 10.35 ? clamp(ba * 1.5) * (1 - away) : 0, `scale(${lerp(0.5, 1, clamp(ba))})`);
+  $('pa').style.boxShadow = t > 10.3 ? `0 0 0 4px rgba(255,198,90,${0.9 * (1 - away)}), 0 0 ${80 + 30 * Math.sin(t * 5)}px rgba(255,198,90,.55)` : '';
+  // confetti over Léa's phone
+  const g = $('confetti').getContext('2d'); g.clearRect(0, 0, 1080, 1920); const ct = t - 10.3;
+  if (ct > 0 && ct < 3) conf.forEach(c => { g.save(); g.translate(c.x + c.vx * ct, 760 + c.vy * ct + 700 * ct * ct); g.rotate(c.r + ct * 8); g.globalAlpha = 1 - ct / 3; g.fillStyle = c.c; g.fillRect(-9, -5, 18, 10); g.restore(); });
+  // ---- leaderboard (14.4–17.8): "and you, who do you beat?"
+  const bd = spring(t - 14.4, 0.55, 0.72); set($('board'), t > 14.4 ? clamp(bd * 1.4) * (1 - prog(t, END - 0.3, END)) : 0, `translateY(${(1 - bd) * 200}px) scale(${lerp(0.9, 1, clamp(bd))})`);
+  const q = ease(prog(t, 14.9, 15.3)); set($('q2'), q * (1 - prog(t, END - 0.3, END)), `translateY(${(1 - q) * 20}px)`);
+  $('defi').style.transform = `scale(${1 + 0.06 * Math.max(0, Math.sin((t - 15.6) * 5)) * (t > 15.6 ? 1 : 0)})`;
+  $('defi').style.boxShadow = t > 15.6 ? `0 0 ${40 + 30 * Math.sin(t * 5)}px rgba(255,198,90,.6)` : '';
+  // commentary under the phones
+  const COM = [['Malik fonce…', 2.7, 4.6], ['Raté !', 4.75, 6.3, '#ff8785'], ['Léa prend son temps…', 6.6, 9.9], ['Léa trouve en 0:38 !', 10.35, 12.9, '#ffc65a'], ['Malik : 0:41. Trop tard !', 13.35, 14.3, '#5ae6c6']];
+  if (!$('com').children.length) COM.forEach(([txt, , , col]) => { const sp = document.createElement('span'); sp.textContent = txt; if (col) sp.style.color = col; $('com').appendChild(sp); });
+  COM.forEach(([, a, b], j) => { const k = ease(prog(t, a, a + 0.25)); set($('com').children[j], k * (1 - prog(t, b, b + 0.2)), `translateY(${(1 - k) * 20}px) scale(${lerp(0.9, 1, k)})`); });
+  renderEnd(t, END);
+  return true;
+};
+</script>
+</body>
+</html>
