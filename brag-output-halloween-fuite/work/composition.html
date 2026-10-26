@@ -12,13 +12,15 @@
   background: radial-gradient(circle at 38% 36%, #fffaf0 0%, #f6ebcf 45%, #e7d3a6 100%);
   box-shadow: 0 0 60px 20px rgba(255,236,190,.35), 0 0 240px 100px rgba(190,150,255,.22); }
 #moon i { position: absolute; border-radius: 50%; background: rgba(170,140,95,.22); }
-#skyline { position: absolute; left: -100px; width: 1280px; height: 420px; transform-origin: 50% 100%; }
+#skyline { position: absolute; left: -760px; width: 2600px; height: 420px; transform-origin: 50% 100%; }
+#groundbg { position: absolute; left: -200px; right: -200px; bottom: -200px; background: linear-gradient(#3a2260 0%, #24143e 6%, #1a0f2c 30%, #120a20 100%); }
 #horizon { position: absolute; left: 0; right: 0; height: 360px; background: radial-gradient(60% 50% at 50% 50%, rgba(160,90,255,.35), rgba(160,90,255,0)); }
 #view { position: absolute; inset: 0; perspective: 1000px; perspective-origin: 540px 960px; overflow: hidden; }
 #scene { position: absolute; left: 540px; top: 960px; width: 0; height: 0; transform-style: preserve-3d; }
 .o { position: absolute; left: 0; top: 0; transform-style: preserve-3d; will-change: transform, opacity; }
-.tile { width: 5000px; height: 252px; background: linear-gradient(90deg, #0c0616, #1c1030 30%, #241538 38%, #241538 62%, #1c1030 70%, #0c0616); }
-.tile .road { position: absolute; left: 2070px; width: 860px; top: 0; bottom: 0; background-size: 430px 430px; }
+.tile { width: 860px; height: 262px; }
+.ground { width: 9000px; height: 252px; background: #1a0f2c; }
+.tile .road { position: absolute; left: 0; width: 860px; top: 0; bottom: 0; background-size: 430px 430px; }
 .tile .edge { position: absolute; top: 0; bottom: 0; width: 12px; background: #ffe0b0;
   box-shadow: 0 0 18px 6px #ff8a1e, 0 0 60px 20px rgba(255,100,0,.45); }
 .neonTxt { font-family: "Fraunces", serif; font-weight: 900; white-space: nowrap; color: #ffe1b0; line-height: 1; }
@@ -56,7 +58,9 @@
 #store .badge small { display: block; font-size: 32px; font-weight: 500; }
 #store .badge b { display: block; font-size: 62px; font-weight: 600; letter-spacing: -1px; line-height: 1.05; }
 #tiktok { position: absolute; left: 0; right: 0; top: 1520px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 52px; font-weight: 700; color: #fff; }
-#happy { position: absolute; left: 0; right: 0; top: 1630px; text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 7px; color: #ffc35a; }
+#cap { position: absolute; left: 0; right: 0; top: 1420px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 86px; line-height: 1.1; color: #fff3e2;
+  text-shadow: 0 0 30px rgba(255,140,30,.8), 0 4px 30px rgba(0,0,0,.9); }
+#cap b { font-weight: 400; color: #ffc35a; }
 #vig { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55)); pointer-events: none; }
 </style>
 </head>
@@ -65,10 +69,12 @@
   <div id="sky">
     <canvas id="stars" width="1080" height="1920"></canvas>
     <div id="moon"><i style="left:22%;top:30%;width:18%;height:18%"></i><i style="left:58%;top:55%;width:24%;height:24%"></i><i style="left:40%;top:72%;width:10%;height:10%"></i><i style="left:64%;top:22%;width:9%;height:9%"></i></div>
+    <div id="groundbg"></div>
     <div id="horizon"></div>
-    <svg id="skyline" viewBox="0 0 1280 420" preserveAspectRatio="none"></svg>
+    <svg id="skyline" viewBox="0 0 2600 420" preserveAspectRatio="none"></svg>
   </div>
   <div id="view"><div id="scene"></div></div>
+  <div id="cap"><span id="cap1">Cette nuit,</span><br><b id="cap2">les voyelles se sont échappées…</b></div>
   <div id="flashAll"></div>
   <div id="end">
     <div id="emoon"></div>
@@ -77,7 +83,6 @@
     <div class="tagw" id="tw2" style="top:1050px">Sans ses voyelles.</div>
     <div id="store"><img src="appicon.png"><div class="badge"><svg width="74" height="74" viewBox="0 0 24 24"><path id="apple" fill="#fff"/></svg><div><small>Disponible sur</small><b>l’App Store</b></div></div></div>
     <div id="tiktok"><svg width="58" height="58" viewBox="0 0 24 24"><path class="tt" fill="#25F4EE" transform="translate(-0.7,-0.5)"/><path class="tt" fill="#FE2C55" transform="translate(0.7,0.5)"/><path class="tt" fill="#fff"/></svg>@jeuCNSNN</div>
-    <div id="happy">JOYEUX HALLOWEEN</div>
   </div>
   <div id="vig"></div>
 </div>
@@ -95,25 +100,31 @@ const extrude = (depth, glow, step = 1.6) => { const s = []; for (let i = 1; i <
 // ================================================================ world
 // Units are CSS px. Camera looks down -z; y grows downwards; the road is at y = GROUND.
 const P = 1000, GROUND = 520;
+// The road bends left, then right: roadX(z) is its centre line, heading(z) its direction (> 0 = turning right)
+const ROAD0 = -1800, ROAD1 = -13600;
+const roadX = z => { const u = clamp((ROAD0 - z) / (ROAD0 - ROAD1)); return -1300 * Math.sin(2 * Math.PI * u) * Math.sin(Math.PI * u); };
+const heading = z => Math.atan2(roadX(z - 50) - roadX(z + 50), 100);
 const OBJ = [];
 function add(html, cls, x, y, z, opt = {}) {
   const d = document.createElement('div'); d.className = 'o ' + (cls || ''); if (html) d.innerHTML = html;
   $('scene').appendChild(d); const o = { d, x, y, z, rot: opt.rot || '', near: opt.near ?? 260, far: opt.far ?? 9000, op: 1, fw: opt.fw || 2500, ext: opt.ext || 0, anchor: opt.anchor || 'translate(-50%,-50%)' };
   OBJ.push(o); return o;
 }
-function place(o, cz, cx) {
+// things that stand beside the road follow its bend
+const side = (dx, y, z, html, cls, opt) => add(html, cls, roadX(z) + dx, y, z, opt);
+function place(o, cz) {
   if (o.tile) {   // ground slabs: drop any slab that reaches behind the camera (Chromium would not draw it anyway)
-    const near = cz - (o.z + 126), op = clamp(1 - (near - o.far) / 2500);
+    const near = cz - (o.z + 140), op = clamp(1 - (near - o.far) / 2500);
     if (near < 5 || op <= 0.003) { o.d.style.visibility = 'hidden'; return; }
     o.d.style.visibility = 'visible'; o.d.style.opacity = op; o.d.style.transform = `translate3d(${o.x}px, ${o.y}px, ${o.z}px) ${o.rot} ${o.anchor}`; return;
   }
-  const dist = cz - o.z + o.ext;   // how far in front of the camera (nearest edge for big objects)
+  const dist = cz - o.z + o.ext;   // how far in front of the camera
   let op = o.op * clamp((dist - 60) / o.near) * clamp(1 - (dist - o.ext - o.far) / o.fw);
   if (dist < 60 || op <= 0.003) { o.d.style.visibility = 'hidden'; return; }
   o.d.style.visibility = 'visible'; o.d.style.opacity = op;
   o.d.style.transform = `translate3d(${o.x}px, ${o.y}px, ${o.z}px) ${o.rot} ${o.anchor}`;
 }
-// ground: tiles of cobbled road with neon edges
+// ground: slabs of cobbled road with neon edges, turned along the bend
 const cob = document.createElement('canvas'); cob.width = cob.height = 512;
 (() => { const g = cob.getContext('2d'); g.fillStyle = '#1b1426'; g.fillRect(0, 0, 512, 512);
   for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) { const x = c * 58 + (r % 2) * 29 + rnd() * 6, y = r * 58 + rnd() * 6;
@@ -121,75 +132,72 @@ const cob = document.createElement('canvas'); cob.width = cob.height = 512;
     g.fillStyle = 'rgba(200,180,255,.06)'; g.beginPath(); g.ellipse(x - 5, y - 6, 12, 8, 0, 0, 7); g.fill(); } })();
 const COB = cob.toDataURL();
 for (let z = 1000, k = 0; z > -18000; z -= 250, k++) {
-  const o = add(`<div class="road" style="background-image:url(${COB});background-position:0 ${-(k % 2) * 250}px"></div><div class="edge" style="left:2064px"></div><div class="edge" style="left:2924px"></div>`, 'tile', 0, GROUND, z - 125,
-    { rot: 'rotateX(90deg)', near: 1, far: 7500 });
+  const zc = z - 125;
+  // the road strip, turned along the bend (the ground itself is a flat gradient behind, #groundbg)
+  const o = add(`<div class="road" style="background-image:url(${COB});background-position:0 ${-(k % 2) * 250}px"></div><div class="edge" style="left:-6px"></div><div class="edge" style="left:854px"></div>`, 'tile', roadX(zc), GROUND - 2, zc,
+    { rot: `rotateX(90deg) rotateZ(${heading(zc)}rad)`, near: 1, far: 7500 });
   o.tile = true;
 }
 // jack-o'-lanterns
-function pumpkinSVG(size) {
-  return `<svg width="${size}" height="${size}" viewBox="-60 -60 120 120" style="overflow:visible">
-    <path d="M-2 -40 C -2 -52 6 -58 12 -60 L 14 -54 C 8 -52 5 -47 5 -40 Z" fill="#3e5a1e"/>
+const PUMP_BODY = `<path d="M-2 -40 C -2 -52 6 -58 12 -60 L 14 -54 C 8 -52 5 -47 5 -40 Z" fill="#3e5a1e"/>
     <ellipse cx="-30" cy="5" rx="30" ry="42" fill="#d4560a"/><ellipse cx="30" cy="5" rx="30" ry="42" fill="#d4560a"/>
-    <ellipse cx="-14" cy="3" rx="26" ry="45" fill="#ee6d12"/><ellipse cx="14" cy="3" rx="26" ry="45" fill="#ee6d12"/><ellipse cx="0" cy="2" rx="20" ry="46" fill="#ff8424"/>
+    <ellipse cx="-14" cy="3" rx="26" ry="45" fill="#ee6d12"/><ellipse cx="14" cy="3" rx="26" ry="45" fill="#ee6d12"/><ellipse cx="0" cy="2" rx="20" ry="46" fill="#ff8424"/>`;
+const pumpkinSVG = size => `<svg width="${size}" height="${size}" viewBox="-60 -60 120 120" style="overflow:visible">${PUMP_BODY}
     <g class="face" fill="#ffd45e"><path d="M-30 -12 L-12 -12 L-21 -28 Z M12 -12 L30 -12 L21 -28 Z M-5 2 L5 2 L0 -8 Z"/>
     <path d="M-34 14 C -20 34 20 34 34 14 L 26 18 L 22 12 L 14 20 L 8 14 L 0 22 L -8 14 L -14 20 L -22 12 L -26 18 Z"/></g></svg>`;
-}
+// a big pumpkin with a word carved in it, lit from inside: the word has lost its vowels too
+const carvedSVG = (size, word) => `<svg width="${size * 1.25}" height="${size}" viewBox="-75 -60 150 120" style="overflow:visible">
+    <g transform="scale(1.25,1)">${PUMP_BODY}</g>
+    <text class="face" x="0" y="${word.length > 4 ? 14 : 16}" text-anchor="middle" font-family="Fraunces" font-weight="900" font-size="${word.length > 4 ? 30 : 38}" letter-spacing="1"
+      fill="#ffd45e" stroke="#7a2e00" stroke-width="1.2" style="filter: drop-shadow(0 0 4px #ffb347)">${word}</text></svg>`;
 const PUMPS = [];
 for (let z = -700, i = 0; z > -16500; z -= 520 + rnd() * 380, i++) {
-  const side = i % 2 ? 1 : -1, s = 230 + rnd() * 150, x = side * (470 + rnd() * 380);
-  const o = add(pumpkinSVG(s), '', x, GROUND - s * 0.42, z); o.d.style.filter = `drop-shadow(0 0 ${s * 0.25}px rgba(255,120,20,.7))`; o.ph = rnd() * 6; PUMPS.push(o);
+  if (z < -4700 && z > -8000) continue;           // the carved pumpkins stand here
+  const sd = i % 2 ? 1 : -1, s = 230 + rnd() * 150;
+  const o = side(sd * (470 + rnd() * 380), GROUND - s * 0.42, z, pumpkinSVG(s)); o.d.style.filter = `drop-shadow(0 0 ${s * 0.25}px rgba(255,120,20,.7))`; o.ph = rnd() * 6; PUMPS.push(o);
 }
-// lamp posts
-for (let z = -2200, i = 0; z > -15000; z -= 2100, i++) add('<i></i>', 'lamp', (i % 2 ? 1 : -1) * 500, GROUND - 380, z);
-// dead trees, far out on both sides
+const CARVED = ['FNTM', 'SRCR', 'CTRLL', 'BNBNS', 'MM'];   // fantôme, sorcière, citrouille, bonbons, momie
+CARVED.forEach((w, i) => { const sd = i % 2 ? 1 : -1, z = -5000 - i * 650;
+  const o = side(sd * 660, GROUND - 190, z, carvedSVG(440, w), 'carve', { rot: `rotateY(${-sd * 22}deg)` });
+  o.d.style.filter = 'drop-shadow(0 0 60px rgba(255,120,20,.6))'; o.ph = rnd() * 6; PUMPS.push(o); });
+// lamp posts, dead trees, fog
+for (let z = -2200, i = 0; z > -15000; z -= 2100, i++) side((i % 2 ? 1 : -1) * 500, GROUND - 380, z, '<i></i>', 'lamp');
 const TREE = `<svg width="900" height="1100" viewBox="0 0 900 1100"><path fill="#07030d" d="M430 1100 L470 1100 L465 700 L560 520 L700 430 L690 415 L555 500 L600 330 L585 325 L535 480 L470 610 L462 420 L540 260 L520 255 L455 380 L430 230 L415 235 L438 420 L420 600 L330 450 L250 400 L240 410 L320 470 L410 640 L300 560 L180 560 L178 575 L300 590 L425 700 Z"/></svg>`;
-for (let z = -1500, i = 0; z > -16000; z -= 1700, i++) add(TREE, '', (i % 2 ? 1 : -1) * (1500 + rnd() * 300), GROUND - 520, z, { far: 11000 });
-// low fog banks
-for (let z = -1200; z > -16000; z -= 1300) add('', 'fog', rnd() * 600 - 300, GROUND - 120, z);
-// tombstones with words that lost their vowels (Halloween words)
-const TOMBS = [['FNTM', 'fantôme'], ['SRCR', 'sorcière'], ['CMTR', 'cimetière'], ['CTRLL', 'citrouille'], ['BNBNS', 'bonbons'], ['MM', 'momie']];   // fantôme, sorcière, cimetière, citrouille, bonbons, momie
-TOMBS.forEach(([w], i) => { const side = i % 2 ? 1 : -1;
-  add(`<small>R.I.P.</small><b>${w}</b>`, 'tomb', side * 560, GROUND - 210, -6300 - i * 500, { rot: `rotateY(${-side * 28}deg)` }); });
+for (let z = -1500, i = 0; z > -16000; z -= 1700, i++) side((i % 2 ? 1 : -1) * (1500 + rnd() * 300), GROUND - 520, z, TREE, '', { far: 11000 });
+for (let z = -1200; z > -16000; z -= 1300) side(rnd() * 600 - 300, GROUND - 120, z, '', 'fog');
 // neon rings to fly through
-const RINGS = [-6900, -12100].map(z => add('', 'ring', 0, -60, z, { near: 350 }));
-// floating words the camera passes, like the reference
-const WORDS = [['Cette nuit,', -3300, -150, -40, 170], ['les voyelles', -4600, 150, -20, 170], ['se sont enfuies.', -5900, -30, 0, 150],
+const RINGS = [-8300, -12900].map(z => side(0, -60, z, '', 'ring', { near: 350 }));
+// floating lines the camera passes, like the reference
+const WORDS = [['Vite,', -2900, -150, -40, 190], ['rattrape-les !', -4100, 120, -20, 170],
   ['Sans elles…', -9500, 150, -40, 170], ['plus rien', -10800, -150, -20, 170], ['n’a de sens.', -12100, 60, 0, 160]]
-  .map(([w, z, x, y, s]) => { const o = add(w, 'fly', x, y, z, { near: 420, far: 1100, fw: 700 }); o.d.style.fontSize = s + 'px'; return o; });
-// the CONSONNE sign at the start, and the phone at the end of the road
-const SIGN = add('', 'neonTxt', 0, -260, -1500, { near: 300, far: 20000 }); SIGN.d.style.fontSize = '300px';
+  .map(([w, z, x, y, s]) => { const o = side(x, y, z, w, 'fly', { near: 420, far: 1100, fw: 700 }); o.d.style.fontSize = s + 'px'; return o; });
+// the phone at the end of the road
 const PHONE = add(`<div class="scr"><img id="phA" src="img/game_slots.png"><img id="phB" src="img/game_result.png"><div class="flash" id="phF"></div></div>`, 'phone', 0, GROUND - 640, -16300, { near: 150, far: 20000 });
 // bats
 const BAT_WING = 'M0 0 C -8 -16 -26 -22 -52 -14 C -46 -8 -44 -2 -44 4 C -38 -2 -30 -1 -26 5 C -22 -1 -14 -1 -10 6 Z';
-function makeBat(x, y, z, s) {
+function makeBat(s) {
   const o = add(`<svg width="120" height="60" viewBox="-60 -30 120 60" style="overflow:visible"><path class="wl" d="${BAT_WING}" fill="#0a0510"/><path class="wr" d="${BAT_WING}" fill="#0a0510"/>
-    <ellipse cx="0" cy="2" rx="7" ry="11" fill="#0a0510"/><path d="M-6 -6 L-8 -16 L-2 -9 Z M6 -6 L8 -16 L2 -9 Z" fill="#0a0510"/></svg>`, 'bat', x, y, z, { near: 200 });
-  o.s = s; o.wl = o.d.querySelector('.wl'); o.wr = o.d.querySelector('.wr'); o.home = [x, y, z]; o.ph = rnd() * 6; return o;
+    <ellipse cx="0" cy="2" rx="7" ry="11" fill="#0a0510"/><path d="M-6 -6 L-8 -16 L-2 -9 Z M6 -6 L8 -16 L2 -9 Z" fill="#0a0510"/></svg>`, 'bat', 0, 0, 0, { near: 200 });
+  o.s = s; o.wl = o.d.querySelector('.wl'); o.wr = o.d.querySelector('.wr'); o.ph = rnd() * 6; return o;
 }
-const BATS = Array.from({ length: 22 }, (_, i) => makeBat(0, 0, 0, 1.4 + rnd() * 1.6));
-// the runaway vowels
-const VOW = ['O', 'O', 'E', 'A', 'I', 'U'].map((c, i) => { const o = add(c, 'vow', 0, 0, 0, { near: 200, far: 20000 }); o.i = i; o.ph = rnd() * 6; return o; });
+const BATS = Array.from({ length: 22 }, () => makeBat(1.4 + rnd() * 1.6));
+// the six runaway vowels, always in the same order
+const VOW = ['A', 'E', 'I', 'O', 'U', 'Y'].map((c, i) => { const o = add(c, 'vow', 0, 0, 0, { near: 200, far: 20000 }); o.i = i; o.ph = i * 1.3; return o; });
 
 // sky
-const stars = Array.from({ length: 240 }, () => ({ x: rnd() * 1080, y: rnd() * 980, r: 0.6 + rnd() * 1.8, ph: rnd() * 6.28, sp: 0.6 + rnd() * 2 }));
-(() => { // haunted skyline: houses with lit windows, a church, hills
-  let s = '<path d="M0 300 C 200 240 340 270 520 280 C 700 290 860 230 1280 260 L1280 420 L0 420 Z" fill="#12082a"/>';
-  const H = [[120, 210, 90, 'M'], [230, 160, 120, 'H'], [420, 120, 70, 'C'], [760, 180, 110, 'H'], [900, 230, 80, 'M'], [1060, 190, 100, 'H']];
-  H.forEach(([x, top, w, k]) => { s += `<path fill="#0c0518" d="M${x} 330 L${x} ${top + 40} L${x + w / 2} ${top} L${x + w} ${top + 40} L${x + w} 330 Z"/>`;
-    if (k === 'C') s += `<path fill="#0c0518" d="M${x + w / 2 - 6} ${top - 90} h12 v90 h-12 Z M${x + w / 2 - 22} ${top - 70} h44 v10 h-44 Z"/>`;
-    for (let j = 0; j < 3; j++) s += `<rect x="${x + 14 + j * (w - 36) / 2}" y="${top + 60 + (j % 2) * 30}" width="12" height="16" fill="#ffb347" opacity="${0.5 + 0.5 * ((x + j) % 3) / 2}"/>`; });
-  $('skyline').innerHTML = s + '<path d="M0 330 L1280 330 L1280 420 L0 420 Z" fill="#0a0414"/>'; })();
+const stars = Array.from({ length: 260 }, () => ({ x: rnd() * 1080, y: rnd() * 980, r: 0.6 + rnd() * 1.8, ph: rnd() * 6.28, sp: 0.6 + rnd() * 2 }));
+(() => { // skyline: hills and houses with lit windows
+  let s = '<path d="M0 300 C 300 240 600 270 900 280 C 1200 290 1500 230 1800 250 C 2100 270 2400 240 2600 260 L2600 420 L0 420 Z" fill="#12082a"/>';
+  for (let x = 40; x < 2560; x += 150 + Math.round(rnd() * 120)) { const w = 70 + Math.round(rnd() * 60), top = 120 + Math.round(rnd() * 120);
+    s += `<path fill="#0c0518" d="M${x} 330 L${x} ${top + 40} L${x + w / 2} ${top} L${x + w} ${top + 40} L${x + w} 330 Z"/>`;
+    for (let j = 0; j < 3; j++) s += `<rect x="${x + 14 + j * (w - 36) / 2}" y="${top + 60 + (j % 2) * 30}" width="12" height="16" fill="#ffb347" opacity="${(0.4 + 0.6 * rnd()).toFixed(2)}"/>`; }
+  $('skyline').innerHTML = s + '<path d="M0 330 L2600 330 L2600 420 L0 420 Z" fill="#0a0414"/>'; })();
 
 // ================================================================ setup
-let OUT, SIGN_L;
+let OUT;
 window.setup = async () => {
   await document.fonts.ready;
   $('apple').setAttribute('d', APPLE); document.querySelectorAll('.tt').forEach(p => p.setAttribute('d', TIKTOK));
-  // the sign is built letter by letter so its vowels can leave
-  SIGN_L = [...'CONSONNE'].map(c => { const s = document.createElement('span'); s.textContent = c; s.style.display = 'inline-block'; SIGN.d.appendChild(s); return { s, c, v: 'OE'.includes(c) }; });
-  SIGN.d.style.textShadow = extrude(10, 1, 1.4);
-  SIGN_L.forEach(l => { l.w = l.s.getBoundingClientRect().width; l.cx = l.s.offsetLeft + l.w / 2; });
-  const W = SIGN.d.getBoundingClientRect().width; SIGN_L.forEach(l => { l.cx -= W / 2; });
   WORDS.forEach(o => { o.d.style.textShadow = extrude(10, 0.9, 1.3); });
   fitFont($('mark'), 'CONSONNE', 980, 200); OUT = buildWord($('mark'), 'CONSONNE'); measure(OUT); $('mark').style.textShadow = extrude(14, 1);
   return true;
@@ -199,62 +207,61 @@ window.setup = async () => {
 // steady cruise with short ramps, so every floating line stays on screen about a second
 const cruise = (x, r = 0.12) => { x = clamp(x); const v = 1 / (1 - r); return x < r ? v * x * x / (2 * r) : x > 1 - r ? 1 - v * (1 - x) * (1 - x) / (2 * r) : v * (x - r / 2); };
 const camZ = t => kf([[0, 900], [2.8, 500], [16.3, -14250], [17.6, -14500]], t, cruise);
-const camX = t => 140 * Math.sin(t * 0.55) * prog(t, 3, 5) * (1 - prog(t, 15, 16.5));
-const camY = t => -40 * Math.sin(t * 0.8) * prog(t, 3, 5) * (1 - prog(t, 15, 16.5));
-window.passTimes = () => { const zs = { rings: RINGS.map(r => r.z), words: WORDS.map(w => w.z), tombs: OBJ.filter(o => o.d.classList.contains('tomb')).map(o => o.z), sign: [SIGN.z] }, out = {};
+window.passTimes = () => { const zs = { rings: RINGS.map(r => r.z), words: WORDS.map(w => w.z), carved: OBJ.filter(o => o.d.classList.contains('carve')).map(o => o.z) }, out = {};
   for (const k in zs) out[k] = zs[k].map(z => { for (let t = 0; t < 26; t += 1 / 60) if (camZ(t) <= z) return +t.toFixed(2); return null; }); return out; };
 
 // ================================================================ frame
+const ROW_Z = -500;   // where the vowels wait at the start
 window.render = (t) => {
-  const cz = camZ(t), cx = camX(t), cy = camY(t);
-  const vz = (camZ(t + 0.05) - cz) / 0.05;                  // forward speed, px/s (negative)
-  const roll = -2.2 * Math.cos(t * 0.55) * prog(t, 3, 5) * (1 - prog(t, 15, 16.5));
-  const pitch = lerp(-13, -6, prog(t, 15, 17.2));   // negative = looking down at the road
+  const cz = camZ(t), cx = roadX(cz), cy = 0;
+  const yaw = heading(cz - 900);                              // look into the bend ahead
+  const roll = -yaw * 180 / Math.PI * 0.3;
+  const pitch = lerp(-13, -6, prog(t, 15, 17.2));            // negative = looking down at the road
   // CSS puts the eye at z = +perspective: move it onto the camera so that scale = P / distance
-  $('scene').style.transform = `translateZ(${P}px) rotateZ(${roll}deg) rotateX(${pitch}deg) translate3d(${-cx}px, ${-cy}px, ${-cz}px)`;
-  // sky: moon and skyline barely move, stars twinkle
+  $('scene').style.transform = `translateZ(${P}px) rotateZ(${roll}deg) rotateX(${pitch}deg) rotateY(${yaw}rad) translate3d(${-cx}px, ${-cy}px, ${-cz}px)`;
+  // sky: slides sideways as the camera turns
+  const sx = -Math.tan(yaw) * P * 0.7;
   const g = $('stars').getContext('2d'); g.clearRect(0, 0, 1080, 1920);
-  stars.forEach(s => { g.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * s.sp + s.ph)); g.fillStyle = '#fff'; g.beginPath(); g.arc(s.x - cx * 0.02, s.y, s.r, 0, 7); g.fill(); });
+  stars.forEach(s => { g.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * s.sp + s.ph)); g.fillStyle = '#fff'; g.beginPath(); g.arc(((s.x + sx * 0.6) % 1080 + 1080) % 1080, s.y, s.r, 0, 7); g.fill(); });
   const hz = 960 + Math.tan(pitch * Math.PI / 180) * P;     // horizon height on screen
-  Object.assign($('moon').style, { left: (700 - cx * 0.03) + 'px', top: (hz - 760) + 'px', width: '260px', height: '260px' });
+  Object.assign($('moon').style, { left: (690 + sx * 0.6) + 'px', top: (hz - 700) + 'px', width: '250px', height: '250px' });
   const grow = 1 + 0.18 * prog(cz, 500, -14500);
-  $('skyline').style.top = (hz - 340) + 'px'; $('skyline').style.transform = `translateX(${-cx * 0.05}px) scale(${grow})`;
-  $('horizon').style.top = (hz - 180) + 'px';
+  $('skyline').style.top = (hz - 340) + 'px'; $('skyline').style.transform = `translateX(${sx}px) rotate(${roll}deg) scale(${grow})`;
+  $('horizon').style.top = (hz - 180) + 'px'; $('groundbg').style.top = (hz - 6) + 'px'; $('groundbg').style.transform = `rotate(${roll}deg)`;
+  // opening caption
+  const c1 = ease(prog(t, 0.2, 0.6)), c2 = ease(prog(t, 0.8, 1.3)), cOut = prog(t, 3.3, 3.8);
+  set($('cap1'), c1 * (1 - cOut), `translateY(${(1 - c1) * 20}px)`); $('cap1').style.display = 'inline-block';
+  set($('cap2'), c2 * (1 - cOut), `translateY(${(1 - c2) * 20}px)`); $('cap2').style.display = 'inline-block';
+  $('cap').style.visibility = t < 3.9 ? 'visible' : 'hidden';
 
-  // ---- the sign: vowels jump out at 1.2 s, the consonants close ranks
-  const gone = ease(prog(t, 1.25, 1.75));
-  SIGN_L.forEach(l => { if (l.v) { l.s.style.opacity = 1 - prog(t, 1.2, 1.3); l.s.style.maxWidth = (l.w * (1 - gone)) + 'px'; l.s.style.overflow = 'visible'; } });
-  const flick = t > 1.3 && t < 2.2 ? (Math.sin(t * 47) > 0.2 ? 1 : 0.35) : 1;
-  SIGN.op = flick;
-  // ---- vowels: escape from the sign, giggle, then flee down the road ahead of the camera
+  // ---- vowels: lined up A E I O U Y, they tremble, then dash off one by one down the road
   VOW.forEach(v => {
-    const fromSign = v.i < 3, l = fromSign ? SIGN_L.filter(s => s.v)[v.i] : null;
-    const start = fromSign ? [l.cx, SIGN.y, SIGN.z + 30] : [[-800, 0, 800][v.i - 3], [-500, -300, -450][v.i - 3], -2300 - (v.i - 3) * 200];
-    const hover = [(-500 + v.i * 200) + Math.sin(t * 3 + v.ph) * 40, -560 + Math.cos(t * 4 + v.ph) * 40, -1700];
-    const lead = 1700 + 300 * Math.sin(t * 1.3 + v.ph) + v.i * 120;
-    const chase = [cx + Math.sin(t * 1.7 + v.ph) * 420 + (v.i - 2.5) * 120, -470 + Math.cos(t * 2.1 + v.ph) * 120, cz - lead];
-    const pDive = prog(t, 16.9 + v.i * 0.22, 17.5 + v.i * 0.22);          // into the phone screen
+    const row = [(v.i - 2.5) * 220, -230 + Math.sin(t * 2.2 + v.ph) * 18, ROW_Z];
+    const shake = prog(t, 1.4, 1.6) * (1 - prog(t, 2.0 + v.i * 0.12, 2.1 + v.i * 0.12));
+    row[0] += Math.sin(t * 70 + v.i) * 14 * shake; row[1] += Math.cos(t * 63 + v.i) * 10 * shake;
+    const lead = lerp(3800, 1650, ease(prog(t, 3.6, 6.6))) + 150 * Math.sin(t * 1.3 + v.ph);   // they race far ahead, then we catch up
+    const zc = cz - lead;
+    const chase = [roadX(zc) + (v.i - 2.5) * 260 + Math.sin(t * 1.9 + v.ph) * 40, -420 + Math.cos(t * 2.3 + v.ph) * 50 + (v.i % 2) * 110, zc];
+    const go = io(prog(t, 2.0 + v.i * 0.12, 3.0 + v.i * 0.12));
     const screen = [PHONE.x + (v.i - 2.5) * 60, PHONE.y - 230, PHONE.z + 20];
-    const a = ease(prog(t, 1.2, 2.0)), b = io(prog(t, 2.6, 3.6));
-    let p = start.map((s, k) => lerp(s, hover[k], fromSign ? a : ease(prog(t, 1.4 + (v.i - 3) * 0.15, 2.3))));
-    p = p.map((s, k) => lerp(s, chase[k], b));
+    let p = row.map((s, k) => lerp(s, chase[k], go));
     p = p.map((s, k) => lerp(s, screen[k], io(prog(t, 15.6 + v.i * 0.15, 16.9 + v.i * 0.22))));
-    v.x = p[0]; v.y = p[1]; v.z = p[2] + pDive * 0;
-    v.op = (fromSign ? 1 : ease(prog(t, 1.4 + (v.i - 3) * 0.15, 1.9 + (v.i - 3) * 0.15))) * (1 - pDive);
-    v.rot = `rotateZ(${Math.sin(t * 5 + v.ph) * 14}deg) scale(${lerp(1, 0.25, pDive)})`;
+    const pDive = prog(t, 16.9 + v.i * 0.22, 17.5 + v.i * 0.22);          // into the phone screen
+    v.x = p[0]; v.y = p[1]; v.z = p[2];
+    v.op = ease(prog(t, 0.1 + v.i * 0.08, 0.5 + v.i * 0.08)) * (1 - pDive);
+    const hop = Math.exp(-Math.pow((t - (2.0 + v.i * 0.12)) / 0.12, 2));  // a little jump before the dash
+    v.rot = `translateY(${-hop * 60}px) rotateZ(${Math.sin(t * 5 + v.ph) * 12}deg) scale(${lerp(1, 0.25, pDive) * (1 + 0.15 * hop)}, ${lerp(1, 0.25, pDive) * (1 - 0.1 * hop)})`;
   });
-  // ---- bats: a colony crosses the road towards the camera in the middle of the chase
-  BATS.forEach((b, i) => { const t0 = 6.2 + (i % 11) * 0.12 + (i > 10 ? 4.6 : 0), p = (t - t0) / 1.8;
+  // ---- bats: two colonies cross towards the camera during the chase
+  BATS.forEach((b, i) => { const t0 = 6.0 + (i % 11) * 0.12 + (i > 10 ? 4.8 : 0), p = (t - t0) / 1.8;
     if (p < 0 || p > 1) { b.op = 0; return; } b.op = 1;
-    const zz = camZ(t0) - 2600 + p * 2300; b.x = Math.cos(i * 2.4) * lerp(300, 900, p); b.y = -400 + Math.sin(i * 1.7) * 260 - p * 200; b.z = zz;
+    const zz = camZ(t0) - 2600 + p * 2300; b.x = roadX(zz) + Math.cos(i * 2.4) * lerp(300, 900, p); b.y = -400 + Math.sin(i * 1.7) * 260 - p * 200; b.z = zz;
     const w = Math.sin(t * (10 + i % 4) + b.ph); b.rot = `scale(${b.s})`;
     b.wl.setAttribute('transform', `rotate(${w * 28}) scale(1, ${0.55 + 0.45 * Math.abs(w)})`); b.wr.setAttribute('transform', `scale(-1,1) rotate(${w * 28}) scale(1, ${0.55 + 0.45 * Math.abs(w)})`); });
   PUMPS.forEach(o => { o.d.querySelector('.face').style.opacity = 0.75 + 0.25 * Math.sin(t * 13 + o.ph) * Math.sin(t * 7.3 + o.ph * 2); });
-  // ---- rings pulse; words flare as the camera reaches them
-  RINGS.forEach(r => { r.rot = `rotateZ(${t * 20}deg)`; });
-  WORDS.forEach(w => { const d = cz - w.z; w.rot = `rotateY(${clamp((d - 600) / 3000) * (w.x < 0 ? 20 : -20)}deg)`; });
+  RINGS.forEach(r => { r.rot = `rotateY(${-heading(r.z)}rad) rotateZ(${t * 20}deg)`; });
+  WORDS.forEach(w => { const d = cz - w.z; w.rot = `rotateY(${-yaw}rad) rotateY(${clamp((d - 600) / 3000) * (w.x - roadX(w.z) < 0 ? 20 : -20)}deg)`; });
   // ---- phone: the vowels land, the screen flashes and shows the found word
-  const land = prog(t, 16.9, 18.4);
   $('phF').style.opacity = Math.max(...[0, 1, 2, 3, 4, 5].map(i => Math.exp(-Math.pow((t - (17.5 + i * 0.22)) / 0.08, 2)))) * 0.9;
   $('phB').style.opacity = ease(prog(t, 18.3, 18.6));
   PHONE.rot = `rotateY(${lerp(-14, 0, prog(t, 14, 17.5))}deg)`;
@@ -263,10 +270,8 @@ window.render = (t) => {
   if (dive > 0) { const z0 = camZ(18.9); const zz = lerp(z0, PHONE.z + 140, dive);
     $('scene').style.transform = `translateZ(${P}px) rotateX(${lerp(pitch, 0, dive)}deg) translate3d(0px, ${-lerp(0, PHONE.y, dive)}px, ${-zz}px)`; }
   const czEff = dive > 0 ? lerp(camZ(18.9), PHONE.z + 140, dive) : cz;
-  OBJ.forEach(o => place(o, czEff, cx));
+  OBJ.forEach(o => place(o, czEff));
   $('flashAll').style.opacity = Math.exp(-Math.pow((t - 20.25) / 0.22, 2));
-  // speed lines feel: blur the near pumpkins a bit when fast
-
 
   // ---- end card 20.25–26
   const e = t >= 20.25; set($('end'), e ? 1 : 0);
@@ -278,7 +283,6 @@ window.render = (t) => {
     [['tw1', 22.0], ['tw2', 22.35]].forEach(([id, t0]) => { const p = spring(t - t0, 0.45, 0.6); set($(id), clamp(p * 1.5), `translateY(${(1 - p) * 40}px)`); });
     const st = spring(t - 23.0, 0.5, 0.75); set($('store'), clamp(st * 1.4), `translateY(${(1 - st) * 50}px)`);
     const tk = spring(t - 23.3, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
-    set($('happy'), ease(prog(t, 23.7, 24.1)));
   }
   return true;
 };
