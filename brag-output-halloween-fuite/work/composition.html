@@ -52,16 +52,28 @@
 #mark .v { color: #ffc35a; }
 #eline { position: absolute; left: 140px; width: 800px; top: 880px; height: 6px; border-radius: 3px; background: #ffe0b0; box-shadow: 0 0 16px 4px #ff8a1e, 0 0 50px 14px rgba(255,100,0,.5); transform-origin: 0 50%; }
 .tagw { position: absolute; left: 0; right: 0; text-align: center; font-family: "Fraunces", serif; font-weight: 900; font-size: 58px; color: #ffcf8a; text-shadow: 0 0 18px rgba(255,130,20,.9); white-space: nowrap; }
-#store { position: absolute; left: 0; right: 0; top: 1300px; display: flex; justify-content: center; align-items: center; gap: 30px; }
+#search { position: absolute; left: 90px; right: 90px; top: 1020px; height: 120px; border-radius: 30px; background: #1c1c1e; border: 2px solid rgba(255,255,255,.1);
+  display: flex; align-items: center; padding: 0 34px; gap: 22px; font-size: 56px; font-weight: 600; color: #fff; letter-spacing: 2px; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+#search em { font-style: normal; font-weight: 400; font-size: 44px; color: #8e8e93; letter-spacing: 0; position: absolute; left: 112px; }
+#caret { width: 4px; height: 60px; background: #0a84ff; border-radius: 2px; margin-left: -18px; }
+#result { position: absolute; left: 90px; right: 90px; top: 1180px; height: 190px; border-radius: 34px; background: rgba(28,28,30,.92); border: 2px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; padding: 0 30px; gap: 26px; color: #fff; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+#result img { width: 130px; height: 130px; border-radius: 30px; }
+#result .ri { flex: 1; } #result .ri b { display: block; font-size: 46px; } #result .ri small { font-size: 28px; color: #8e8e93; }
+#get { height: 70px; padding: 0 34px; border-radius: 35px; background: #2c2c2e; color: #0a84ff; font-size: 34px; font-weight: 700; display: flex; align-items: center; }
+#free { position: absolute; left: 0; right: 0; top: 1410px; text-align: center; font-family: "Fraunces", serif; font-weight: 900; font-size: 88px; color: #ffd36e; letter-spacing: 6px;
+  text-shadow: 0 0 30px rgba(255,150,30,.9), 0 0 80px rgba(255,100,0,.6); }
+#storeTag { position: absolute; left: 0; right: 0; top: 1540px; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 34px; font-weight: 600; color: rgba(255,255,255,.75); }
+#store { display: none; }
 #store img { width: 170px; height: 170px; border-radius: 38px; box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 0 40px rgba(255,130,20,.35); }
 #store .badge { height: 150px; padding: 0 44px 0 32px; border-radius: 32px; background: #000; border: 3px solid #a6a6a6; display: flex; align-items: center; gap: 18px; color: #fff; }
 #store .badge small { display: block; font-size: 32px; font-weight: 500; }
 #store .badge b { display: block; font-size: 62px; font-weight: 600; letter-spacing: -1px; line-height: 1.05; }
-#tiktok { position: absolute; left: 0; right: 0; top: 1520px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 52px; font-weight: 700; color: #fff; }
-#cap { position: absolute; left: 0; right: 0; top: 1420px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 86px; line-height: 1.1; color: #fff3e2;
+#tiktok { position: absolute; left: 0; right: 0; top: 1640px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 52px; font-weight: 700; color: #fff; }
+#cap { position: absolute; z-index: 5; left: 0; right: 0; top: 1420px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 86px; line-height: 1.1; color: #fff3e2;
   text-shadow: 0 0 30px rgba(255,140,30,.8), 0 4px 30px rgba(0,0,0,.9); }
-#cap b { font-weight: 400; color: #ffc35a; }
-#cap span, #cap b { position: absolute; left: 60px; right: 60px; top: 0; }
+#cap span { position: absolute; left: 40px; right: 40px; top: 0; }
+#cap span.g { color: #ffc35a; }
 .app { background: radial-gradient(500px 600px at 20% 25%, rgba(89,62,199,.55), rgba(89,62,199,0)), radial-gradient(500px 500px at 90% 85%, rgba(0,125,134,.45), rgba(0,125,134,0)), linear-gradient(#121426, #06070c) !important; color: #f4f5f8; }
 .app .sb { position: absolute; left: 44px; right: 44px; top: 30px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 600; }
 .app .isl { position: absolute; left: 50%; top: 18px; width: 150px; height: 44px; margin-left: -75px; border-radius: 22px; background: #000; }
@@ -92,14 +104,15 @@
     <svg id="skyline" viewBox="0 0 2600 420" preserveAspectRatio="none"></svg>
   </div>
   <div id="view"><div id="scene"></div></div>
-  <div id="cap"><span id="cap1">« Ahhh ! Les voyelles s’échappent ! »</span><b id="cap2">« Viens nous aider à retrouver les mots sans voyelles ! »</b></div>
+  <div id="cap"></div>
   <div id="flashAll"></div>
   <div id="end">
     <div id="emoon"></div>
     <div id="mark"></div><div id="eline"></div>
-    <div class="tagw" id="tw1" style="top:960px">Le mot du jour.</div>
-    <div class="tagw" id="tw2" style="top:1050px">Sans ses voyelles.</div>
-    <div id="store"><img src="appicon.png"><div class="badge"><svg width="74" height="74" viewBox="0 0 24 24"><path id="apple" fill="#fff"/></svg><div><small>Disponible sur</small><b>l’App Store</b></div></div></div>
+    <div id="search"><svg width="44" height="44" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#8e8e93" stroke-width="2.4"/><path d="M15.5 15.5 L21 21" stroke="#8e8e93" stroke-width="2.6" stroke-linecap="round"/></svg><span id="typed"></span><i id="caret"></i><em id="ph">Jeux, apps, articles…</em></div>
+    <div id="result"><img src="appicon.png"><div class="ri"><b>CNSNN</b><small>Jeu de mots</small></div><div id="get">Obtenir</div></div>
+    <div id="free">GRATUIT</div>
+    <div id="storeTag"><svg width="34" height="34" viewBox="0 0 24 24"><path id="apple" fill="#fff"/></svg>App Store</div>
     <div id="tiktok"><svg width="58" height="58" viewBox="0 0 24 24"><path class="tt" fill="#25F4EE" transform="translate(-0.7,-0.5)"/><path class="tt" fill="#FE2C55" transform="translate(0.7,0.5)"/><path class="tt" fill="#fff"/></svg>@jeuCNSNN</div>
   </div>
   <div id="vig"></div>
@@ -187,7 +200,7 @@ for (let z = -1200; z > -16000; z -= 1300) side(rnd() * 600 - 300, GROUND - 120,
 const RINGS = [-8300, -12900].map(z => side(0, -60, z, '', 'ring', { near: 350 }));
 // floating lines the camera passes, like the reference
 const WORDS = [['Suis-les…', -3200, -150, -40, 190], ['ne les perds pas !', -4400, 100, -20, 160],
-  ['Chaque jour,', -9500, 150, -40, 170], ['un mot', -10800, -150, -20, 190], ['sans voyelles.', -12100, 60, 0, 160]]
+  ['Un mot,', -9500, 150, -40, 190], ['sans voyelles…', -10800, -150, -20, 170], ['à toi de le trouver !', -12100, 60, 0, 150]]
   .map(([w, z, x, y, s]) => { const o = side(x, y, z, w, 'fly', { near: 420, far: 1100, fw: 700 }); o.d.style.fontSize = s + 'px'; return o; });
 // the phone at the end of the road
 const KB = ['AZERTYUIOP', 'QSDFGHJKLM', 'WXCVBN'].map(r => `<div class="kr">${[...r].map(c => `<i class="${'AEIOUY'.includes(c) ? 'g' : ''}">${c}</i>`).join('')}</div>`).join('');
@@ -198,8 +211,8 @@ const PHONE = add(`<div class="scr app"><div class="isl"></div><div class="sb"><
 // HALLOWEEN on the screen: consonants shown, gold slots where the vowels go
 const HW = [...'HALLOWEEN'].map(c => { const sp = document.createElement('span'); const v = 'AEIOU'.includes(c);
   sp.innerHTML = v ? `<b style="font-weight:400">${c}</b><i></i>` : c; if (v) sp.className = 'v'; $('hw').appendChild(sp); return { sp, c, v }; });
-const SLOT = { 0: 1, 3: 4, 1: 6, 6: 7 };   // vowel index (A E I O U Y E2) -> letter index in HALLOWEEN
-const LAND = { 0: 18.6, 3: 18.9, 1: 19.2, 6: 19.45 };
+const SLOT = { 0: 1, 1: 4, 2: 6, 3: 7 };   // runaway vowel (A O E E) -> its own letter in HALLOWEEN
+const LAND = { 0: 18.6, 1: 18.9, 2: 19.2, 3: 19.45 };
 // bats
 const BAT_WING = 'M0 0 C -8 -16 -26 -22 -52 -14 C -46 -8 -44 -2 -44 4 C -38 -2 -30 -1 -26 5 C -22 -1 -14 -1 -10 6 Z';
 function makeBat(s) {
@@ -209,10 +222,10 @@ function makeBat(s) {
 }
 const BATS = Array.from({ length: 22 }, () => makeBat(1.4 + rnd() * 1.6));
 // the six runaway vowels, always in the same order
-// the six runaway vowels A E I O U Y, plus the second E (it splits off at the end) and CONSONNE's second O (it merges into the first)
-const VOW = ['A', 'E', 'I', 'O', 'U', 'Y', 'E', 'O'].map((c, i) => { const o = add(c, 'vow', 0, 0, 0, { near: 200, far: 20000 }); o.i = i; o.ph = i * 1.3; return o; });
-// the hook: the CONSONNE neon sign the vowels leave
-const SIGN = add('', 'neonTxt', 0, -250, -900, { near: 300, far: 20000 }); SIGN.d.style.fontSize = '300px';
+// the four runaway vowels of HALLOWEEN: A, O, E, E
+const VOW = ['A', 'O', 'E', 'E'].map((c, i) => { const o = add(c, 'vow', 0, 0, 0, { near: 200, far: 20000 }); o.i = i; o.ph = i * 1.7; return o; });
+// the hook: the HALLOWEEN neon sign the vowels leave
+const SIGN = add('', 'neonTxt', 0, -250, -900, { near: 300, far: 20000 }); SIGN.d.style.fontSize = '235px';
 
 // sky
 const stars = Array.from({ length: 260 }, () => ({ x: rnd() * 1080, y: rnd() * 980, r: 0.6 + rnd() * 1.8, ph: rnd() * 6.28, sp: 0.6 + rnd() * 2 }));
@@ -227,9 +240,9 @@ const stars = Array.from({ length: 260 }, () => ({ x: rnd() * 1080, y: rnd() * 9
 let OUT, SIGN_L;
 window.setup = async () => {
   await document.fonts.ready;
-  $('apple').setAttribute('d', APPLE); document.querySelectorAll('.tt').forEach(p => p.setAttribute('d', TIKTOK));
+  $('apple').setAttribute('d', APPLE); fitFont($('mark'), 'CONSONNE', 980, 200); document.querySelectorAll('.tt').forEach(p => p.setAttribute('d', TIKTOK));
   WORDS.forEach(o => { o.d.style.textShadow = extrude(10, 0.9, 1.3); });
-  SIGN_L = [...'CONSONNE'].map(c => { const sp = document.createElement('span'); sp.textContent = c; sp.style.display = 'inline-block'; SIGN.d.appendChild(sp); return { sp, c, v: 'OE'.includes(c) }; });
+  SIGN_L = [...'HALLOWEEN'].map(c => { const sp = document.createElement('span'); sp.textContent = c; sp.style.display = 'inline-block'; SIGN.d.appendChild(sp); return { sp, c, v: 'AOE'.includes(c) }; });
   SIGN.d.style.textShadow = extrude(10, 1, 1.4);
   const W = SIGN.d.getBoundingClientRect().width;
   SIGN_L.forEach(l => { l.w = l.sp.getBoundingClientRect().width; l.cx = l.sp.offsetLeft + l.w / 2 - W / 2; });
@@ -245,9 +258,9 @@ window.setup = async () => {
 // ================================================================ camera
 // steady cruise with short ramps, so every floating line stays on screen about a second
 const cruise = (x, r = 0.12) => { x = clamp(x); const v = 1 / (1 - r); return x < r ? v * x * x / (2 * r) : x > 1 - r ? 1 - v * (1 - x) * (1 - x) / (2 * r) : v * (x - r / 2); };
-const camZ = t => kf([[0, 900], [4.4, 860], [17.9, -14250], [19.0, -15150]], t, cruise);
+const camZ = t => kf([[0, 900], [4.4, 860], [17.9, -14250], [19.0, -15150]], t, cruise);   // the end card waits for the voice: see the dive at 20.95
 window.passTimes = () => { const zs = { rings: RINGS.map(r => r.z), words: WORDS.map(w => w.z), carved: OBJ.filter(o => o.d.classList.contains('carve')).map(o => o.z) }, out = {};
-  for (const k in zs) out[k] = zs[k].map(z => { for (let t = 0; t < 28; t += 1 / 60) if (camZ(t) <= z) return +t.toFixed(2); return null; }); return out; };
+  for (const k in zs) out[k] = zs[k].map(z => { for (let t = 0; t < 30; t += 1 / 60) if (camZ(t) <= z) return +t.toFixed(2); return null; }); return out; };
 
 // ================================================================ frame
 window.render = (t) => {
@@ -266,55 +279,41 @@ window.render = (t) => {
   const grow = 1 + 0.18 * prog(cz, 500, -14500);
   $('skyline').style.top = (hz - 340) + 'px'; $('skyline').style.transform = `translateX(${sx}px) rotate(${roll}deg) scale(${grow})`;
   $('horizon').style.top = (hz - 180) + 'px'; $('groundbg').style.top = (hz - 6) + 'px'; $('groundbg').style.transform = `rotate(${roll}deg)`;
-  // subtitles of the voice-over
-  const c1 = ease(prog(t, 1.7, 2.0)) * (1 - prog(t, 3.5, 3.75)), c2 = ease(prog(t, 3.8, 4.1)) * (1 - prog(t, 6.3, 6.7));
-  set($('cap1'), c1, `translateY(${(1 - ease(prog(t, 1.7, 2.0))) * 20}px)`); set($('cap2'), c2, `translateY(${(1 - ease(prog(t, 3.8, 4.1))) * 20}px)`);
-  $('cap').style.visibility = t < 6.8 ? 'visible' : 'hidden';
+  // subtitles of the voice-over (times = where each line sits in the video, see voice.py)
+  const CAPS = [['« Ahhh ! Les voyelles s’échappent ! »', 0.8, 2.8], ['« Chaque jour, un nouveau mot… sans ses voyelles. »', 3.3, 6.5],
+    ['« Viens nous aider à les retrouver ! »', 6.7, 8.3], ['« Regarde ! Elles retrouvent leur place ! »', 17.0, 19.0], ['« Halloween ! »', 19.75, 20.9, 'g'],
+    ['« Pour jouer, tape C. N. S. N. N. sur l’App Store. »', 22.4, 25.4], ['« C’est juste le mot consonne… sans ses voyelles ! »', 25.7, 28.2], ['« Et c’est gratuit ! »', 28.3, 29.5, 'g']];
+  if (!$('cap').children.length) CAPS.forEach(([txt, , , cl]) => { const sp = document.createElement('span'); sp.textContent = txt; if (cl) sp.className = cl; $('cap').appendChild(sp); });
+  CAPS.forEach(([, a, b], j) => { const k = ease(prog(t, a, a + 0.25)) * (1 - prog(t, b, b + 0.2)); set($('cap').children[j], k, `translateY(${(1 - ease(prog(t, a, a + 0.25))) * 20}px)`); });
+  $('cap').style.top = t > 22 ? '1760px' : '1420px'; $('cap').style.fontSize = t > 22 ? '50px' : '74px';
 
-  // ---- the hook: CONSONNE lights up, A I U Y fly in, the sign loses its O, O and E, which join them
+  // ---- the hook: HALLOWEEN is lit; on "Ahhh !" its A, O, E, E jump out: HLLWN
   const lerp3 = (a, b, k) => a.map((v, j) => lerp(v, b[j], k));
-  const POP = { 3: [1, 1.8], 7: [4, 1.95], 1: [7, 2.1] };            // vowel -> [letter of CONSONNE, time it jumps out]
-  const ENTER = { 0: [[-1500, -1000, -500], 0.45], 2: [[0, -1700, -1500], 0.65], 4: [[1500, -800, -600], 0.85], 5: [[1300, 300, -400], 1.05] };
-  SIGN_L.forEach((l, j) => { const pop = Object.values(POP).find(([k]) => k === j); if (pop) l.sp.style.opacity = t < pop[1] ? 1 : 0;
-    if (l.v) { l.sp.style.maxWidth = (l.w * (1 - ease(prog(t, 2.4, 2.9)))) + 'px'; l.sp.style.overflow = 'visible'; } });
-  SIGN.op = t < 0.25 ? (Math.sin(t * 90) > 0 ? 1 : 0.2) : t > 1.9 && t < 2.9 ? (Math.sin(t * 47) > 0.1 ? 1 : 0.35) : 1;
+  const POP = [[1, 1.05], [4, 1.2], [6, 1.35], [7, 1.5]];            // vowel -> [letter of HALLOWEEN, time it jumps out]
+  SIGN_L.forEach((l, j) => { const pop = POP.find(([k]) => k === j); if (pop) l.sp.style.opacity = t < pop[1] ? 1 : 0;
+    if (l.v) { l.sp.style.maxWidth = (l.w * (1 - ease(prog(t, 1.9, 2.4)))) + 'px'; l.sp.style.overflow = 'visible'; } });
+  SIGN.op = t < 0.25 ? (Math.sin(t * 90) > 0 ? 1 : 0.2) : t > 1.1 && t < 2.4 ? (Math.sin(t * 47) > 0.1 ? 1 : 0.35) : 1;
   VOW.forEach(v => {
-    const i = v.i, slot = i === 7 ? 3 : i === 6 ? 1 : i;
-    const row = [(slot - 2.5) * 220, -600 + Math.sin(t * 2.2 + slot * 1.3) * 18, -900];
-    const shake = prog(t, 3.0, 3.15) * (1 - prog(t, 3.6 + slot * 0.12, 3.7 + slot * 0.12));
+    const i = v.i;
+    const row = [(i - 1.5) * 250, -600 + Math.sin(t * 2.2 + i * 1.7) * 18, -900];
+    const shake = prog(t, 2.7, 2.85) * (1 - prog(t, 3.3 + i * 0.15, 3.4 + i * 0.15));
     row[0] += Math.sin(t * 70 + i) * 14 * shake; row[1] += Math.cos(t * 63 + i) * 10 * shake;
-    let pos = row, op = 1, sc = 1;
-    if (ENTER[i]) { const [from, t0] = ENTER[i]; const k = spring(t - t0, 0.55, 0.72); pos = lerp3(from, row, k); op = clamp((t - t0) * 4); }
-    if (POP[i]) { const [j, t0] = POP[i]; const l = SIGN_L[j]; const k = io(prog(t, t0, t0 + 0.7));
-      pos = lerp3([l.cx, SIGN.y, SIGN.z + 20], row, k); pos[1] -= Math.sin(Math.PI * k) * 260; op = t >= t0 ? 1 : 0; }
-    if (i === 7) op *= 1 - prog(t, 2.62, 2.7);                                   // the second O melts into the first
-    if (i === 3) sc *= 1 + 0.35 * Math.exp(-Math.pow((t - 2.68) / 0.08, 2));
-    if (i === 6) op = 0;
+    const [j, t0] = POP[i], l = SIGN_L[j], kp = io(prog(t, t0, t0 + 0.6));
+    let pos = lerp3([l.cx, SIGN.y, SIGN.z + 20], row, kp); pos[1] -= Math.sin(Math.PI * kp) * 280;
+    let op = t >= t0 ? 1 : 0, sc = 1;
     // the escape: one by one they dash far down the road, then the camera catches up
-    const lead = lerp(3800, 1650, ease(prog(t, 5.2, 8.2))) + 150 * Math.sin(t * 1.3 + slot * 1.3);
+    const lead = lerp(3800, 1650, ease(prog(t, 5.2, 8.2))) + 150 * Math.sin(t * 1.3 + i * 1.7);
     const zc = cz - lead;
-    const chase = [roadX(zc) + (slot - 2.5) * 260 + Math.sin(t * 1.9 + slot) * 40, -420 + Math.cos(t * 2.3 + slot) * 50 + (slot % 2) * 110, zc];
-    pos = lerp3(pos, chase, io(prog(t, 3.6 + slot * 0.12, 4.6 + slot * 0.12)));
-    // the end: A, O and E dive into their slots on the phone; E splits for the second E; I, U, Y bounce off
-    if (LAND[i] !== undefined || i === 1) {
-      const k = i === 6 ? 6 : i, h = HW[SLOT[k]], land = LAND[k];
-      const target = [PHONE.x - 280 + h.lx, PHONE.y - 590 + h.ly, PHONE.z + 6];
-      if (i === 6) { const e1 = HW[SLOT[1]]; const from = [PHONE.x - 280 + e1.lx, PHONE.y - 590 + e1.ly, PHONE.z + 6];
-        pos = lerp3(from, target, io(prog(t, LAND[1], land))); op = t >= LAND[1] - 0.02 ? 1 : 0; sc = 0.5; }
-      else { const k2 = io(prog(t, land - 1.6, land)); pos = lerp3(pos, target, k2); sc *= lerp(1, 0.5, k2); }
-      op *= 1 - prog(t, land, land + 0.08);
-    } else if (i !== 7) {
-      const spot = { 2: [-420, -470], 4: [420, -330], 5: [-400, 60] }[i];   // beside the phone, where the camera sees them
-      const near = [PHONE.x + spot[0] * 0.3, PHONE.y - 650, PHONE.z + 60];
-      const k1 = io(prog(t, 17.0, 18.4)), k2 = spring(t - 18.4, 0.5, 0.6);
-      pos = lerp3(lerp3(pos, near, k1), [PHONE.x + spot[0] + Math.sin(t * 3 + i) * 20, PHONE.y + spot[1] + Math.cos(t * 3.4 + i) * 16, PHONE.z + 60], clamp(k2, 0, 1.2));
-      sc *= lerp(1, 0.55, k1);
-    }
-    v.x = pos[0]; v.y = pos[1]; v.z = pos[2];
-    v.op = op * (1 - prog(t, 20.7, 21.1));
-    const hop = Math.exp(-Math.pow((t - (3.6 + slot * 0.12)) / 0.12, 2));  // a little jump before the dash
-    const tilt = LAND[i] !== undefined || i === 6 ? Math.sin(t * 5 + i) * 12 * (1 - prog(t, 17.5, 18.3)) : Math.sin(t * 5 + i) * 12;
-    v.rot = `translateY(${-hop * 60}px) rotateZ(${tilt}deg) scale(${sc * (1 + 0.15 * hop)}, ${sc * (1 - 0.1 * hop)})`;
+    const chase = [roadX(zc) + (i - 1.5) * 300 + Math.sin(t * 1.9 + i) * 40, -420 + Math.cos(t * 2.3 + i) * 50 + (i % 2) * 110, zc];
+    pos = lerp3(pos, chase, io(prog(t, 3.3 + i * 0.15, 4.3 + i * 0.15)));
+    // the end: each one dives back into its own slot of HLLWN on the phone
+    const h = HW[SLOT[i]], land = LAND[i];
+    const target = [PHONE.x - 280 + h.lx, PHONE.y - 590 + h.ly, PHONE.z + 6];
+    const k2 = io(prog(t, land - 1.6, land)); pos = lerp3(pos, target, k2); sc *= lerp(1, 0.5, k2);
+    op *= 1 - prog(t, land, land + 0.08);
+    v.x = pos[0]; v.y = pos[1]; v.z = pos[2]; v.op = op;
+    const hop = Math.exp(-Math.pow((t - (3.3 + i * 0.15)) / 0.12, 2));  // a little jump before the dash
+    v.rot = `translateY(${-hop * 60}px) rotateZ(${Math.sin(t * 5 + i) * 12 * (1 - prog(t, 17.5, 18.3))}deg) scale(${sc * (1 + 0.15 * hop)}, ${sc * (1 - 0.1 * hop)})`;
   });
   // the word on the phone fills in as each vowel lands
   HW.forEach((h, j) => { if (!h.v) return; const k = Object.keys(SLOT).find(q => SLOT[q] === j); const pr = clamp(spring(t - LAND[k], 0.4, 0.6), 0, 1.2);
@@ -334,23 +333,30 @@ window.render = (t) => {
   WORDS.forEach(w => { const d = cz - w.z; w.rot = `rotateY(${-yaw}rad) rotateY(${clamp((d - 600) / 3000) * (w.x - roadX(w.z) < 0 ? 20 : -20)}deg)`; });
   PHONE.rot = `rotateY(${lerp(-14, 0, prog(t, 14, 17))}deg)`;
   // ---- dive into the screen, flash, end card
-  const dive = io(prog(t, 20.6, 21.8));
-  if (dive > 0) { const z0 = camZ(20.5); const zz = lerp(z0, PHONE.z + 140, dive);
+  const dive = io(prog(t, 20.95, 22.1));
+  if (dive > 0) { const z0 = camZ(20.9); const zz = lerp(z0, PHONE.z + 140, dive);
     $('scene').style.transform = `translateZ(${P}px) rotateX(${lerp(pitch, 0, dive)}deg) translate3d(0px, ${-lerp(0, PHONE.y - 590 + HW[4].ly, dive)}px, ${-zz}px)`; }
-  const czEff = dive > 0 ? lerp(camZ(20.5), PHONE.z + 140, dive) : cz;
+  const czEff = dive > 0 ? lerp(camZ(20.9), PHONE.z + 140, dive) : cz;
   OBJ.forEach(o => place(o, czEff));
-  $('flashAll').style.opacity = Math.exp(-Math.pow((t - 21.85) / 0.22, 2));
+  $('flashAll').style.opacity = Math.exp(-Math.pow((t - 22.15) / 0.22, 2));
 
-  // ---- end card 21.85–27.6
-  const e = t >= 21.85; set($('end'), e ? 1 : 0);
+  // ---- end card 22.15–30: CNSNN, typed in the App Store search; "consonne without its vowels"; free
+  const e = t >= 22.15; set($('end'), e ? 1 : 0);
   if (e) {
-    const mk = ease(prog(t, 21.9, 22.4)); set($('mark'), mk, `scale(${lerp(1.25, 1, mk)})`);
-    reveal(OUT, i => spring(t - (22.6 + i * 0.18)));
-    $('eline').style.transform = `scaleX(${io(prog(t, 22.8, 23.5))})`;
-    $('emoon').style.transform = `translateY(${lerp(80, 0, ease(prog(t, 21.9, 22.9)))}px)`;
-    [['tw1', 23.6], ['tw2', 23.95]].forEach(([id, t0]) => { const p = spring(t - t0, 0.45, 0.6); set($(id), clamp(p * 1.5), `translateY(${(1 - p) * 40}px)`); });
-    const st = spring(t - 24.6, 0.5, 0.75); set($('store'), clamp(st * 1.4), `translateY(${(1 - st) * 50}px)`);
-    const tk = spring(t - 24.9, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
+    const mk = ease(prog(t, 22.2, 22.7)); set($('mark'), mk, `scale(${lerp(1.25, 1, mk)})`);
+    reveal(OUT, i => spring(t - (25.9 + i * 0.2)));                  // on "le mot consonne", the vowels drop in
+    $('eline').style.transform = `scaleX(${io(prog(t, 22.6, 23.3))})`;
+    $('emoon').style.transform = `translateY(${lerp(80, 0, ease(prog(t, 22.2, 23.2)))}px)`;
+    const sb = spring(t - 22.7, 0.5, 0.75); set($('search'), clamp(sb * 1.4), `translateY(${(1 - sb) * 40}px)`);
+    const typed = 'CNSNN'.slice(0, Math.max(0, Math.min(5, Math.floor((t - 23.3) / 0.28) + 1)));   // typed with the spelling
+    $('typed').textContent = typed; $('ph').style.opacity = typed ? 0 : 1;
+    $('caret').style.opacity = Math.floor(t * 2.2) % 2 || (t > 23.2 && t < 24.8) ? 1 : 0;
+    const rs = spring(t - 24.75, 0.5, 0.7); set($('result'), clamp(rs * 1.4), `translateY(${(1 - rs) * 40}px)`);
+    const fr = spring(t - 28.3, 0.45, 0.55); set($('free'), clamp(fr * 1.5), `scale(${lerp(0.6, 1, clamp(fr))})`);
+    const pulse = 1 + 0.08 * Math.exp(-Math.pow((t - 28.4) / 0.15, 2)); $('get').style.transform = `scale(${pulse})`;
+    $('get').style.background = t > 28.3 ? '#0a84ff' : '#2c2c2e'; $('get').style.color = t > 28.3 ? '#fff' : '#0a84ff';
+    set($('storeTag'), ease(prog(t, 25.0, 25.4)));
+    const tk = spring(t - 25.2, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
   }
   return true;
 };
