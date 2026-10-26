@@ -1,0 +1,17 @@
+VOIX OFF — « La nuit où les voyelles ont disparu »
+À générer d'un seul bloc dans ElevenLabs (modèle Eleven v3, stabilité « Natural »), puis m'envoyer le fichier.
+
+Placement dans la vidéo :
+  1,7 s → « Ahhh ! Les voyelles s'échappent ! »            (les O et le E sautent hors de CONSONNE)
+  3,8 s → « Viens nous aider à retrouver les mots sans voyelles ! »   (elles filent au loin)
+
+Texte à copier :
+
+[panicked] Ahhh ! Les voyelles s'échappent !
+[long pause]
+[excited] Viens nous aider à retrouver les mots sans voyelles !
+
+Variante plus « conte » :
+[whispers] Cette nuit… [gasps] Ahhh ! Les voyelles s'échappent !
+[long pause]
+[playful] Viens nous aider à retrouver les mots sans voyelles !

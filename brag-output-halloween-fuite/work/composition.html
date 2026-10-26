@@ -61,6 +61,24 @@
 #cap { position: absolute; left: 0; right: 0; top: 1420px; text-align: center; font-family: "Instrument Serif", serif; font-style: italic; font-size: 86px; line-height: 1.1; color: #fff3e2;
   text-shadow: 0 0 30px rgba(255,140,30,.8), 0 4px 30px rgba(0,0,0,.9); }
 #cap b { font-weight: 400; color: #ffc35a; }
+#cap span, #cap b { position: absolute; left: 60px; right: 60px; top: 0; }
+.app { background: radial-gradient(500px 600px at 20% 25%, rgba(89,62,199,.55), rgba(89,62,199,0)), radial-gradient(500px 500px at 90% 85%, rgba(0,125,134,.45), rgba(0,125,134,0)), linear-gradient(#121426, #06070c) !important; color: #f4f5f8; }
+.app .sb { position: absolute; left: 44px; right: 44px; top: 30px; display: flex; justify-content: space-between; font-size: 24px; font-weight: 600; }
+.app .isl { position: absolute; left: 50%; top: 18px; width: 150px; height: 44px; margin-left: -75px; border-radius: 22px; background: #000; }
+.app .hd { position: absolute; left: 0; right: 0; top: 110px; text-align: center; }
+.app .hd b { display: block; font-size: 27px; } .app .hd small { font-size: 19px; color: rgba(244,245,248,.56); }
+.app .hw { position: absolute; left: 0; right: 0; top: 250px; text-align: center; font-family: "Instrument Serif", serif; font-size: 104px; line-height: 1; white-space: nowrap; }
+.app .hw span { display: inline-block; position: relative; text-align: center; vertical-align: bottom; }
+.app .hw .v { color: #ffc65a; text-shadow: 0 0 24px rgba(255,198,90,.7); }
+.app .hw .v i { position: absolute; left: 6%; right: 6%; bottom: 10px; height: 7px; border-radius: 4px; background: #ffc65a; box-shadow: 0 0 14px rgba(255,198,90,.9); }
+.app .rule { position: absolute; left: 232px; width: 64px; height: 3px; top: 400px; background: rgba(244,245,248,.35); }
+.app .hint { position: absolute; left: 30px; right: 30px; top: 430px; text-align: center; font-size: 19px; color: rgba(244,245,248,.56); }
+.app .ans { position: absolute; left: 60px; right: 60px; top: 600px; padding-bottom: 14px; text-align: center; border-bottom: 2px solid rgba(255,255,255,.16); font-family: "Instrument Serif", serif; font-style: italic; font-size: 38px; color: rgba(244,245,248,.5); }
+.app .kb { position: absolute; left: 18px; right: 18px; bottom: 60px; padding: 18px 10px; border-radius: 34px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+.app .kr { display: flex; justify-content: center; gap: 7px; margin: 9px 0; }
+.app .kr i { width: 41px; height: 58px; border-radius: 10px; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 25px; font-weight: 600; }
+.app .kr i.g { background: linear-gradient(#ffd673, #f6b84d); color: #1a1406; }
+.app .val { margin: 14px 40px 4px; height: 66px; border-radius: 33px; background: linear-gradient(#ffd673, #f6b84d); color: #1a1406; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; }
 #vig { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55)); pointer-events: none; }
 </style>
 </head>
@@ -74,7 +92,7 @@
     <svg id="skyline" viewBox="0 0 2600 420" preserveAspectRatio="none"></svg>
   </div>
   <div id="view"><div id="scene"></div></div>
-  <div id="cap"><span id="cap1">Cette nuit,</span><br><b id="cap2">les voyelles se sont échappées…</b></div>
+  <div id="cap"><span id="cap1">« Ahhh ! Les voyelles s’échappent ! »</span><b id="cap2">« Viens nous aider à retrouver les mots sans voyelles ! »</b></div>
   <div id="flashAll"></div>
   <div id="end">
     <div id="emoon"></div>
@@ -168,11 +186,20 @@ for (let z = -1200; z > -16000; z -= 1300) side(rnd() * 600 - 300, GROUND - 120,
 // neon rings to fly through
 const RINGS = [-8300, -12900].map(z => side(0, -60, z, '', 'ring', { near: 350 }));
 // floating lines the camera passes, like the reference
-const WORDS = [['Vite,', -2900, -150, -40, 190], ['rattrape-les !', -4100, 120, -20, 170],
-  ['Sans elles…', -9500, 150, -40, 170], ['plus rien', -10800, -150, -20, 170], ['n’a de sens.', -12100, 60, 0, 160]]
+const WORDS = [['Suis-les…', -3200, -150, -40, 190], ['ne les perds pas !', -4400, 100, -20, 160],
+  ['Chaque jour,', -9500, 150, -40, 170], ['un mot', -10800, -150, -20, 190], ['sans voyelles.', -12100, 60, 0, 160]]
   .map(([w, z, x, y, s]) => { const o = side(x, y, z, w, 'fly', { near: 420, far: 1100, fw: 700 }); o.d.style.fontSize = s + 'px'; return o; });
 // the phone at the end of the road
-const PHONE = add(`<div class="scr"><img id="phA" src="img/game_slots.png"><img id="phB" src="img/game_result.png"><div class="flash" id="phF"></div></div>`, 'phone', 0, GROUND - 640, -16300, { near: 150, far: 20000 });
+const KB = ['AZERTYUIOP', 'QSDFGHJKLM', 'WXCVBN'].map(r => `<div class="kr">${[...r].map(c => `<i class="${'AEIOUY'.includes(c) ? 'g' : ''}">${c}</i>`).join('')}</div>`).join('');
+const PHONE = add(`<div class="scr app"><div class="isl"></div><div class="sb"><span>20:31</span><span>●●● ▮</span></div>
+  <div class="hd"><b>Mot du jour</b><small>Général · Facile</small></div><div class="hw" id="hw"></div><div class="rule"></div>
+  <div class="hint">Chrono officiel. 20 essais pour trouver le mot.</div><div class="ans">votre réponse</div>
+  <div class="kb">${KB}<div class="val">Valider</div></div><div class="flash" id="phF"></div></div>`, 'phone', 0, GROUND - 640, -16300, { near: 150, far: 20000 });
+// HALLOWEEN on the screen: consonants shown, gold slots where the vowels go
+const HW = [...'HALLOWEEN'].map(c => { const sp = document.createElement('span'); const v = 'AEIOU'.includes(c);
+  sp.innerHTML = v ? `<b style="font-weight:400">${c}</b><i></i>` : c; if (v) sp.className = 'v'; $('hw').appendChild(sp); return { sp, c, v }; });
+const SLOT = { 0: 1, 3: 4, 1: 6, 6: 7 };   // vowel index (A E I O U Y E2) -> letter index in HALLOWEEN
+const LAND = { 0: 18.6, 3: 18.9, 1: 19.2, 6: 19.45 };
 // bats
 const BAT_WING = 'M0 0 C -8 -16 -26 -22 -52 -14 C -46 -8 -44 -2 -44 4 C -38 -2 -30 -1 -26 5 C -22 -1 -14 -1 -10 6 Z';
 function makeBat(s) {
@@ -182,7 +209,10 @@ function makeBat(s) {
 }
 const BATS = Array.from({ length: 22 }, () => makeBat(1.4 + rnd() * 1.6));
 // the six runaway vowels, always in the same order
-const VOW = ['A', 'E', 'I', 'O', 'U', 'Y'].map((c, i) => { const o = add(c, 'vow', 0, 0, 0, { near: 200, far: 20000 }); o.i = i; o.ph = i * 1.3; return o; });
+// the six runaway vowels A E I O U Y, plus the second E (it splits off at the end) and CONSONNE's second O (it merges into the first)
+const VOW = ['A', 'E', 'I', 'O', 'U', 'Y', 'E', 'O'].map((c, i) => { const o = add(c, 'vow', 0, 0, 0, { near: 200, far: 20000 }); o.i = i; o.ph = i * 1.3; return o; });
+// the hook: the CONSONNE neon sign the vowels leave
+const SIGN = add('', 'neonTxt', 0, -250, -900, { near: 300, far: 20000 }); SIGN.d.style.fontSize = '300px';
 
 // sky
 const stars = Array.from({ length: 260 }, () => ({ x: rnd() * 1080, y: rnd() * 980, r: 0.6 + rnd() * 1.8, ph: rnd() * 6.28, sp: 0.6 + rnd() * 2 }));
@@ -194,11 +224,20 @@ const stars = Array.from({ length: 260 }, () => ({ x: rnd() * 1080, y: rnd() * 9
   $('skyline').innerHTML = s + '<path d="M0 330 L2600 330 L2600 420 L0 420 Z" fill="#0a0414"/>'; })();
 
 // ================================================================ setup
-let OUT;
+let OUT, SIGN_L;
 window.setup = async () => {
   await document.fonts.ready;
   $('apple').setAttribute('d', APPLE); document.querySelectorAll('.tt').forEach(p => p.setAttribute('d', TIKTOK));
   WORDS.forEach(o => { o.d.style.textShadow = extrude(10, 0.9, 1.3); });
+  SIGN_L = [...'CONSONNE'].map(c => { const sp = document.createElement('span'); sp.textContent = c; sp.style.display = 'inline-block'; SIGN.d.appendChild(sp); return { sp, c, v: 'OE'.includes(c) }; });
+  SIGN.d.style.textShadow = extrude(10, 1, 1.4);
+  const W = SIGN.d.getBoundingClientRect().width;
+  SIGN_L.forEach(l => { l.w = l.sp.getBoundingClientRect().width; l.cx = l.sp.offsetLeft + l.w / 2 - W / 2; });
+  // where each vowel ends on the phone screen, in the phone's own pixels, once the word is complete
+  HW.forEach(h => { h.w = h.sp.getBoundingClientRect().width; });
+  const local = el => { let x = 0, y = 0; for (let e = el; e && !e.classList.contains('phone'); e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; } return [x, y]; };
+  HW.forEach(h => { const [x, y] = local(h.sp); h.lx = x + h.w / 2 + 16; h.ly = y + h.sp.offsetHeight * 0.55 + 16; });
+  HW.forEach(h => { if (h.v) { h.dash = 52; } });
   fitFont($('mark'), 'CONSONNE', 980, 200); OUT = buildWord($('mark'), 'CONSONNE'); measure(OUT); $('mark').style.textShadow = extrude(14, 1);
   return true;
 };
@@ -206,17 +245,16 @@ window.setup = async () => {
 // ================================================================ camera
 // steady cruise with short ramps, so every floating line stays on screen about a second
 const cruise = (x, r = 0.12) => { x = clamp(x); const v = 1 / (1 - r); return x < r ? v * x * x / (2 * r) : x > 1 - r ? 1 - v * (1 - x) * (1 - x) / (2 * r) : v * (x - r / 2); };
-const camZ = t => kf([[0, 900], [2.8, 500], [16.3, -14250], [17.6, -14500]], t, cruise);
+const camZ = t => kf([[0, 900], [4.4, 860], [17.9, -14250], [19.0, -15150]], t, cruise);
 window.passTimes = () => { const zs = { rings: RINGS.map(r => r.z), words: WORDS.map(w => w.z), carved: OBJ.filter(o => o.d.classList.contains('carve')).map(o => o.z) }, out = {};
-  for (const k in zs) out[k] = zs[k].map(z => { for (let t = 0; t < 26; t += 1 / 60) if (camZ(t) <= z) return +t.toFixed(2); return null; }); return out; };
+  for (const k in zs) out[k] = zs[k].map(z => { for (let t = 0; t < 28; t += 1 / 60) if (camZ(t) <= z) return +t.toFixed(2); return null; }); return out; };
 
 // ================================================================ frame
-const ROW_Z = -500;   // where the vowels wait at the start
 window.render = (t) => {
   const cz = camZ(t), cx = roadX(cz), cy = 0;
   const yaw = heading(cz - 900);                              // look into the bend ahead
   const roll = -yaw * 180 / Math.PI * 0.3;
-  const pitch = lerp(-13, -6, prog(t, 15, 17.2));            // negative = looking down at the road
+  const pitch = lerp(-13, 0, prog(t, 15.5, 18.5));            // negative = looking down at the road
   // CSS puts the eye at z = +perspective: move it onto the camera so that scale = P / distance
   $('scene').style.transform = `translateZ(${P}px) rotateZ(${roll}deg) rotateX(${pitch}deg) rotateY(${yaw}rad) translate3d(${-cx}px, ${-cy}px, ${-cz}px)`;
   // sky: slides sideways as the camera turns
@@ -228,32 +266,65 @@ window.render = (t) => {
   const grow = 1 + 0.18 * prog(cz, 500, -14500);
   $('skyline').style.top = (hz - 340) + 'px'; $('skyline').style.transform = `translateX(${sx}px) rotate(${roll}deg) scale(${grow})`;
   $('horizon').style.top = (hz - 180) + 'px'; $('groundbg').style.top = (hz - 6) + 'px'; $('groundbg').style.transform = `rotate(${roll}deg)`;
-  // opening caption
-  const c1 = ease(prog(t, 0.2, 0.6)), c2 = ease(prog(t, 0.8, 1.3)), cOut = prog(t, 3.3, 3.8);
-  set($('cap1'), c1 * (1 - cOut), `translateY(${(1 - c1) * 20}px)`); $('cap1').style.display = 'inline-block';
-  set($('cap2'), c2 * (1 - cOut), `translateY(${(1 - c2) * 20}px)`); $('cap2').style.display = 'inline-block';
-  $('cap').style.visibility = t < 3.9 ? 'visible' : 'hidden';
+  // subtitles of the voice-over
+  const c1 = ease(prog(t, 1.7, 2.0)) * (1 - prog(t, 3.5, 3.75)), c2 = ease(prog(t, 3.8, 4.1)) * (1 - prog(t, 6.3, 6.7));
+  set($('cap1'), c1, `translateY(${(1 - ease(prog(t, 1.7, 2.0))) * 20}px)`); set($('cap2'), c2, `translateY(${(1 - ease(prog(t, 3.8, 4.1))) * 20}px)`);
+  $('cap').style.visibility = t < 6.8 ? 'visible' : 'hidden';
 
-  // ---- vowels: lined up A E I O U Y, they tremble, then dash off one by one down the road
+  // ---- the hook: CONSONNE lights up, A I U Y fly in, the sign loses its O, O and E, which join them
+  const lerp3 = (a, b, k) => a.map((v, j) => lerp(v, b[j], k));
+  const POP = { 3: [1, 1.8], 7: [4, 1.95], 1: [7, 2.1] };            // vowel -> [letter of CONSONNE, time it jumps out]
+  const ENTER = { 0: [[-1500, -1000, -500], 0.45], 2: [[0, -1700, -1500], 0.65], 4: [[1500, -800, -600], 0.85], 5: [[1300, 300, -400], 1.05] };
+  SIGN_L.forEach((l, j) => { const pop = Object.values(POP).find(([k]) => k === j); if (pop) l.sp.style.opacity = t < pop[1] ? 1 : 0;
+    if (l.v) { l.sp.style.maxWidth = (l.w * (1 - ease(prog(t, 2.4, 2.9)))) + 'px'; l.sp.style.overflow = 'visible'; } });
+  SIGN.op = t < 0.25 ? (Math.sin(t * 90) > 0 ? 1 : 0.2) : t > 1.9 && t < 2.9 ? (Math.sin(t * 47) > 0.1 ? 1 : 0.35) : 1;
   VOW.forEach(v => {
-    const row = [(v.i - 2.5) * 220, -230 + Math.sin(t * 2.2 + v.ph) * 18, ROW_Z];
-    const shake = prog(t, 1.4, 1.6) * (1 - prog(t, 2.0 + v.i * 0.12, 2.1 + v.i * 0.12));
-    row[0] += Math.sin(t * 70 + v.i) * 14 * shake; row[1] += Math.cos(t * 63 + v.i) * 10 * shake;
-    const lead = lerp(3800, 1650, ease(prog(t, 3.6, 6.6))) + 150 * Math.sin(t * 1.3 + v.ph);   // they race far ahead, then we catch up
+    const i = v.i, slot = i === 7 ? 3 : i === 6 ? 1 : i;
+    const row = [(slot - 2.5) * 220, -600 + Math.sin(t * 2.2 + slot * 1.3) * 18, -900];
+    const shake = prog(t, 3.0, 3.15) * (1 - prog(t, 3.6 + slot * 0.12, 3.7 + slot * 0.12));
+    row[0] += Math.sin(t * 70 + i) * 14 * shake; row[1] += Math.cos(t * 63 + i) * 10 * shake;
+    let pos = row, op = 1, sc = 1;
+    if (ENTER[i]) { const [from, t0] = ENTER[i]; const k = spring(t - t0, 0.55, 0.72); pos = lerp3(from, row, k); op = clamp((t - t0) * 4); }
+    if (POP[i]) { const [j, t0] = POP[i]; const l = SIGN_L[j]; const k = io(prog(t, t0, t0 + 0.7));
+      pos = lerp3([l.cx, SIGN.y, SIGN.z + 20], row, k); pos[1] -= Math.sin(Math.PI * k) * 260; op = t >= t0 ? 1 : 0; }
+    if (i === 7) op *= 1 - prog(t, 2.62, 2.7);                                   // the second O melts into the first
+    if (i === 3) sc *= 1 + 0.35 * Math.exp(-Math.pow((t - 2.68) / 0.08, 2));
+    if (i === 6) op = 0;
+    // the escape: one by one they dash far down the road, then the camera catches up
+    const lead = lerp(3800, 1650, ease(prog(t, 5.2, 8.2))) + 150 * Math.sin(t * 1.3 + slot * 1.3);
     const zc = cz - lead;
-    const chase = [roadX(zc) + (v.i - 2.5) * 260 + Math.sin(t * 1.9 + v.ph) * 40, -420 + Math.cos(t * 2.3 + v.ph) * 50 + (v.i % 2) * 110, zc];
-    const go = io(prog(t, 2.0 + v.i * 0.12, 3.0 + v.i * 0.12));
-    const screen = [PHONE.x + (v.i - 2.5) * 60, PHONE.y - 230, PHONE.z + 20];
-    let p = row.map((s, k) => lerp(s, chase[k], go));
-    p = p.map((s, k) => lerp(s, screen[k], io(prog(t, 15.6 + v.i * 0.15, 16.9 + v.i * 0.22))));
-    const pDive = prog(t, 16.9 + v.i * 0.22, 17.5 + v.i * 0.22);          // into the phone screen
-    v.x = p[0]; v.y = p[1]; v.z = p[2];
-    v.op = ease(prog(t, 0.1 + v.i * 0.08, 0.5 + v.i * 0.08)) * (1 - pDive);
-    const hop = Math.exp(-Math.pow((t - (2.0 + v.i * 0.12)) / 0.12, 2));  // a little jump before the dash
-    v.rot = `translateY(${-hop * 60}px) rotateZ(${Math.sin(t * 5 + v.ph) * 12}deg) scale(${lerp(1, 0.25, pDive) * (1 + 0.15 * hop)}, ${lerp(1, 0.25, pDive) * (1 - 0.1 * hop)})`;
+    const chase = [roadX(zc) + (slot - 2.5) * 260 + Math.sin(t * 1.9 + slot) * 40, -420 + Math.cos(t * 2.3 + slot) * 50 + (slot % 2) * 110, zc];
+    pos = lerp3(pos, chase, io(prog(t, 3.6 + slot * 0.12, 4.6 + slot * 0.12)));
+    // the end: A, O and E dive into their slots on the phone; E splits for the second E; I, U, Y bounce off
+    if (LAND[i] !== undefined || i === 1) {
+      const k = i === 6 ? 6 : i, h = HW[SLOT[k]], land = LAND[k];
+      const target = [PHONE.x - 280 + h.lx, PHONE.y - 590 + h.ly, PHONE.z + 6];
+      if (i === 6) { const e1 = HW[SLOT[1]]; const from = [PHONE.x - 280 + e1.lx, PHONE.y - 590 + e1.ly, PHONE.z + 6];
+        pos = lerp3(from, target, io(prog(t, LAND[1], land))); op = t >= LAND[1] - 0.02 ? 1 : 0; sc = 0.5; }
+      else { const k2 = io(prog(t, land - 1.6, land)); pos = lerp3(pos, target, k2); sc *= lerp(1, 0.5, k2); }
+      op *= 1 - prog(t, land, land + 0.08);
+    } else if (i !== 7) {
+      const spot = { 2: [-420, -470], 4: [420, -330], 5: [-400, 60] }[i];   // beside the phone, where the camera sees them
+      const near = [PHONE.x + spot[0] * 0.3, PHONE.y - 650, PHONE.z + 60];
+      const k1 = io(prog(t, 17.0, 18.4)), k2 = spring(t - 18.4, 0.5, 0.6);
+      pos = lerp3(lerp3(pos, near, k1), [PHONE.x + spot[0] + Math.sin(t * 3 + i) * 20, PHONE.y + spot[1] + Math.cos(t * 3.4 + i) * 16, PHONE.z + 60], clamp(k2, 0, 1.2));
+      sc *= lerp(1, 0.55, k1);
+    }
+    v.x = pos[0]; v.y = pos[1]; v.z = pos[2];
+    v.op = op * (1 - prog(t, 20.7, 21.1));
+    const hop = Math.exp(-Math.pow((t - (3.6 + slot * 0.12)) / 0.12, 2));  // a little jump before the dash
+    const tilt = LAND[i] !== undefined || i === 6 ? Math.sin(t * 5 + i) * 12 * (1 - prog(t, 17.5, 18.3)) : Math.sin(t * 5 + i) * 12;
+    v.rot = `translateY(${-hop * 60}px) rotateZ(${tilt}deg) scale(${sc * (1 + 0.15 * hop)}, ${sc * (1 - 0.1 * hop)})`;
   });
+  // the word on the phone fills in as each vowel lands
+  HW.forEach((h, j) => { if (!h.v) return; const k = Object.keys(SLOT).find(q => SLOT[q] === j); const pr = clamp(spring(t - LAND[k], 0.4, 0.6), 0, 1.2);
+    h.sp.style.width = lerp(h.dash, h.w, clamp(pr)) + 'px'; h.sp.querySelector('b').style.opacity = clamp(pr * 1.5); h.sp.querySelector('i').style.opacity = 1 - clamp(pr * 2);
+    h.sp.style.transform = `scale(${lerp(1.4, 1, clamp(pr))})`; });
+  const done = Math.exp(-Math.max(0, t - 19.75) * 2) * (t >= 19.75 ? 1 : 0);
+  $('hw').style.filter = `drop-shadow(0 0 ${30 * done}px rgba(255,198,90,${done}))`;
+  $('phF').style.opacity = Math.max(...Object.values(LAND).map(l => Math.exp(-Math.pow((t - l) / 0.07, 2)))) * 0.55;
   // ---- bats: two colonies cross towards the camera during the chase
-  BATS.forEach((b, i) => { const t0 = 6.0 + (i % 11) * 0.12 + (i > 10 ? 4.8 : 0), p = (t - t0) / 1.8;
+  BATS.forEach((b, i) => { const t0 = 7.0 + (i % 11) * 0.12 + (i > 10 ? 5.0 : 0), p = (t - t0) / 1.8;
     if (p < 0 || p > 1) { b.op = 0; return; } b.op = 1;
     const zz = camZ(t0) - 2600 + p * 2300; b.x = roadX(zz) + Math.cos(i * 2.4) * lerp(300, 900, p); b.y = -400 + Math.sin(i * 1.7) * 260 - p * 200; b.z = zz;
     const w = Math.sin(t * (10 + i % 4) + b.ph); b.rot = `scale(${b.s})`;
@@ -261,28 +332,25 @@ window.render = (t) => {
   PUMPS.forEach(o => { o.d.querySelector('.face').style.opacity = 0.75 + 0.25 * Math.sin(t * 13 + o.ph) * Math.sin(t * 7.3 + o.ph * 2); });
   RINGS.forEach(r => { r.rot = `rotateY(${-heading(r.z)}rad) rotateZ(${t * 20}deg)`; });
   WORDS.forEach(w => { const d = cz - w.z; w.rot = `rotateY(${-yaw}rad) rotateY(${clamp((d - 600) / 3000) * (w.x - roadX(w.z) < 0 ? 20 : -20)}deg)`; });
-  // ---- phone: the vowels land, the screen flashes and shows the found word
-  $('phF').style.opacity = Math.max(...[0, 1, 2, 3, 4, 5].map(i => Math.exp(-Math.pow((t - (17.5 + i * 0.22)) / 0.08, 2)))) * 0.9;
-  $('phB').style.opacity = ease(prog(t, 18.3, 18.6));
-  PHONE.rot = `rotateY(${lerp(-14, 0, prog(t, 14, 17.5))}deg)`;
+  PHONE.rot = `rotateY(${lerp(-14, 0, prog(t, 14, 17))}deg)`;
   // ---- dive into the screen, flash, end card
-  const dive = io(prog(t, 19.0, 20.2));
-  if (dive > 0) { const z0 = camZ(18.9); const zz = lerp(z0, PHONE.z + 140, dive);
-    $('scene').style.transform = `translateZ(${P}px) rotateX(${lerp(pitch, 0, dive)}deg) translate3d(0px, ${-lerp(0, PHONE.y, dive)}px, ${-zz}px)`; }
-  const czEff = dive > 0 ? lerp(camZ(18.9), PHONE.z + 140, dive) : cz;
+  const dive = io(prog(t, 20.6, 21.8));
+  if (dive > 0) { const z0 = camZ(20.5); const zz = lerp(z0, PHONE.z + 140, dive);
+    $('scene').style.transform = `translateZ(${P}px) rotateX(${lerp(pitch, 0, dive)}deg) translate3d(0px, ${-lerp(0, PHONE.y - 590 + HW[4].ly, dive)}px, ${-zz}px)`; }
+  const czEff = dive > 0 ? lerp(camZ(20.5), PHONE.z + 140, dive) : cz;
   OBJ.forEach(o => place(o, czEff));
-  $('flashAll').style.opacity = Math.exp(-Math.pow((t - 20.25) / 0.22, 2));
+  $('flashAll').style.opacity = Math.exp(-Math.pow((t - 21.85) / 0.22, 2));
 
-  // ---- end card 20.25–26
-  const e = t >= 20.25; set($('end'), e ? 1 : 0);
+  // ---- end card 21.85–27.6
+  const e = t >= 21.85; set($('end'), e ? 1 : 0);
   if (e) {
-    const mk = ease(prog(t, 20.3, 20.8)); set($('mark'), mk, `scale(${lerp(1.25, 1, mk)})`);
-    reveal(OUT, i => spring(t - (21.0 + i * 0.18)));
-    $('eline').style.transform = `scaleX(${io(prog(t, 21.2, 21.9))})`;
-    $('emoon').style.transform = `translateY(${lerp(80, 0, ease(prog(t, 20.3, 21.3)))}px)`;
-    [['tw1', 22.0], ['tw2', 22.35]].forEach(([id, t0]) => { const p = spring(t - t0, 0.45, 0.6); set($(id), clamp(p * 1.5), `translateY(${(1 - p) * 40}px)`); });
-    const st = spring(t - 23.0, 0.5, 0.75); set($('store'), clamp(st * 1.4), `translateY(${(1 - st) * 50}px)`);
-    const tk = spring(t - 23.3, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
+    const mk = ease(prog(t, 21.9, 22.4)); set($('mark'), mk, `scale(${lerp(1.25, 1, mk)})`);
+    reveal(OUT, i => spring(t - (22.6 + i * 0.18)));
+    $('eline').style.transform = `scaleX(${io(prog(t, 22.8, 23.5))})`;
+    $('emoon').style.transform = `translateY(${lerp(80, 0, ease(prog(t, 21.9, 22.9)))}px)`;
+    [['tw1', 23.6], ['tw2', 23.95]].forEach(([id, t0]) => { const p = spring(t - t0, 0.45, 0.6); set($(id), clamp(p * 1.5), `translateY(${(1 - p) * 40}px)`); });
+    const st = spring(t - 24.6, 0.5, 0.75); set($('store'), clamp(st * 1.4), `translateY(${(1 - st) * 50}px)`);
+    const tk = spring(t - 24.9, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
   }
   return true;
 };
