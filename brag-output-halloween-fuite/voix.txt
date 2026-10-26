@@ -1,24 +1,27 @@
-VOIX OFF — « La nuit où les voyelles ont disparu »
+VOIX OFF — « La nuit où les voyelles ont disparu » (version HALLOWEEN → HLLWN)
 À générer d'un seul bloc dans ElevenLabs (modèle Eleven v3, stabilité « Natural »), puis m'envoyer le fichier.
+La vidéo sera adaptée et rendue une fois la voix reçue.
 
-Placement dans la vidéo :
-  1,7 s  → « Ahhh ! Les voyelles s'échappent ! »                       (les O et le E sautent hors de CONSONNE)
-  3,8 s  → « Viens nous aider à retrouver les mots sans voyelles ! »   (elles filent au loin)
-  17,3 s → « Ah ! Elles rentrent dans le jeu ! »                        (elles foncent vers le téléphone)
-  19,8 s → « Halloween ! »                                              (le mot se complète et brille)
-  24,3 s → « Télécharge CNSNN sur l'App Store ! C'est gratuit ! »      (le badge App Store apparaît)
+Placement prévu :
+  ~1 s    « Ahhh ! Les voyelles s'échappent ! »                     A, O, E, E sautent hors de HALLOWEEN : HLLWN
+  ~3,5 s  « Chaque jour, un nouveau mot… sans ses voyelles. »       elles filent au loin, la caméra démarre
+  ~6 s    « Viens nous aider à les retrouver ! »                     la poursuite
+  ~17,3 s « Regarde ! Elles retrouvent leur place ! »                elles foncent vers le téléphone
+  ~19,8 s « Halloween ! »                                           le mot se complète
+  ~22 s   « Pour jouer, tape C. N. S. N. N. sur l'App Store… »       barre de recherche App Store où « CNSNN » se tape, puis l'appli
 
 Texte à copier :
 
 [panicked] Ahhh ! Les voyelles s'échappent !
 [long pause]
-[excited] Viens nous aider à retrouver les mots sans voyelles !
+[mysterious] Chaque jour, un nouveau mot… sans ses voyelles.
 [long pause]
-[surprised] Ah ! Elles rentrent dans le jeu !
+[excited] Viens nous aider à les retrouver !
+[long pause]
+[surprised] Regarde ! Elles retrouvent leur place !
 [long pause]
 [delighted] Halloween !
 [long pause]
-[confident] Télécharge CNSNN sur l'App Store ! [cheerfully] C'est gratuit !
+[confident] Pour jouer, tape C. N. S. N. N. sur l'App Store. [playful] C'est juste le mot « consonne »… sans ses voyelles ! [cheerfully] Et c'est gratuit !
 
-Variante pour la 3e réplique : « Regarde ! Elles retrouvent leur place ! »
-Prononciation : si l'IA lit « CNSNN » lettre par lettre ou bizarrement, remplace-le par « Consonne » dans le texte.
+Si l'IA lit « CNSNN » comme un mot : garder les lettres séparées par des points, ou essayer « C… N… S… N… N… ».
