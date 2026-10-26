@@ -4,14 +4,21 @@ VOIX OFF — « La nuit où les voyelles ont disparu »
 Placement dans la vidéo :
   1,7 s → « Ahhh ! Les voyelles s'échappent ! »            (les O et le E sautent hors de CONSONNE)
   3,8 s → « Viens nous aider à retrouver les mots sans voyelles ! »   (elles filent au loin)
+  24,3 s → « Télécharge CNSNN sur l'App Store ! C'est gratuit ! »   (le badge App Store apparaît)
 
 Texte à copier :
 
 [panicked] Ahhh ! Les voyelles s'échappent !
 [long pause]
 [excited] Viens nous aider à retrouver les mots sans voyelles !
+[long pause]
+[confident] Télécharge CNSNN sur l'App Store ! [cheerfully] C'est gratuit !
 
 Variante plus « conte » :
 [whispers] Cette nuit… [gasps] Ahhh ! Les voyelles s'échappent !
 [long pause]
 [playful] Viens nous aider à retrouver les mots sans voyelles !
+[long pause]
+[confident] Télécharge CNSNN sur l'App Store ! [cheerfully] C'est gratuit !
+
+Prononciation : si l'IA lit « CNSNN » lettre par lettre ou bizarrement, remplace-le par « Consonne » dans le texte.
