@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>CNSNN brag — la nuit où les voyelles ont disparu</title>
+<link rel="stylesheet" href="base.css">
+<style>
+#stage { background: linear-gradient(#0a0518 0%, #1c0c3c 38%, #3a1a66 49%, #1a0a30 52%, #07030c 100%); }
+#sky { position: absolute; inset: 0; }
+#stars { position: absolute; inset: 0; }
+#moon { position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fffaf0 0%, #f6ebcf 45%, #e7d3a6 100%);
+  box-shadow: 0 0 60px 20px rgba(255,236,190,.35), 0 0 240px 100px rgba(190,150,255,.22); }
+#moon i { position: absolute; border-radius: 50%; background: rgba(170,140,95,.22); }
+#skyline { position: absolute; left: -100px; width: 1280px; height: 420px; transform-origin: 50% 100%; }
+#horizon { position: absolute; left: 0; right: 0; height: 360px; background: radial-gradient(60% 50% at 50% 50%, rgba(160,90,255,.35), rgba(160,90,255,0)); }
+#view { position: absolute; inset: 0; perspective: 1000px; perspective-origin: 540px 960px; overflow: hidden; }
+#scene { position: absolute; left: 540px; top: 960px; width: 0; height: 0; transform-style: preserve-3d; }
+.o { position: absolute; left: 0; top: 0; transform-style: preserve-3d; will-change: transform, opacity; }
+.tile { width: 5000px; height: 252px; background: linear-gradient(90deg, #0c0616, #1c1030 30%, #241538 38%, #241538 62%, #1c1030 70%, #0c0616); }
+.tile .road { position: absolute; left: 2070px; width: 860px; top: 0; bottom: 0; background-size: 430px 430px; }
+.tile .edge { position: absolute; top: 0; bottom: 0; width: 12px; background: #ffe0b0;
+  box-shadow: 0 0 18px 6px #ff8a1e, 0 0 60px 20px rgba(255,100,0,.45); }
+.neonTxt { font-family: "Fraunces", serif; font-weight: 900; white-space: nowrap; color: #ffe1b0; line-height: 1; }
+.fly { font-family: "Fraunces", serif; font-weight: 900; white-space: nowrap; line-height: 1; color: #ffd9a0; }
+.vow { font-family: "Fraunces", serif; font-weight: 900; font-size: 210px; line-height: 1; color: #ffd36e;
+  text-shadow: 0 0 20px rgba(255,210,110,1), 0 0 60px rgba(255,160,40,.9), 0 0 140px rgba(255,120,0,.6); }
+.tomb { width: 330px; height: 420px; border-radius: 165px 165px 14px 14px; background: linear-gradient(160deg, #6b6178, #3b3448 55%, #241e2e);
+  box-shadow: inset 0 6px 0 rgba(255,255,255,.12), inset -14px 0 30px rgba(0,0,0,.35), 0 0 80px rgba(160,110,255,.25); display: flex; flex-direction: column; align-items: center; }
+.tomb small { margin-top: 70px; font-family: "Instrument Serif", serif; font-size: 44px; color: #1a1422; letter-spacing: 6px; text-shadow: 0 2px 0 rgba(255,255,255,.18); }
+.tomb b { margin-top: 26px; font-family: "Fraunces", serif; font-weight: 900; font-size: 92px; color: #17121f; letter-spacing: 4px; text-shadow: 0 3px 0 rgba(255,255,255,.2), 0 0 26px rgba(255,140,40,.5); }
+.ring { width: 1100px; height: 1100px; border-radius: 50%; border: 14px solid #ffe0b0;
+  box-shadow: 0 0 24px 8px #ff8a1e, inset 0 0 24px 8px #ff8a1e, 0 0 90px 30px rgba(255,100,0,.4), inset 0 0 90px 30px rgba(255,100,0,.4); }
+.lamp { width: 26px; height: 760px; background: linear-gradient(90deg, #1a1420, #3a3044, #1a1420); border-radius: 8px; }
+.lamp i { position: absolute; left: -42px; top: -70px; width: 110px; height: 110px; border-radius: 50%;
+  background: radial-gradient(closest-side, #fff2c8, #ffb04a 45%, rgba(255,120,20,0)); box-shadow: 0 0 120px 60px rgba(255,140,40,.35); }
+.fog { width: 2400px; height: 420px; border-radius: 50%; background: radial-gradient(closest-side, rgba(210,190,255,.28), rgba(210,190,255,0)); }
+.phone { width: 560px; height: 1180px; border-radius: 86px; padding: 16px;
+  background: linear-gradient(135deg, #3a3550, #0d0b14 40%, #2b2740 70%, #0a0910); box-shadow: 0 0 0 2px rgba(255,255,255,.08), 0 0 160px rgba(255,140,40,.35); }
+.phone .scr { position: relative; width: 100%; height: 100%; border-radius: 72px; overflow: hidden; background: #05040a; }
+.phone .scr img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.phone .flash { position: absolute; inset: 0; border-radius: 72px; background: radial-gradient(closest-side, rgba(255,230,170,.95), rgba(255,170,60,0)); }
+.bat { width: 120px; height: 60px; }
+#flashAll { position: absolute; inset: 0; background: radial-gradient(closest-side, #fff4dc, #ffb050 60%, #ff7a10); opacity: 0; }
+/* end card */
+#end { position: absolute; inset: 0; background: radial-gradient(1400px 1500px at 50% 30%, #3b1b72 0%, #1d0d3d 45%, #0b0614 100%); }
+#emoon { position: absolute; left: 330px; top: 120px; width: 420px; height: 420px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fffaf0 0%, #f6ebcf 45%, #e7d3a6 100%); box-shadow: 0 0 60px 20px rgba(255,236,190,.35), 0 0 240px 100px rgba(190,150,255,.22); }
+#mark { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font-family: "Fraunces", serif; font-weight: 900; line-height: 1; white-space: nowrap; color: #ffe1b0; }
+#mark .v { color: #ffc35a; }
+#eline { position: absolute; left: 140px; width: 800px; top: 880px; height: 6px; border-radius: 3px; background: #ffe0b0; box-shadow: 0 0 16px 4px #ff8a1e, 0 0 50px 14px rgba(255,100,0,.5); transform-origin: 0 50%; }
+.tagw { position: absolute; left: 0; right: 0; text-align: center; font-family: "Fraunces", serif; font-weight: 900; font-size: 58px; color: #ffcf8a; text-shadow: 0 0 18px rgba(255,130,20,.9); white-space: nowrap; }
+#store { position: absolute; left: 0; right: 0; top: 1300px; display: flex; justify-content: center; align-items: center; gap: 30px; }
+#store img { width: 170px; height: 170px; border-radius: 38px; box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 0 40px rgba(255,130,20,.35); }
+#store .badge { height: 150px; padding: 0 44px 0 32px; border-radius: 32px; background: #000; border: 3px solid #a6a6a6; display: flex; align-items: center; gap: 18px; color: #fff; }
+#store .badge small { display: block; font-size: 32px; font-weight: 500; }
+#store .badge b { display: block; font-size: 62px; font-weight: 600; letter-spacing: -1px; line-height: 1.05; }
+#tiktok { position: absolute; left: 0; right: 0; top: 1520px; display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 52px; font-weight: 700; color: #fff; }
+#happy { position: absolute; left: 0; right: 0; top: 1630px; text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 7px; color: #ffc35a; }
+#vig { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55)); pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="sky">
+    <canvas id="stars" width="1080" height="1920"></canvas>
+    <div id="moon"><i style="left:22%;top:30%;width:18%;height:18%"></i><i style="left:58%;top:55%;width:24%;height:24%"></i><i style="left:40%;top:72%;width:10%;height:10%"></i><i style="left:64%;top:22%;width:9%;height:9%"></i></div>
+    <div id="horizon"></div>
+    <svg id="skyline" viewBox="0 0 1280 420" preserveAspectRatio="none"></svg>
+  </div>
+  <div id="view"><div id="scene"></div></div>
+  <div id="flashAll"></div>
+  <div id="end">
+    <div id="emoon"></div>
+    <div id="mark"></div><div id="eline"></div>
+    <div class="tagw" id="tw1" style="top:960px">Le mot du jour.</div>
+    <div class="tagw" id="tw2" style="top:1050px">Sans ses voyelles.</div>
+    <div id="store"><img src="appicon.png"><div class="badge"><svg width="74" height="74" viewBox="0 0 24 24"><path id="apple" fill="#fff"/></svg><div><small>Disponible sur</small><b>l’App Store</b></div></div></div>
+    <div id="tiktok"><svg width="58" height="58" viewBox="0 0 24 24"><path class="tt" fill="#25F4EE" transform="translate(-0.7,-0.5)"/><path class="tt" fill="#FE2C55" transform="translate(0.7,0.5)"/><path class="tt" fill="#fff"/></svg>@jeuCNSNN</div>
+    <div id="happy">JOYEUX HALLOWEEN</div>
+  </div>
+  <div id="vig"></div>
+</div>
+<script src="lib.js"></script>
+<script>
+const APPLE = 'M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701';
+const TIKTOK = 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z';
+let seed = 1031; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const NS = 'http://www.w3.org/2000/svg';
+const kf = (keys, t, f = io) => { if (t <= keys[0][0]) return keys[0][1]; for (let i = 0; i < keys.length - 1; i++) { const [a, va] = keys[i], [b, vb] = keys[i + 1];
+  if (t <= b) return Array.isArray(va) ? va.map((v, j) => lerp(v, vb[j], f(prog(t, a, b)))) : lerp(va, vb, f(prog(t, a, b))); } return keys[keys.length - 1][1]; };
+const extrude = (depth, glow, step = 1.6) => { const s = []; for (let i = 1; i <= depth; i++) { const c = Math.round(lerp(200, 70, i / depth)); s.push(`0 ${i * step}px 0 rgb(${c},${Math.round(c * 0.38)},0)`); }
+  s.push(`0 0 ${30 * glow}px rgba(255,150,40,${0.9 * glow})`, `0 0 ${90 * glow}px rgba(255,100,0,${0.6 * glow})`); return s.join(','); };
+
+// ================================================================ world
+// Units are CSS px. Camera looks down -z; y grows downwards; the road is at y = GROUND.
+const P = 1000, GROUND = 520;
+const OBJ = [];
+function add(html, cls, x, y, z, opt = {}) {
+  const d = document.createElement('div'); d.className = 'o ' + (cls || ''); if (html) d.innerHTML = html;
+  $('scene').appendChild(d); const o = { d, x, y, z, rot: opt.rot || '', near: opt.near ?? 260, far: opt.far ?? 9000, op: 1, fw: opt.fw || 2500, ext: opt.ext || 0, anchor: opt.anchor || 'translate(-50%,-50%)' };
+  OBJ.push(o); return o;
+}
+function place(o, cz, cx) {
+  if (o.tile) {   // ground slabs: drop any slab that reaches behind the camera (Chromium would not draw it anyway)
+    const near = cz - (o.z + 126), op = clamp(1 - (near - o.far) / 2500);
+    if (near < 5 || op <= 0.003) { o.d.style.visibility = 'hidden'; return; }
+    o.d.style.visibility = 'visible'; o.d.style.opacity = op; o.d.style.transform = `translate3d(${o.x}px, ${o.y}px, ${o.z}px) ${o.rot} ${o.anchor}`; return;
+  }
+  const dist = cz - o.z + o.ext;   // how far in front of the camera (nearest edge for big objects)
+  let op = o.op * clamp((dist - 60) / o.near) * clamp(1 - (dist - o.ext - o.far) / o.fw);
+  if (dist < 60 || op <= 0.003) { o.d.style.visibility = 'hidden'; return; }
+  o.d.style.visibility = 'visible'; o.d.style.opacity = op;
+  o.d.style.transform = `translate3d(${o.x}px, ${o.y}px, ${o.z}px) ${o.rot} ${o.anchor}`;
+}
+// ground: tiles of cobbled road with neon edges
+const cob = document.createElement('canvas'); cob.width = cob.height = 512;
+(() => { const g = cob.getContext('2d'); g.fillStyle = '#1b1426'; g.fillRect(0, 0, 512, 512);
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) { const x = c * 58 + (r % 2) * 29 + rnd() * 6, y = r * 58 + rnd() * 6;
+    const l = 30 + rnd() * 18; g.fillStyle = `rgb(${l + 8},${l},${l + 22})`; g.beginPath(); g.ellipse(x, y, 25 + rnd() * 3, 23 + rnd() * 3, rnd(), 0, 7); g.fill();
+    g.fillStyle = 'rgba(200,180,255,.06)'; g.beginPath(); g.ellipse(x - 5, y - 6, 12, 8, 0, 0, 7); g.fill(); } })();
+const COB = cob.toDataURL();
+for (let z = 1000, k = 0; z > -18000; z -= 250, k++) {
+  const o = add(`<div class="road" style="background-image:url(${COB});background-position:0 ${-(k % 2) * 250}px"></div><div class="edge" style="left:2064px"></div><div class="edge" style="left:2924px"></div>`, 'tile', 0, GROUND, z - 125,
+    { rot: 'rotateX(90deg)', near: 1, far: 7500 });
+  o.tile = true;
+}
+// jack-o'-lanterns
+function pumpkinSVG(size) {
+  return `<svg width="${size}" height="${size}" viewBox="-60 -60 120 120" style="overflow:visible">
+    <path d="M-2 -40 C -2 -52 6 -58 12 -60 L 14 -54 C 8 -52 5 -47 5 -40 Z" fill="#3e5a1e"/>
+    <ellipse cx="-30" cy="5" rx="30" ry="42" fill="#d4560a"/><ellipse cx="30" cy="5" rx="30" ry="42" fill="#d4560a"/>
+    <ellipse cx="-14" cy="3" rx="26" ry="45" fill="#ee6d12"/><ellipse cx="14" cy="3" rx="26" ry="45" fill="#ee6d12"/><ellipse cx="0" cy="2" rx="20" ry="46" fill="#ff8424"/>
+    <g class="face" fill="#ffd45e"><path d="M-30 -12 L-12 -12 L-21 -28 Z M12 -12 L30 -12 L21 -28 Z M-5 2 L5 2 L0 -8 Z"/>
+    <path d="M-34 14 C -20 34 20 34 34 14 L 26 18 L 22 12 L 14 20 L 8 14 L 0 22 L -8 14 L -14 20 L -22 12 L -26 18 Z"/></g></svg>`;
+}
+const PUMPS = [];
+for (let z = -700, i = 0; z > -16500; z -= 520 + rnd() * 380, i++) {
+  const side = i % 2 ? 1 : -1, s = 230 + rnd() * 150, x = side * (470 + rnd() * 380);
+  const o = add(pumpkinSVG(s), '', x, GROUND - s * 0.42, z); o.d.style.filter = `drop-shadow(0 0 ${s * 0.25}px rgba(255,120,20,.7))`; o.ph = rnd() * 6; PUMPS.push(o);
+}
+// lamp posts
+for (let z = -2200, i = 0; z > -15000; z -= 2100, i++) add('<i></i>', 'lamp', (i % 2 ? 1 : -1) * 500, GROUND - 380, z);
+// dead trees, far out on both sides
+const TREE = `<svg width="900" height="1100" viewBox="0 0 900 1100"><path fill="#07030d" d="M430 1100 L470 1100 L465 700 L560 520 L700 430 L690 415 L555 500 L600 330 L585 325 L535 480 L470 610 L462 420 L540 260 L520 255 L455 380 L430 230 L415 235 L438 420 L420 600 L330 450 L250 400 L240 410 L320 470 L410 640 L300 560 L180 560 L178 575 L300 590 L425 700 Z"/></svg>`;
+for (let z = -1500, i = 0; z > -16000; z -= 1700, i++) add(TREE, '', (i % 2 ? 1 : -1) * (1500 + rnd() * 300), GROUND - 520, z, { far: 11000 });
+// low fog banks
+for (let z = -1200; z > -16000; z -= 1300) add('', 'fog', rnd() * 600 - 300, GROUND - 120, z);
+// tombstones with words that lost their vowels (Halloween words)
+const TOMBS = [['FNTM', 'fantôme'], ['SRCR', 'sorcière'], ['CMTR', 'cimetière'], ['CTRLL', 'citrouille'], ['BNBNS', 'bonbons'], ['MM', 'momie']];   // fantôme, sorcière, cimetière, citrouille, bonbons, momie
+TOMBS.forEach(([w], i) => { const side = i % 2 ? 1 : -1;
+  add(`<small>R.I.P.</small><b>${w}</b>`, 'tomb', side * 560, GROUND - 210, -6300 - i * 500, { rot: `rotateY(${-side * 28}deg)` }); });
+// neon rings to fly through
+const RINGS = [-6900, -12100].map(z => add('', 'ring', 0, -60, z, { near: 350 }));
+// floating words the camera passes, like the reference
+const WORDS = [['Cette nuit,', -3300, -150, -40, 170], ['les voyelles', -4600, 150, -20, 170], ['se sont enfuies.', -5900, -30, 0, 150],
+  ['Sans elles…', -9500, 150, -40, 170], ['plus rien', -10800, -150, -20, 170], ['n’a de sens.', -12100, 60, 0, 160]]
+  .map(([w, z, x, y, s]) => { const o = add(w, 'fly', x, y, z, { near: 420, far: 1100, fw: 700 }); o.d.style.fontSize = s + 'px'; return o; });
+// the CONSONNE sign at the start, and the phone at the end of the road
+const SIGN = add('', 'neonTxt', 0, -260, -1500, { near: 300, far: 20000 }); SIGN.d.style.fontSize = '300px';
+const PHONE = add(`<div class="scr"><img id="phA" src="img/game_slots.png"><img id="phB" src="img/game_result.png"><div class="flash" id="phF"></div></div>`, 'phone', 0, GROUND - 640, -16300, { near: 150, far: 20000 });
+// bats
+const BAT_WING = 'M0 0 C -8 -16 -26 -22 -52 -14 C -46 -8 -44 -2 -44 4 C -38 -2 -30 -1 -26 5 C -22 -1 -14 -1 -10 6 Z';
+function makeBat(x, y, z, s) {
+  const o = add(`<svg width="120" height="60" viewBox="-60 -30 120 60" style="overflow:visible"><path class="wl" d="${BAT_WING}" fill="#0a0510"/><path class="wr" d="${BAT_WING}" fill="#0a0510"/>
+    <ellipse cx="0" cy="2" rx="7" ry="11" fill="#0a0510"/><path d="M-6 -6 L-8 -16 L-2 -9 Z M6 -6 L8 -16 L2 -9 Z" fill="#0a0510"/></svg>`, 'bat', x, y, z, { near: 200 });
+  o.s = s; o.wl = o.d.querySelector('.wl'); o.wr = o.d.querySelector('.wr'); o.home = [x, y, z]; o.ph = rnd() * 6; return o;
+}
+const BATS = Array.from({ length: 22 }, (_, i) => makeBat(0, 0, 0, 1.4 + rnd() * 1.6));
+// the runaway vowels
+const VOW = ['O', 'O', 'E', 'A', 'I', 'U'].map((c, i) => { const o = add(c, 'vow', 0, 0, 0, { near: 200, far: 20000 }); o.i = i; o.ph = rnd() * 6; return o; });
+
+// sky
+const stars = Array.from({ length: 240 }, () => ({ x: rnd() * 1080, y: rnd() * 980, r: 0.6 + rnd() * 1.8, ph: rnd() * 6.28, sp: 0.6 + rnd() * 2 }));
+(() => { // haunted skyline: houses with lit windows, a church, hills
+  let s = '<path d="M0 300 C 200 240 340 270 520 280 C 700 290 860 230 1280 260 L1280 420 L0 420 Z" fill="#12082a"/>';
+  const H = [[120, 210, 90, 'M'], [230, 160, 120, 'H'], [420, 120, 70, 'C'], [760, 180, 110, 'H'], [900, 230, 80, 'M'], [1060, 190, 100, 'H']];
+  H.forEach(([x, top, w, k]) => { s += `<path fill="#0c0518" d="M${x} 330 L${x} ${top + 40} L${x + w / 2} ${top} L${x + w} ${top + 40} L${x + w} 330 Z"/>`;
+    if (k === 'C') s += `<path fill="#0c0518" d="M${x + w / 2 - 6} ${top - 90} h12 v90 h-12 Z M${x + w / 2 - 22} ${top - 70} h44 v10 h-44 Z"/>`;
+    for (let j = 0; j < 3; j++) s += `<rect x="${x + 14 + j * (w - 36) / 2}" y="${top + 60 + (j % 2) * 30}" width="12" height="16" fill="#ffb347" opacity="${0.5 + 0.5 * ((x + j) % 3) / 2}"/>`; });
+  $('skyline').innerHTML = s + '<path d="M0 330 L1280 330 L1280 420 L0 420 Z" fill="#0a0414"/>'; })();
+
+// ================================================================ setup
+let OUT, SIGN_L;
+window.setup = async () => {
+  await document.fonts.ready;
+  $('apple').setAttribute('d', APPLE); document.querySelectorAll('.tt').forEach(p => p.setAttribute('d', TIKTOK));
+  // the sign is built letter by letter so its vowels can leave
+  SIGN_L = [...'CONSONNE'].map(c => { const s = document.createElement('span'); s.textContent = c; s.style.display = 'inline-block'; SIGN.d.appendChild(s); return { s, c, v: 'OE'.includes(c) }; });
+  SIGN.d.style.textShadow = extrude(10, 1, 1.4);
+  SIGN_L.forEach(l => { l.w = l.s.getBoundingClientRect().width; l.cx = l.s.offsetLeft + l.w / 2; });
+  const W = SIGN.d.getBoundingClientRect().width; SIGN_L.forEach(l => { l.cx -= W / 2; });
+  WORDS.forEach(o => { o.d.style.textShadow = extrude(10, 0.9, 1.3); });
+  fitFont($('mark'), 'CONSONNE', 980, 200); OUT = buildWord($('mark'), 'CONSONNE'); measure(OUT); $('mark').style.textShadow = extrude(14, 1);
+  return true;
+};
+
+// ================================================================ camera
+// steady cruise with short ramps, so every floating line stays on screen about a second
+const cruise = (x, r = 0.12) => { x = clamp(x); const v = 1 / (1 - r); return x < r ? v * x * x / (2 * r) : x > 1 - r ? 1 - v * (1 - x) * (1 - x) / (2 * r) : v * (x - r / 2); };
+const camZ = t => kf([[0, 900], [2.8, 500], [16.3, -14250], [17.6, -14500]], t, cruise);
+const camX = t => 140 * Math.sin(t * 0.55) * prog(t, 3, 5) * (1 - prog(t, 15, 16.5));
+const camY = t => -40 * Math.sin(t * 0.8) * prog(t, 3, 5) * (1 - prog(t, 15, 16.5));
+window.passTimes = () => { const zs = { rings: RINGS.map(r => r.z), words: WORDS.map(w => w.z), tombs: OBJ.filter(o => o.d.classList.contains('tomb')).map(o => o.z), sign: [SIGN.z] }, out = {};
+  for (const k in zs) out[k] = zs[k].map(z => { for (let t = 0; t < 26; t += 1 / 60) if (camZ(t) <= z) return +t.toFixed(2); return null; }); return out; };
+
+// ================================================================ frame
+window.render = (t) => {
+  const cz = camZ(t), cx = camX(t), cy = camY(t);
+  const vz = (camZ(t + 0.05) - cz) / 0.05;                  // forward speed, px/s (negative)
+  const roll = -2.2 * Math.cos(t * 0.55) * prog(t, 3, 5) * (1 - prog(t, 15, 16.5));
+  const pitch = lerp(-13, -6, prog(t, 15, 17.2));   // negative = looking down at the road
+  // CSS puts the eye at z = +perspective: move it onto the camera so that scale = P / distance
+  $('scene').style.transform = `translateZ(${P}px) rotateZ(${roll}deg) rotateX(${pitch}deg) translate3d(${-cx}px, ${-cy}px, ${-cz}px)`;
+  // sky: moon and skyline barely move, stars twinkle
+  const g = $('stars').getContext('2d'); g.clearRect(0, 0, 1080, 1920);
+  stars.forEach(s => { g.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * s.sp + s.ph)); g.fillStyle = '#fff'; g.beginPath(); g.arc(s.x - cx * 0.02, s.y, s.r, 0, 7); g.fill(); });
+  const hz = 960 + Math.tan(pitch * Math.PI / 180) * P;     // horizon height on screen
+  Object.assign($('moon').style, { left: (700 - cx * 0.03) + 'px', top: (hz - 760) + 'px', width: '260px', height: '260px' });
+  const grow = 1 + 0.18 * prog(cz, 500, -14500);
+  $('skyline').style.top = (hz - 340) + 'px'; $('skyline').style.transform = `translateX(${-cx * 0.05}px) scale(${grow})`;
+  $('horizon').style.top = (hz - 180) + 'px';
+
+  // ---- the sign: vowels jump out at 1.2 s, the consonants close ranks
+  const gone = ease(prog(t, 1.25, 1.75));
+  SIGN_L.forEach(l => { if (l.v) { l.s.style.opacity = 1 - prog(t, 1.2, 1.3); l.s.style.maxWidth = (l.w * (1 - gone)) + 'px'; l.s.style.overflow = 'visible'; } });
+  const flick = t > 1.3 && t < 2.2 ? (Math.sin(t * 47) > 0.2 ? 1 : 0.35) : 1;
+  SIGN.op = flick;
+  // ---- vowels: escape from the sign, giggle, then flee down the road ahead of the camera
+  VOW.forEach(v => {
+    const fromSign = v.i < 3, l = fromSign ? SIGN_L.filter(s => s.v)[v.i] : null;
+    const start = fromSign ? [l.cx, SIGN.y, SIGN.z + 30] : [[-800, 0, 800][v.i - 3], [-500, -300, -450][v.i - 3], -2300 - (v.i - 3) * 200];
+    const hover = [(-500 + v.i * 200) + Math.sin(t * 3 + v.ph) * 40, -560 + Math.cos(t * 4 + v.ph) * 40, -1700];
+    const lead = 1700 + 300 * Math.sin(t * 1.3 + v.ph) + v.i * 120;
+    const chase = [cx + Math.sin(t * 1.7 + v.ph) * 420 + (v.i - 2.5) * 120, -470 + Math.cos(t * 2.1 + v.ph) * 120, cz - lead];
+    const pDive = prog(t, 16.9 + v.i * 0.22, 17.5 + v.i * 0.22);          // into the phone screen
+    const screen = [PHONE.x + (v.i - 2.5) * 60, PHONE.y - 230, PHONE.z + 20];
+    const a = ease(prog(t, 1.2, 2.0)), b = io(prog(t, 2.6, 3.6));
+    let p = start.map((s, k) => lerp(s, hover[k], fromSign ? a : ease(prog(t, 1.4 + (v.i - 3) * 0.15, 2.3))));
+    p = p.map((s, k) => lerp(s, chase[k], b));
+    p = p.map((s, k) => lerp(s, screen[k], io(prog(t, 15.6 + v.i * 0.15, 16.9 + v.i * 0.22))));
+    v.x = p[0]; v.y = p[1]; v.z = p[2] + pDive * 0;
+    v.op = (fromSign ? 1 : ease(prog(t, 1.4 + (v.i - 3) * 0.15, 1.9 + (v.i - 3) * 0.15))) * (1 - pDive);
+    v.rot = `rotateZ(${Math.sin(t * 5 + v.ph) * 14}deg) scale(${lerp(1, 0.25, pDive)})`;
+  });
+  // ---- bats: a colony crosses the road towards the camera in the middle of the chase
+  BATS.forEach((b, i) => { const t0 = 6.2 + (i % 11) * 0.12 + (i > 10 ? 4.6 : 0), p = (t - t0) / 1.8;
+    if (p < 0 || p > 1) { b.op = 0; return; } b.op = 1;
+    const zz = camZ(t0) - 2600 + p * 2300; b.x = Math.cos(i * 2.4) * lerp(300, 900, p); b.y = -400 + Math.sin(i * 1.7) * 260 - p * 200; b.z = zz;
+    const w = Math.sin(t * (10 + i % 4) + b.ph); b.rot = `scale(${b.s})`;
+    b.wl.setAttribute('transform', `rotate(${w * 28}) scale(1, ${0.55 + 0.45 * Math.abs(w)})`); b.wr.setAttribute('transform', `scale(-1,1) rotate(${w * 28}) scale(1, ${0.55 + 0.45 * Math.abs(w)})`); });
+  PUMPS.forEach(o => { o.d.querySelector('.face').style.opacity = 0.75 + 0.25 * Math.sin(t * 13 + o.ph) * Math.sin(t * 7.3 + o.ph * 2); });
+  // ---- rings pulse; words flare as the camera reaches them
+  RINGS.forEach(r => { r.rot = `rotateZ(${t * 20}deg)`; });
+  WORDS.forEach(w => { const d = cz - w.z; w.rot = `rotateY(${clamp((d - 600) / 3000) * (w.x < 0 ? 20 : -20)}deg)`; });
+  // ---- phone: the vowels land, the screen flashes and shows the found word
+  const land = prog(t, 16.9, 18.4);
+  $('phF').style.opacity = Math.max(...[0, 1, 2, 3, 4, 5].map(i => Math.exp(-Math.pow((t - (17.5 + i * 0.22)) / 0.08, 2)))) * 0.9;
+  $('phB').style.opacity = ease(prog(t, 18.3, 18.6));
+  PHONE.rot = `rotateY(${lerp(-14, 0, prog(t, 14, 17.5))}deg)`;
+  // ---- dive into the screen, flash, end card
+  const dive = io(prog(t, 19.0, 20.2));
+  if (dive > 0) { const z0 = camZ(18.9); const zz = lerp(z0, PHONE.z + 140, dive);
+    $('scene').style.transform = `translateZ(${P}px) rotateX(${lerp(pitch, 0, dive)}deg) translate3d(0px, ${-lerp(0, PHONE.y, dive)}px, ${-zz}px)`; }
+  const czEff = dive > 0 ? lerp(camZ(18.9), PHONE.z + 140, dive) : cz;
+  OBJ.forEach(o => place(o, czEff, cx));
+  $('flashAll').style.opacity = Math.exp(-Math.pow((t - 20.25) / 0.22, 2));
+  // speed lines feel: blur the near pumpkins a bit when fast
+
+
+  // ---- end card 20.25–26
+  const e = t >= 20.25; set($('end'), e ? 1 : 0);
+  if (e) {
+    const mk = ease(prog(t, 20.3, 20.8)); set($('mark'), mk, `scale(${lerp(1.25, 1, mk)})`);
+    reveal(OUT, i => spring(t - (21.0 + i * 0.18)));
+    $('eline').style.transform = `scaleX(${io(prog(t, 21.2, 21.9))})`;
+    $('emoon').style.transform = `translateY(${lerp(80, 0, ease(prog(t, 20.3, 21.3)))}px)`;
+    [['tw1', 22.0], ['tw2', 22.35]].forEach(([id, t0]) => { const p = spring(t - t0, 0.45, 0.6); set($(id), clamp(p * 1.5), `translateY(${(1 - p) * 40}px)`); });
+    const st = spring(t - 23.0, 0.5, 0.75); set($('store'), clamp(st * 1.4), `translateY(${(1 - st) * 50}px)`);
+    const tk = spring(t - 23.3, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
+    set($('happy'), ease(prog(t, 23.7, 24.1)));
+  }
+  return true;
+};
+</script>
+</body>
+</html>
