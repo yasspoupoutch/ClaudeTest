@@ -49,7 +49,8 @@
 <script>
 // Level 1 and 2 are made-up sentences; level 3 is a real card (Shared/cards.tsv, Général, difficile).
 const S1 = ['TU ARRIVES', 'À LIRE', 'CETTE PHRASE ?'], S2 = ['SI TU LIS ÇA,', 'TU ES TRÈS FORT'], S3 = ['PISSENLIT'];
-const T2 = 6.9, T3 = 11.9, END = 18.7;   // level 2, level 3, end card
+const T2 = 7.2, T3 = 12.2, END = 18.1;   // level 2, level 3, end card (timed on the voice, see voice_lines.json)
+const CUES = { search: 0.45, type: 0.75, result: 2.3, consonne: 4.1, free: 5.6 };   // the end card follows the spelling of CNSNN
 let L1, L2, L3;
 window.setup = async () => {
   await document.fonts.ready;
@@ -85,20 +86,20 @@ window.render = (t) => {
   const s2 = spring(t - T2, 0.45, 0.7); set($('s2'), t >= T2 ? clamp(s2 * 1.5) * (1 - prog(t, T3 - 0.4, T3 - 0.1)) : 0, `scale(${lerp(0.85, 1, clamp(s2))})`);
   fillLines(L2, t, T2 + 3.5);
   set($('v2'), ease(prog(t, T2 + 4.0, T2 + 4.3)) * (1 - prog(t, T3 - 0.4, T3 - 0.1)), `scale(${lerp(0.7, 1, spring(t - T2 - 4.0))})`);
-  // ---- level 3 (11.9–16.4): a real card, one word
-  const s3 = spring(t - T3, 0.45, 0.7); set($('s3'), t >= T3 ? clamp(s3 * 1.5) * (1 - prog(t, 15.95, 16.25)) : 0, `scale(${lerp(0.85, 1, clamp(s3))})`);
-  set($('hint'), ease(prog(t, T3 + 0.3, T3 + 0.6)) * (1 - prog(t, 15.95, 16.25)));
+  // ---- level 3: a real card, one word
+  const s3 = spring(t - T3, 0.45, 0.7); set($('s3'), t >= T3 ? clamp(s3 * 1.5) * (1 - prog(t, T3 + 4.35, T3 + 4.65)) : 0, `scale(${lerp(0.85, 1, clamp(s3))})`);
+  set($('hint'), ease(prog(t, T3 + 0.3, T3 + 0.6)) * (1 - prog(t, T3 + 4.35, T3 + 4.65)));
   fill(L3[0], j => spring(t - (T3 + 3.5 + j * 0.1), 0.4, 0.62));
-  set($('v3'), ease(prog(t, T3 + 4.0, T3 + 4.3)) * (1 - prog(t, 15.95, 16.25)), `scale(${lerp(0.7, 1, spring(t - T3 - 4.0))})`);
+  set($('v3'), ease(prog(t, T3 + 4.0, T3 + 4.3)) * (1 - prog(t, T3 + 4.35, T3 + 4.65)), `scale(${lerp(0.7, 1, spring(t - T3 - 4.0))})`);
   // the ring counts 3 seconds on levels 2 and 3
   const rt = t >= T3 ? t - T3 : t - T2, on = t >= T2 && rt >= 0.4 && rt < 3.55;
   set($('ring'), on ? 1 : 0, `scale(${1 + 0.12 * Math.exp(-((rt - 0.4) % 1) * 10)})`);
   ring($('ring'), prog(rt, 0.4, 3.4), clamp(3 - Math.floor(rt - 0.4), 1, 3));
-  // ---- the app: "a word like that, every day" (16.4–18.7)
-  const dj = ease(prog(t, 16.35, 16.75)); set($('dj'), dj * (1 - prog(t, END - 0.3, END)), `translateY(${(1 - dj) * 20}px)`);
-  const ph = spring(t - 16.5, 0.6, 0.75); set($('ph'), t >= 16.5 ? clamp(ph * 1.4) * (1 - prog(t, END - 0.3, END)) : 0,
+  // ---- the app: "a word like that, every day"
+  const dj = ease(prog(t, T3 + 4.5, T3 + 4.9)); set($('dj'), dj * (1 - prog(t, END - 0.3, END)), `translateY(${(1 - dj) * 20}px)`);
+  const ph = spring(t - T3 - 4.6, 0.6, 0.75); set($('ph'), t >= T3 + 4.6 ? clamp(ph * 1.4) * (1 - prog(t, END - 0.3, END)) : 0,
     `translateY(${(1 - ph) * 700}px) rotate(${lerp(8, -3, clamp(ph))}deg) scale(0.86)`);
-  renderEnd(t, END);
+  renderEnd(t, END, CUES);
   return true;
 };
 </script>

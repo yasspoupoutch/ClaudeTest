@@ -55,7 +55,8 @@
 <script>
 // A real card (Shared/cards.tsv, Général, difficile); Léa and Malik are the names of the app's own leaderboard screen.
 const WORD = 'CASSOULET', HINT = '« Des haricots blancs et des saucisses, spécialité de Castelnaudary. »';
-const GO = 2.3, END = 17.8;                         // the race starts at 0:30 on both clocks
+const GO = 2.3, END = 16.9;   // timed on the voice, see voice_lines.json
+const CUES = { search: 0.3, type: 0.57, result: 2.0, consonne: 2.7, free: 3.85 };                         // the race starts at 0:30 on both clocks
 const P = {                                          // what each player does, in seconds of video
   pa: { tries: [[7.9, 'CASSOULET', 0.22, 10.3]], win: 10.3 },                         // Léa takes her time, then finds it: 0:38
   pb: { tries: [[2.6, 'CASSOLET', 0.22, 4.7], [11.3, 'CASSOULET', 0.2, 13.3]], win: 13.3 },  // Malik rushes, misses, then 0:41
@@ -114,14 +115,14 @@ window.render = (t) => {
   if (ct > 0 && ct < 3) conf.forEach(c => { g.save(); g.translate(c.x + c.vx * ct, 760 + c.vy * ct + 700 * ct * ct); g.rotate(c.r + ct * 8); g.globalAlpha = 1 - ct / 3; g.fillStyle = c.c; g.fillRect(-9, -5, 18, 10); g.restore(); });
   // ---- leaderboard (14.4–17.8): "and you, who do you beat?"
   const bd = spring(t - 14.4, 0.55, 0.72); set($('board'), t > 14.4 ? clamp(bd * 1.4) * (1 - prog(t, END - 0.3, END)) : 0, `translateY(${(1 - bd) * 200}px) scale(${lerp(0.9, 1, clamp(bd))})`);
-  const q = ease(prog(t, 14.9, 15.3)); set($('q2'), q * (1 - prog(t, END - 0.3, END)), `translateY(${(1 - q) * 20}px)`);
+  const q = ease(prog(t, 15.5, 15.9)); set($('q2'), q * (1 - prog(t, END - 0.3, END)), `translateY(${(1 - q) * 20}px)`);
   $('defi').style.transform = `scale(${1 + 0.06 * Math.max(0, Math.sin((t - 15.6) * 5)) * (t > 15.6 ? 1 : 0)})`;
   $('defi').style.boxShadow = t > 15.6 ? `0 0 ${40 + 30 * Math.sin(t * 5)}px rgba(255,198,90,.6)` : '';
   // commentary under the phones
   const COM = [['Malik fonce…', 2.7, 4.6], ['Raté !', 4.75, 6.3, '#ff8785'], ['Léa prend son temps…', 6.6, 9.9], ['Léa trouve en 0:38 !', 10.35, 12.9, '#ffc65a'], ['Malik : 0:41. Trop tard !', 13.35, 14.3, '#5ae6c6']];
   if (!$('com').children.length) COM.forEach(([txt, , , col]) => { const sp = document.createElement('span'); sp.textContent = txt; if (col) sp.style.color = col; $('com').appendChild(sp); });
   COM.forEach(([, a, b], j) => { const k = ease(prog(t, a, a + 0.25)); set($('com').children[j], k * (1 - prog(t, b, b + 0.2)), `translateY(${(1 - k) * 20}px) scale(${lerp(0.9, 1, k)})`); });
-  renderEnd(t, END);
+  renderEnd(t, END, CUES);
   return true;
 };
 </script>

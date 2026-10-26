@@ -57,11 +57,12 @@
 // Real Football cards from Shared/cards.tsv, easy to hard
 const DIFF = { FACILE: '#5ae6c6', MOYEN: '#ffc65a', DIFFICILE: '#ff8785' };
 const ROUNDS = [
-  { t: 2.6, diff: 'FACILE', word: 'CARTON JAUNE', hint: '« Un avertissement de l’arbitre. »' },
-  { t: 7.1, diff: 'MOYEN', word: 'MARADONA', hint: '« L’Argentin de la “main de Dieu”. »' },
-  { t: 11.6, diff: 'DIFFICILE', word: 'LIZARAZU', hint: '« Un latéral gauche basque champion du monde en 1998. »' },
+  { t: 3.5, diff: 'FACILE', word: 'CARTON JAUNE', hint: '« Un avertissement de l’arbitre. »' },
+  { t: 8.0, diff: 'MOYEN', word: 'MARADONA', hint: '« L’Argentin de la “main de Dieu”. »' },
+  { t: 12.5, diff: 'DIFFICILE', word: 'LIZARAZU', hint: '« Un latéral gauche basque champion du monde en 1998. »' },
 ];
-const RLEN = 4.5, ASK = 16.1, END = 18.6;
+const RLEN = 4.5, ASK = 18.3, END = 20.6;   // timed on the voice, see voice_lines.json
+const CUES = { search: 0.3, type: 0.65, result: 2.0, consonne: 2.6, free: 3.07 };
 ROUNDS.forEach((r, i) => {
   const el = document.createElement('div'); el.className = 'round';
   el.innerHTML = `<div class="pill"><i style="background:${DIFF[r.diff]}"></i>MOT ${i + 1} / 3 · ${r.diff}</div><div class="word"></div>
@@ -80,12 +81,12 @@ window.setup = async () => {
 window.render = (t) => {
   // stands and flashes
   const g = $('crowd').getContext('2d'); g.clearRect(0, 0, 1080, 160);
-  heads.forEach(h => { g.fillStyle = 'rgba(30,45,70,.9)'; g.beginPath(); g.arc(h.x, h.y + Math.sin(t * 6 + h.x) * (t > 2.6 ? 1.5 : 0.5), h.r, 0, 7); g.fill(); });
+  heads.forEach(h => { g.fillStyle = 'rgba(30,45,70,.9)'; g.beginPath(); g.arc(h.x, h.y + Math.sin(t * 6 + h.x) * (t > 3.5 ? 1.5 : 0.5), h.r, 0, 7); g.fill(); });
   const roar = ROUNDS.some(r => t - r.t > 3.0 && t - r.t < 4.3);
   flashes.forEach(f => { const k = Math.exp(-Math.pow(((t - f.t) % (roar ? 1.2 : 3.5)) / 0.05, 2)); if (k > 0.02) { g.fillStyle = `rgba(255,255,255,${k})`; g.beginPath(); g.arc(f.x, f.y, 6, 0, 7); g.fill(); } });
   $('pitch').style.backgroundPosition = `0 ${t * 40}px`;
   // ---- hook 0–2.6
-  const a1 = ease(prog(t, 0.0, 0.3)), a2 = ease(prog(t, 0.45, 0.8)), a3 = ease(prog(t, 1.1, 1.4)), out = prog(t, 2.3, 2.6);
+  const a1 = ease(prog(t, 0.0, 0.3)), a2 = ease(prog(t, 0.45, 0.8)), a3 = ease(prog(t, 1.1, 1.4)), out = prog(t, 3.2, 3.5);
   set($('h1'), a1 * (1 - out), `scale(${lerp(1.15, 1, a1)})`); set($('h2'), a2 * (1 - out), `translateY(${(1 - a2) * 30}px)`); set($('h3'), a3 * (1 - out));
   // ---- rounds: 3 s on the clock, then the vowels drop in and the crowd goes up
   ROUNDS.forEach((r, i) => {
@@ -107,7 +108,7 @@ window.render = (t) => {
   // ---- how many did you get? (16.1–18.6)
   const k1 = ease(prog(t, ASK, ASK + 0.3)), k2 = ease(prog(t, ASK + 0.6, ASK + 0.9)), ko = prog(t, END - 0.3, END);
   set($('ask1'), k1 * (1 - ko), `scale(${lerp(1.15, 1, k1)})`); set($('ask2'), k2 * (1 - ko), `translateY(${(1 - k2) * 20}px)`);
-  renderEnd(t, END);
+  renderEnd(t, END, CUES);
   // the stadium stays behind the end card, dimmed
   $('end').style.background = t >= END ? `rgba(4,7,13,${0.75 * ease(prog(t, END, END + 0.4))})` : 'none';
   return true;

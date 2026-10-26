@@ -1,8 +1,9 @@
 # Soundtrack for "seuls les vrais fans de foot": stomp-stomp-clap anthem in E minor, whistle, horn on each answer.
 # No continuous crowd noise (it sounded like static): the stadium is carried by the beat, a low rumble only on answers.
 import sys; import numpy as np; from synth import *; from endcue import end_cues
-DUR, END = 24.0, 18.6
-ROUNDS = [2.6, 7.1, 11.6]
+DUR, END, ASK = 26.0, 20.6, 18.3
+ROUNDS = [3.5, 8.0, 12.5]
+CUES = dict(search=0.3, type=0.65, result=2.0, consonne=2.6, free=3.07)   # same as composition.html
 M = Mix(DUR, seed=11)
 def rumble(t0, d, g):   # a crowd going up: low, soft, no hiss
     k = int(d * SR); x = smooth(M.noise(k), 220) * 12
@@ -34,6 +35,6 @@ for r in ROUNDS:
     for j in range(5): M.place(bell([76, 79, 83, 86, 88][j], 0.6), r + 3.45 + j * 0.09, 0.045)
     horn(r + 3.75); rumble(r + 3.45, 1.6, 0.06)
 whistle(ROUNDS[0] + 3.5, 0.5, 0.04)                                         # referee on the yellow card
-M.place(whoosh(M, 0.6), 15.9, 0.07); M.place(pluck(76), 16.1, 0.05); M.place(pluck(79), 16.7, 0.05)
-end_cues(M, END)
+M.place(whoosh(M, 0.6), ASK - 0.2, 0.07); M.place(pluck(76), ASK, 0.05); M.place(pluck(79), ASK + 0.6, 0.05)
+end_cues(M, END, **CUES)
 M.write(sys.argv[1], fade_out=1.2)

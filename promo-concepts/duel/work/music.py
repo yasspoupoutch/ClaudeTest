@@ -1,6 +1,7 @@
 # Soundtrack for "le duel": A minor, 128 BPM, tense; keystrokes of both players, a buzzer on the miss, fanfare on the win.
 import sys; from synth import *; from endcue import end_cues
-DUR, GO, END = 23.5, 2.3, 17.8
+DUR, GO, END = 22.0, 2.3, 16.9
+CUES = dict(search=0.3, type=0.57, result=2.0, consonne=2.7, free=3.85)   # same as composition.html
 M = Mix(DUR, seed=21)
 beat = 60 / 128
 TRIES = {'pa': [(7.9, 'CASSOULET', 0.22, 10.3)], 'pb': [(2.6, 'CASSOLET', 0.22, 4.7), (11.3, 'CASSOULET', 0.2, 13.3)]}
@@ -32,6 +33,6 @@ for m in [57, 64, 69, 72, 76]: M.place(tone(hz(m), 1.8, ((1, 1), (2, .3)), a=0.0
 for j in range(4): M.place(bell([72, 76, 79, 84][j], 0.6), 13.3 + j * 0.09, 0.045, 0.4)
 # leaderboard and the challenge button
 M.place(whoosh(M, 0.6), 14.2, 0.08); M.place(blip(84, dur=0.08), 14.5, 0.05)
-for i in range(3): M.place(blip(88 + i * 3, dur=0.07), 15.6 + i * 0.6, 0.04)
-end_cues(M, END)
+for i in range(2): M.place(blip(88 + i * 3, dur=0.07), 15.6 + i * 0.6, 0.04)
+end_cues(M, END, **CUES)
 M.write(sys.argv[1], fade_out=1.2)

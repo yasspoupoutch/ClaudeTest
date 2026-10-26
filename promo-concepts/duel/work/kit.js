@@ -59,19 +59,22 @@ function buildEnd() {
   fitFont($('e-mark'), 'CONSONNE', 940, 190); END_L = buildWord($('e-mark'), 'CONSONNE'); measure(END_L);
 }
 let END_L;
-function renderEnd(t, t0) {
+// c: when each step happens, in seconds after t0, so that it can follow the voice
+const END_CUES = { search: 1.0, type: 1.5, result: 2.8, consonne: 3.3, free: 4.0 };
+function renderEnd(t, t0, c = {}) {
+  c = { ...END_CUES, ...c };
   const lt = t - t0; set($('end'), lt >= 0 ? 1 : 0); if (lt < 0) return;
   const mk = ease(prog(lt, 0, 0.45)); set($('e-mark'), mk, `scale(${lerp(1.2, 1, mk)})`);
-  reveal(END_L, i => spring(lt - (3.3 + i * 0.18)));                       // "it's just consonne without its vowels"
-  const tg = ease(prog(lt, 0.4, 0.8)); set($('e-tag'), tg, `translateY(${(1 - tg) * 20}px)`);
-  const cp = ease(prog(lt, 0.8, 1.2)); set($('e-cap'), cp, `translateY(${(1 - cp) * 20}px)`);
-  const sb = spring(lt - 1.0, 0.5, 0.75); set($('search'), clamp(sb * 1.4), `translateY(${(1 - sb) * 40}px)`);
-  const typed = 'CNSNN'.slice(0, clamp(Math.floor((lt - 1.5) / 0.26) + 1, 0, 5)); $('typed').textContent = lt >= 1.5 ? typed : '';
-  $('sph').style.opacity = lt >= 1.5 ? 0 : 1; $('caret').style.opacity = Math.floor(t * 2.2) % 2 || (lt > 1.4 && lt < 2.9) ? 1 : 0;
-  const rs = spring(lt - 2.8, 0.5, 0.7); set($('result'), clamp(rs * 1.4), `translateY(${(1 - rs) * 40}px)`);
-  const fr = spring(lt - 4.0, 0.45, 0.55); set($('free'), clamp(fr * 1.5), `scale(${lerp(0.6, 1, clamp(fr))})`);
-  const on = lt > 4.0; $('get').style.background = on ? '#0a84ff' : '#2c2c2e'; $('get').style.color = on ? '#fff' : '#0a84ff';
-  $('get').style.transform = `scale(${1 + 0.1 * Math.exp(-Math.pow((lt - 4.1) / 0.15, 2))})`;
-  const tk = spring(lt - 4.4, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
+  reveal(END_L, i => spring(lt - (c.consonne + i * 0.18)));                // "it's just consonne without its vowels"
+  const tg = ease(prog(lt, 0.3, 0.7)); set($('e-tag'), tg, `translateY(${(1 - tg) * 20}px)`);
+  const cp = ease(prog(lt, c.search - 0.2, c.search + 0.2)); set($('e-cap'), cp, `translateY(${(1 - cp) * 20}px)`);
+  const sb = spring(lt - c.search, 0.5, 0.75); set($('search'), clamp(sb * 1.4), `translateY(${(1 - sb) * 40}px)`);
+  const typed = 'CNSNN'.slice(0, clamp(Math.floor((lt - c.type) / 0.26) + 1, 0, 5)); $('typed').textContent = lt >= c.type ? typed : '';
+  $('sph').style.opacity = lt >= c.type ? 0 : 1; $('caret').style.opacity = Math.floor(t * 2.2) % 2 || (lt > c.type - 0.1 && lt < c.type + 1.4) ? 1 : 0;
+  const rs = spring(lt - c.result, 0.5, 0.7); set($('result'), clamp(rs * 1.4), `translateY(${(1 - rs) * 40}px)`);
+  const fr = spring(lt - c.free, 0.45, 0.55); set($('free'), clamp(fr * 1.5), `scale(${lerp(0.6, 1, clamp(fr))})`);
+  const on = lt > c.free; $('get').style.background = on ? '#0a84ff' : '#2c2c2e'; $('get').style.color = on ? '#fff' : '#0a84ff';
+  $('get').style.transform = `scale(${1 + 0.1 * Math.exp(-Math.pow((lt - c.free - 0.1) / 0.15, 2))})`;
+  const tk = spring(lt - c.free - 0.4, 0.5, 0.75); set($('tiktok'), clamp(tk * 1.4), `translateY(${(1 - tk) * 40}px)`);
 }
 // End-card sound cues for music.py (relative to t0): search keys, result, vowels into CONSONNE, "free"

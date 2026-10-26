@@ -1,6 +1,7 @@
 # Soundtrack for "ton cerveau sait lire sans voyelles": E minor, 120 BPM. Times follow composition.html.
 import sys; from synth import *; from endcue import end_cues
-DUR, T2, T3, END = 24.0, 6.9, 11.9, 18.7
+DUR, T2, T3, END = 25.4, 7.2, 12.2, 18.1
+CUES = dict(search=0.45, type=0.75, result=2.3, consonne=4.1, free=5.6)   # same as composition.html
 M = Mix(DUR, seed=5)
 chords = [[64, 67, 71], [60, 64, 67], [55, 59, 62, 67], [62, 66, 69]]  # Em C G D
 roots = [40, 36, 43, 38]
@@ -35,6 +36,6 @@ M.place(whoosh(M, 0.5), T2 - 0.25, 0.08); think(T2); found(T2 + 3.5, 7); M.place
 M.place(whoosh(M, 0.5), T3 - 0.25, 0.08); think(T3); found(T3 + 3.5, 3); M.place(blip(91, dur=0.1), T3 + 4.0, 0.06)
 M.place(riser(M, 0.6), T3 + 2.8, 0.06)
 # the app
-M.place(whoosh(M, 0.7), 16.3, 0.08)
-end_cues(M, END)
+M.place(whoosh(M, 0.7), T3 + 4.4, 0.08)
+end_cues(M, END, **CUES)
 M.write(sys.argv[1], fade_out=1.2)
