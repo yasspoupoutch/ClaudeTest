@@ -2,6 +2,12 @@
 
 Compte : **@jeucnsnn**. Chaque vidéo est aussi publiée en **Reels** (Instagram) et en **Shorts** (YouTube), même fichier.
 
+## Le quota Metricool gratuit (règle : zéro euro)
+
+- **20 publications par mois**, et une vidéo envoyée sur 3 réseaux en compte 3. Le compteur repart à zéro le 1er du mois.
+- Répartition : **TikTok en priorité** (une vidéo tous les 2 jours environ), **Instagram seulement pour les meilleures** (3 à 5 par mois), **Facebook jamais via Metricool**. Les Reels Instagram sont repartagés sur la Page Facebook par le réglage gratuit d'Instagram (« Partager aussi sur Facebook »).
+- Novembre : 7 TikTok + 3 Instagram du 1er au 7, soit 10 ; il reste 10 publications pour le 8 au 30 (8 TikTok + 2 Instagram).
+
 ## Les règles du jeu
 
 - **Une vidéo par jour, à heure fixe.** La régularité compte plus que la perfection : l'algorithme et les abonnés prennent l'habitude.
