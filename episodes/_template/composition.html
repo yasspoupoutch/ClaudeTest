@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>CNSNN — épisode</title>
+<link rel="stylesheet" href="base.css">
+<style>
+#hook { inset: 0; }
+#h1 { top: 560px; font-size: 190px; line-height: 1; }
+#h2 { top: 800px; font-size: 120px; color: var(--gold); }
+#h3 { top: 1080px; font-size: 44px; font-weight: 600; color: var(--fg2); letter-spacing: 2px; }
+.round { inset: 0; }
+.day { left: 50%; top: 250px; height: 100px; padding: 0 44px; transform: translateX(-50%); font-size: 36px; font-weight: 700; letter-spacing: 4px; }
+.day i { width: 22px; height: 22px; border-radius: 50%; margin-right: 18px; display: inline-block; }
+.idx { top: 390px; font-size: 32px; color: var(--fg3); font-weight: 600; letter-spacing: 3px; }
+.word { left: 0; right: 0; top: 560px; text-align: center; font-size: 260px; line-height: 1; white-space: nowrap; letter-spacing: 10px; }
+.word .v { text-shadow: 0 0 34px rgba(255,198,90,.6); }
+.glow { left: 40px; right: 40px; top: 470px; height: 460px; background: radial-gradient(closest-side, rgba(255,198,90,.4), rgba(255,198,90,0)); }
+.rule { left: 495px; width: 90px; height: 4px; top: 930px; background: var(--fg3); }
+.hint { left: 110px; right: 110px; top: 990px; font-size: 70px; line-height: 1.15; text-align: center; }
+.bar { left: 140px; right: 140px; top: 1330px; height: 16px; border-radius: 8px; background: rgba(255,255,255,.1); overflow: hidden; }
+.bar b { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--gold-bot), var(--gold-top)); transform-origin: 0 50%; }
+.count { top: 1380px; font-size: 64px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.verdict { top: 1380px; font-size: 64px; color: var(--mint); }
+#week { inset: 0; }
+#wk1 { top: 420px; font-size: 128px; line-height: 1.02; }
+#days { left: 70px; right: 70px; top: 860px; display: flex; gap: 16px; }
+.dcol { flex: 1; border-radius: 40px; padding: 30px 0 34px; text-align: center; }
+.dcol b { display: block; font-size: 46px; font-weight: 700; }
+.dcol span { display: block; font-size: 25px; margin-top: 18px; color: var(--fg2); font-weight: 600; }
+.dcol i { display: block; width: 26px; height: 26px; border-radius: 50%; margin: 22px auto 0; }
+#wk2 { top: 1200px; font-size: 76px; color: var(--fg2); }
+#outro { inset: 0; }
+#mark { left: 0; right: 0; top: 620px; text-align: center; }
+#mark .v { text-shadow: 0 0 40px rgba(255,198,90,.55); }
+#markGlow { left: 40px; right: 40px; top: 530px; height: 420px; background: radial-gradient(closest-side, rgba(255,198,90,.35), rgba(255,198,90,0)); }
+#tag { top: 960px; font-size: 92px; line-height: 1.1; }
+#free { left: 50%; top: 1250px; height: 120px; padding: 0 60px; font-size: 44px; font-weight: 700; transform: translateX(-50%); }
+#store { left: 0; right: 0; top: 1470px; display: flex; justify-content: center; align-items: center; gap: 30px; }
+#store img { width: 170px; height: 170px; border-radius: 38px; box-shadow: 0 18px 40px rgba(0,0,0,.55), 0 0 0 2px rgba(255,255,255,.12); }
+#store .badge { height: 150px; padding: 0 44px 0 32px; border-radius: 32px; background: #000; border: 3px solid #a6a6a6; display: flex; align-items: center; gap: 18px; }
+#store .badge small { display: block; font-size: 32px; font-weight: 500; letter-spacing: .3px; }
+#store .badge b { display: block; font-size: 62px; font-weight: 600; letter-spacing: -1px; line-height: 1.05; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="blob" id="b1"></div><div class="blob" id="b2"></div>
+
+  <div id="hook" class="abs">
+    <div class="abs center-x serif" id="h1"></div>
+    <div class="abs center-x italic" id="h2"></div>
+    <div class="abs center-x" id="h3"></div>
+  </div>
+  <div id="rounds"></div>
+
+  <div id="week" class="abs">
+    <div class="abs center-x" id="wk1"><div class="serif" id="wk1a">Un nouveau mot</div><div class="italic" id="wk1b" style="color:var(--gold)">chaque jour.</div></div>
+    <div class="abs" id="days"></div>
+    <div class="abs center-x italic" id="wk2">Plus coriace le week-end.</div>
+  </div>
+
+  <div id="outro" class="abs">
+    <div class="abs" id="markGlow"></div>
+    <div class="abs mark" id="mark"></div>
+    <div class="abs center-x italic" id="tag"><span id="tagq"></span><br><span style="color:var(--gold)">Dis-le en commentaire.</span></div>
+    <div class="abs pill gold-fill" id="free">Gratuit, sans publicité.</div>
+    <div class="abs" id="store">
+      <img src="appicon.png" alt="">
+      <div class="badge"><svg width="74" height="74" viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="#fff"/></svg>
+        <div><small>Disponible sur</small><b>l’App Store</b></div></div>
+    </div>
+  </div>
+</div>
+<script src="lib.js"></script>
+<script src="ep.js"></script>
+<script>
+// Real cards from Shared/cards.tsv; difficulty follows DailySchedule (easy Mon–Tue, medium Wed–Fri, hard weekend)
+const DIFF = { Facile: '#5ae6c6', Moyen: '#ffc65a', Difficile: '#ff8785' };
+const ROUNDS = EP.rounds.map((r, i) => ({ ...r, hint: r.hint.replace('« ', '«\u00A0').replace(' »', '\u00A0»'), t: 2.4 + 4.6 * i }));
+const OT = 2.4 + 4.6 * ROUNDS.length;   // outro start
+$('h1').textContent = EP.h1; $('h2').textContent = EP.h2; $('h3').textContent = EP.h3; $('tagq').textContent = EP.tag;
+const ROUND_LEN = 4.6, THINK = 3.0, START = 0.45;
+ROUNDS.forEach((r, i) => {
+  const el = document.createElement('div'); el.className = 'abs round';
+  el.innerHTML = `<div class="abs pill glass day"><i style="background:${DIFF[r.diff]}"></i>${r.label} · ${r.diff.toUpperCase()}</div>
+    <div class="abs center-x idx">${ROUNDS.length > 1 ? `MOT ${i + 1} / ${ROUNDS.length}` : 'SANS VOYELLES'}</div><div class="abs glow"></div><div class="abs word serif"></div><div class="abs rule"></div>
+    <div class="abs hint italic">${r.hint}</div><div class="abs bar"><b></b></div><div class="abs center-x count"></div>
+    <div class="abs center-x verdict italic">${r.answer || r.word.charAt(0) + r.word.slice(1).toLowerCase()} !</div>`;
+  $('rounds').appendChild(el); r.el = el; r.q = s => el.querySelector(s);
+});
+const WEEK = [['L', 'Facile'], ['M', 'Facile'], ['M', 'Moyen'], ['J', 'Moyen'], ['V', 'Moyen'], ['S', 'Difficile'], ['D', 'Difficile']];
+const dayEls = WEEK.map(([d, f]) => { const c = document.createElement('div'); c.className = 'dcol glass';
+  c.innerHTML = `<b>${d}</b><i style="background:${DIFF[f]}"></i><span style="color:${DIFF[f]}">${f === 'Difficile' ? 'DUR' : f.toUpperCase()}</span>`; $('days').appendChild(c); return c; });
+let OUT;
+window.setup = async () => {
+  await document.fonts.ready;
+  ROUNDS.forEach(r => { fitFont(r.q('.word'), r.word, 820, 260); r.L = buildWord(r.q('.word'), r.word); measure(r.L); });
+  fitFont($('mark'), 'CONSONNE', 940); OUT = buildWord($('mark'), 'CONSONNE'); measure(OUT);
+  return true;
+};
+window.render = (t) => {
+  ambient(t, 0.5);
+  // Hook 0–2.4
+  const ho = prog(t, 2.15, 2.4);
+  set($('hook'), t < 2.4 ? 1 - ho : 0, `scale(${1 - 0.04 * ho})`);
+  const a1 = ease(prog(t, -0.2, 0.3)), a2 = ease(prog(t, 0.45, 0.85)), a3 = ease(prog(t, 1.2, 1.5));
+  set($('h1'), a1, `scale(${lerp(1.1, 1, a1)})`);
+  set($('h2'), a2, `translateY(${(1 - a2) * 30}px)`);
+  set($('h3'), a3);
+  // Rounds
+  ROUNDS.forEach((r, i) => {
+    const lt = t - r.t, on = lt >= 0 && lt < ROUND_LEN;
+    const out = prog(lt, ROUND_LEN - 0.25, ROUND_LEN);
+    set(r.el, on ? 1 - out : 0, `translateX(${-80 * io(out)}px)`);
+    if (!on) return;
+    const inn = ease(prog(lt, 0, 0.35));
+    set(r.q('.day'), inn, `translateX(-50%) translateY(${(1 - inn) * -30}px)`);
+    set(r.q('.idx'), inn);
+    set(r.q('.word'), inn, `scale(${lerp(1.15, 1, inn)})`);
+    set(r.q('.rule'), ease(prog(lt, 0.15, 0.45)));
+    const hi = ease(prog(lt, 0.25, 0.6));
+    set(r.q('.hint'), hi, `translateY(${(1 - hi) * 20}px)`);
+    const think = prog(lt, START, START + THINK), rv = START + THINK;
+    set(r.q('.bar'), lt < rv + 0.1 ? 1 : 1 - prog(lt, rv + 0.1, rv + 0.3));
+    r.q('.bar b').style.transform = `scaleX(${1 - think})`;
+    const sec = Math.ceil(THINK - (lt - START));
+    r.q('.count').textContent = String(clamp(sec, 1, 3));
+    const tick = lt - START - (3 - clamp(sec, 1, 3));
+    set(r.q('.count'), lt >= START && lt < rv ? 1 : 0, `scale(${1 + 0.18 * Math.exp(-tick * 10)})`);
+    reveal(r.L, j => spring(lt - rv - j * 0.12));
+    const nv = r.word.split('').filter(isVowel).length;
+    const g = ease(prog(lt, rv + 0.12 * nv + 0.15, rv + 0.12 * nv + 0.45)) * (1 - prog(lt, ROUND_LEN - 0.6, ROUND_LEN));
+    r.q('.glow').style.opacity = g;
+    const vd = ease(prog(lt, rv + 0.2, rv + 0.5));
+    set(r.q('.verdict'), vd, `translateY(${(1 - vd) * 20}px)`);
+    set(r.q('.hint'), hi * (1 - 0.45 * prog(lt, rv, rv + 0.3)), `translateY(${(1 - hi) * 20}px)`);
+  });
+  // Week 16.2–18.4
+  const wOn = t >= 16.2 && t < 19.0, wout = prog(t, 18.75, 19.0);
+  set($('week'), 0);
+  const w1 = ease(prog(t, 16.25, 16.6)), w2 = ease(prog(t, 16.45, 16.8));
+  set($('wk1a'), w1, `translateY(${(1 - w1) * 40}px)`); set($('wk1b'), w2, `translateY(${(1 - w2) * 40}px)`);
+  dayEls.forEach((d, i) => { const p = spring(t - (16.7 + i * 0.07), 0.4, 0.7); set(d, clamp(p * 1.4), `translateY(${(1 - p) * 70}px)`); });
+  const we = Math.exp(-Math.pow((t - 17.75) / 0.18, 2));
+  [5, 6].forEach(i => { dayEls[i].style.boxShadow = `0 0 ${70 * we}px rgba(255,135,133,${0.7 * we})`; });
+  const w3 = ease(prog(t, 17.5, 17.85));
+  set($('wk2'), w3, `translateY(${(1 - w3) * 30}px)`);
+  // Outro OT + 0.00–OT + 3.50
+  set($('outro'), t >= OT + 0.00 ? 1 : 0);
+  const mk = ease(prog(t, OT + 0.00, OT + 0.40));
+  set($('mark'), mk, `scale(${lerp(1.12, 1, mk)})`);
+  reveal(OUT, i => spring(t - (OT + 0.70 + i * 0.16)));
+  set($('markGlow'), ease(prog(t, OT + 1.10, OT + 1.50)) * (0.6 + 0.4 * (1 - prog(t, OT + 1.50, 22))));
+  const tg = ease(prog(t, OT + 1.30, OT + 1.70));
+  set($('tag'), tg, `translateY(${(1 - tg) * 30}px)`);
+  const fr = spring(t - (OT + 2.00), 0.5, 0.7);
+  set($('free'), clamp(fr), `translateX(-50%) scale(${lerp(0.8, 1, fr)})`);
+  const st = spring(t - (OT + 2.50), 0.5, 0.75);
+  set($('store'), clamp(st * 1.4), `translateY(${(1 - st) * 50}px)`);
+  return true;
+};
+</script>
+</body>
+</html>
