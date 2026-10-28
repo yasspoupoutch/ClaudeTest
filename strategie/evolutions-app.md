@@ -3,6 +3,9 @@
 Analyse faite sur le dépôt `yasspoupoutch/cnsnn` à jour (version 1.2, commit `94c07ab`). Rien n'a été modifié dans ce dépôt :
 ce document décrit les changements, avec les fichiers concernés, pour que tu les fasses (ou que tu me demandes de les préparer ailleurs).
 
+> **Règle fixée le 29 octobre : aucun euro dépensé, sur aucune plateforme.** Les points 4 (Blaze, qui demande une carte bancaire),
+> 5 (compte Google Play à 25 $) et 8 (pub payante) sont donc en pause tant que cette règle tient.
+
 ## Ce qui est déjà en place (et qui aide beaucoup)
 
 - Publiée sur l'App Store (`id6823569042`), tutoriel de démarrage, demande d'avis dans l'appli, rappel à 12 h, rattrapage classé des
