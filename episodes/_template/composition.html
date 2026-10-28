@@ -77,10 +77,11 @@
 <script>
 // Real cards from Shared/cards.tsv; difficulty follows DailySchedule (easy Mon–Tue, medium Wed–Fri, hard weekend)
 const DIFF = { Facile: '#5ae6c6', Moyen: '#ffc65a', Difficile: '#ff8785' };
-const ROUNDS = EP.rounds.map((r, i) => ({ ...r, hint: r.hint.replace('« ', '«\u00A0').replace(' »', '\u00A0»'), t: 2.4 + 4.6 * i }));
-const OT = 2.4 + 4.6 * ROUNDS.length;   // outro start
+const RL = EP.roundLen || 4.6, ST = EP.start || 0.45;   // round length, timer start in the round
+const ROUNDS = EP.rounds.map((r, i) => ({ ...r, hint: r.hint.replace('« ', '«\u00A0').replace(' »', '\u00A0»'), t: 2.4 + RL * i }));
+const OT = 2.4 + RL * ROUNDS.length;   // outro start
 $('h1').textContent = EP.h1; $('h2').textContent = EP.h2; $('h3').textContent = EP.h3; $('tagq').textContent = EP.tag;
-const ROUND_LEN = 4.6, THINK = 3.0, START = 0.45;
+const ROUND_LEN = RL, THINK = 3.0, START = ST;
 ROUNDS.forEach((r, i) => {
   const el = document.createElement('div'); el.className = 'abs round';
   el.innerHTML = `<div class="abs pill glass day"><i style="background:${DIFF[r.diff]}"></i>${r.label} · ${r.diff.toUpperCase()}</div>

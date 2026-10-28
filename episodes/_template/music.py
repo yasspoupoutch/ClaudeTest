@@ -1,13 +1,13 @@
 # Soundtrack for the "3 secondes" quiz: E minor, 120 BPM, a ticking clock under each round.
 import sys, json; from synth import *
 EP = json.load(open(sys.argv[2] if len(sys.argv) > 2 else 'ep.json'))
-N = len(EP['rounds']); OT = 2.4 + 4.6 * N
+N = len(EP['rounds']); RL = EP.get('roundLen', 4.6); ST = EP.get('start', 0.45); OT = 2.4 + RL * N
 M = Mix(OT + 4.5)
 beat = 0.5; bar = 2.0
 chords = [[64, 67, 71], [60, 64, 67], [55, 59, 62, 67], [62, 66, 69]]  # Em C G D
 roots = [40, 36, 43, 38]
-ROUNDS = [(2.4 + 4.6 * i, [76, 79, 83, 88][:3 + (i == N - 1 and N > 1)]) for i in range(N)]
-def thinking(t): return any(r + 0.45 <= t < r + 3.45 for r, _ in ROUNDS)
+ROUNDS = [(2.4 + RL * i, [76, 79, 83, 88][:3 + (i == N - 1 and N > 1)]) for i in range(N)]
+def thinking(t): return any(r + ST <= t < r + ST + 3 for r, _ in ROUNDS)
 t = 0.0; step = 0
 while t < OT:
     ci = int(t // bar) % 4; k = step % 8
@@ -29,8 +29,8 @@ for r0, vowels in ROUNDS:
     M.place(whoosh(M, 0.3), r0 - 0.05, 0.05)
     for s in range(3):  # clock ticks, tock on the last
         n = int(0.05 * SR)
-        M.place(tone(2000 if s < 2 else 1500, 0.05, a=.0005, tau=.012) + 0.4 * hat(M, 0.05, 0.006)[:n], r0 + 0.45 + s, 0.08)
-    rv = r0 + 3.45
+        M.place(tone(2000 if s < 2 else 1500, 0.05, a=.0005, tau=.012) + 0.4 * hat(M, 0.05, 0.006)[:n], r0 + ST + s, 0.08)
+    rv = r0 + ST + 3
     for i, m in enumerate(vowels): M.place(bell(m, 0.7), rv + i * 0.12, 0.055, (i - 2) * 0.15)
     for m in [52, 64, 71, 76]: M.place(tone(hz(m), 1.2, ((1, 1), (2, .2)), a=.02, tau=.5), rv + 0.1, 0.035)
 # Outro
