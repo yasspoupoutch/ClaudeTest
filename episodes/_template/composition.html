@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="base.css">
 <style>
 #hook { inset: 0; }
+#banner { left: 60px; right: 60px; top: 345px; font-size: 80px; line-height: 1.05; color: var(--gold); text-align: center; }
 #h1 { top: 560px; font-size: 190px; line-height: 1; }
 #h2 { top: 800px; font-size: 120px; color: var(--gold); }
 #h3 { top: 1080px; font-size: 44px; font-weight: 600; color: var(--fg2); letter-spacing: 2px; }
@@ -52,6 +53,7 @@
     <div class="abs center-x italic" id="h2"></div>
     <div class="abs center-x" id="h3"></div>
   </div>
+  <div class="abs italic" id="banner"></div>
   <div id="rounds"></div>
 
   <div id="week" class="abs">
@@ -78,13 +80,14 @@
 // Real cards from Shared/cards.tsv; difficulty follows DailySchedule (easy Mon–Tue, medium Wed–Fri, hard weekend)
 const DIFF = { Facile: '#5ae6c6', Moyen: '#ffc65a', Difficile: '#ff8785' };
 const RL = EP.roundLen || 4.6, ST = EP.start || 0.45;   // round length, timer start in the round
-const ROUNDS = EP.rounds.map((r, i) => ({ ...r, hint: r.hint.replace('« ', '«\u00A0').replace(' »', '\u00A0»'), t: 2.4 + RL * i }));
-const OT = 2.4 + RL * ROUNDS.length;   // outro start
-$('h1').textContent = EP.h1; $('h2').textContent = EP.h2; $('h3').textContent = EP.h3; $('tagq').textContent = EP.tag;
+const H = EP.hookLen ?? 2.4;   // 0: no title card, the first word is on screen from the first frame
+const ROUNDS = EP.rounds.map((r, i) => ({ ...r, hint: r.hint.replace('« ', '«\u00A0').replace(' »', '\u00A0»'), t: H + RL * i }));
+const OT = H + RL * ROUNDS.length;   // outro start
+$('h1').textContent = EP.h1; $('h2').textContent = EP.h2; $('h3').textContent = EP.h3; $('tagq').textContent = EP.tag; $('banner').textContent = (EP.banner || '').replace(/(\d) /g, '$1\u00A0');
 const ROUND_LEN = RL, THINK = 3.0, START = ST;
 ROUNDS.forEach((r, i) => {
   const el = document.createElement('div'); el.className = 'abs round';
-  el.innerHTML = `<div class="abs pill glass day"><i style="background:${DIFF[r.diff]}"></i>${r.label} · ${r.diff.toUpperCase()}</div>
+  el.innerHTML = `<div class="abs pill glass day"><i style="background:${DIFF[r.diff]}"></i>${r.label} · ${r.diff.toUpperCase()}${EP.hookLen === 0 && EP.rounds.length > 1 ? ` · ${i + 1}/${EP.rounds.length}` : ''}</div>
     <div class="abs center-x idx">${ROUNDS.length > 1 ? `MOT ${i + 1} / ${ROUNDS.length}` : 'SANS VOYELLES'}</div><div class="abs glow"></div><div class="abs word serif"></div><div class="abs rule"></div>
     <div class="abs hint italic">${r.hint}</div><div class="abs bar"><b></b></div><div class="abs center-x count"></div>
     <div class="abs center-x verdict italic">${r.answer || r.word.charAt(0) + r.word.slice(1).toLowerCase()} !</div>`;
@@ -104,7 +107,8 @@ window.render = (t) => {
   ambient(t, 0.5);
   // Hook 0–2.4
   const ho = prog(t, 2.15, 2.4);
-  set($('hook'), t < 2.4 ? 1 - ho : 0, `scale(${1 - 0.04 * ho})`);
+  set($('hook'), t < H ? 1 - ho : 0, `scale(${1 - 0.04 * ho})`);
+  set($('banner'), H === 0 && EP.banner ? 1 - prog(t, OT - 0.3, OT) : 0);
   const a1 = ease(prog(t, -0.2, 0.3)), a2 = ease(prog(t, 0.45, 0.85)), a3 = ease(prog(t, 1.2, 1.5));
   set($('h1'), a1, `scale(${lerp(1.1, 1, a1)})`);
   set($('h2'), a2, `translateY(${(1 - a2) * 30}px)`);
@@ -115,12 +119,13 @@ window.render = (t) => {
     const out = prog(lt, ROUND_LEN - 0.25, ROUND_LEN);
     set(r.el, on ? 1 - out : 0, `translateX(${-80 * io(out)}px)`);
     if (!on) return;
-    const inn = ease(prog(lt, 0, 0.35));
+    const first = H === 0 && i === 0;   // already on screen at frame 0
+    const inn = first ? 1 : ease(prog(lt, 0, 0.35));
     set(r.q('.day'), inn, `translateX(-50%) translateY(${(1 - inn) * -30}px)`);
-    set(r.q('.idx'), inn);
+    set(r.q('.idx'), H === 0 ? 0 : inn);
     set(r.q('.word'), inn, `scale(${lerp(1.15, 1, inn)})`);
-    set(r.q('.rule'), ease(prog(lt, 0.15, 0.45)));
-    const hi = ease(prog(lt, 0.25, 0.6));
+    set(r.q('.rule'), first ? 1 : ease(prog(lt, 0.15, 0.45)));
+    const hi = first ? 1 : ease(prog(lt, 0.25, 0.6));
     set(r.q('.hint'), hi, `translateY(${(1 - hi) * 20}px)`);
     const think = prog(lt, START, START + THINK), rv = START + THINK;
     set(r.q('.bar'), lt < rv + 0.1 ? 1 : 1 - prog(lt, rv + 0.1, rv + 0.3));
