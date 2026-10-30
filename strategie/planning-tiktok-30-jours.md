@@ -80,3 +80,10 @@ Les formats **A, B, C et D** se fabriquent avec les modèles existants en **moin
 | Visites de profil, clics sur le lien en bio | TikTok Studio | monte avec les abonnés |
 | Téléchargements par jour, sources (« Référent web », « Recherche App Store ») | App Store Connect → Analytics | les pics suivent les vidéos qui marchent |
 | Joueurs du jour (Mot du jour) | classement « Aujourd'hui » dans l'appli (« 3e sur 120 ») | le nombre de joueurs quotidiens qui monte |
+
+## Leçons des premières semaines (à appliquer aux prochaines vidéos, sans refaire les anciennes)
+
+- Les quiz simples faits par le créateur (un mot, consonnes énormes, indice, barre de temps) ont fait 271 à 944 vues sur TikTok ; les vidéos plus travaillées : Halloween 352, « cerveau » 20.
+- Garder la police du jeu, mais : un seul mot lisible dès la vignette, consonnes très grandes, défi à l'écran dès la première image, fin courte « Tape CNSNN sur l'App Store ».
+- Code de campagne App Store : `pt=129627766` (liens : `https://apps.apple.com/app/apple-store/id6823569042?pt=129627766&ct=<source>&mt=8`).
+- Compte TikTok personnel : le passage en compte pro demande une entreprise vérifiée, donc pas de stats TikTok dans Metricool ni de lien cliquable avant 1 000 abonnés.
