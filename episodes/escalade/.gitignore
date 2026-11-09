@@ -1,4 +1,4 @@
 work/frames/
 work/stills/
-work/audio.wav
+work/*.wav
 work/__pycache__/
