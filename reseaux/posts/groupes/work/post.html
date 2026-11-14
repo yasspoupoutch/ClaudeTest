@@ -1,0 +1,36 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+html, body { width: 1080px; height: 1350px; }
+#s { position: absolute; inset: 0; background: radial-gradient(900px 700px at 15% 0%, #3d2b9e 0%, rgba(61,43,158,0) 70%), radial-gradient(900px 800px at 95% 85%, #0b5a5d 0%, rgba(11,90,93,0) 70%), #0b0c14; }
+.c { position: absolute; left: 0; right: 0; text-align: center; }
+#t { top: 90px; font-family: "Fraunces", serif; font-weight: 900; font-size: 74px; letter-spacing: .01em; }
+#pill { position: absolute; left: 50%; top: 210px; transform: translateX(-50%); height: 70px; padding: 0 34px; font-size: 28px; font-weight: 700; letter-spacing: 4px; }
+#pill i { width: 18px; height: 18px; border-radius: 50%; margin-right: 14px; display: inline-block; }
+#w { top: 360px; font-family: "Instrument Serif", serif; line-height: 1; letter-spacing: 12px; white-space: nowrap; }
+#rule { position: absolute; left: 495px; width: 90px; height: 4px; top: 640px; background: rgba(244,245,248,.35); }
+#h { top: 690px; left: 110px; right: 110px; font-family: "Instrument Serif", serif; font-style: italic; font-size: 60px; line-height: 1.15; color: var(--fg2); }
+#q { top: 900px; font-size: 44px; font-weight: 700; color: var(--gold); }
+#bar { position: absolute; left: 50px; right: 50px; bottom: 50px; height: 200px; border-radius: 40px; display: flex; align-items: center; gap: 26px; padding: 0 34px; }
+#bar img { width: 120px; height: 120px; border-radius: 28px; }
+#bar .tx { flex: 1; } #bar .tx b { display: block; font-family: "Fraunces", serif; font-weight: 900; font-size: 46px; letter-spacing: .05em; }
+#bar .tx span { display: block; font-size: 27px; line-height: 1.25; color: var(--fg2); margin-top: 4px; }
+.bd { display: flex; align-items: center; gap: 10px; height: 92px; padding: 0 24px 0 18px; border-radius: 20px; background: #000; border: 3px solid #a6a6a6; white-space: nowrap; }
+.bd small { display: block; font-size: 19px; } .bd b { display: block; font-size: 38px; font-weight: 600; letter-spacing: -1px; line-height: 1.02; }
+</style></head><body><div id="s">
+<div class="c" id="t">Devine le mot 🧠</div>
+<div class="pill glass" id="pill"><i></i><span></span></div>
+<div class="c" id="w"></div><div id="rule"></div>
+<div class="c" id="h"></div>
+<div class="c" id="q">Réponds en commentaire 👇</div>
+<div class="glass" id="bar"><img src="appicon.png" alt=""><div class="tx"><b>CNSNN</b><span>Plein d’autres mots t’attendent<br>dans l’appli. Gratuit, sans pub.</span></div>
+<div class="bd"><svg width="50" height="50" viewBox="0 0 24 24"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" fill="#fff"/></svg><div><small>Disponible sur</small><b>l’App Store</b></div></div></div>
+</div>
+<script>
+window.fill = (w, h, d) => {
+  const col = { MOYEN: '#ffc65a', DIFFICILE: '#ff8785' }[d];
+  document.querySelector('#pill i').style.background = col; document.querySelector('#pill span').textContent = d;
+  const el = document.getElementById('w'); el.textContent = w;
+  el.style.fontSize = Math.min(240, Math.floor(240 * 900 / (w.length * 150))) + 'px';
+  document.getElementById('h').textContent = '« ' + h + ' »';
+};
+</script></body></html>
