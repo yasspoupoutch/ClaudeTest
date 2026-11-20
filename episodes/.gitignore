@@ -1,2 +1,5 @@
-*/work/
-!_template/
+*/work/frames/
+*/work/stills/
+*/work/g/
+*/work/*.wav
+*/work/__pycache__/
