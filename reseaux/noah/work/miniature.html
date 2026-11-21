@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<style>
+@font-face { font-family: "Fraunces"; font-weight: 900; src: url("fonts/Fraunces-Black.ttf"); }
+@font-face { font-family: "Instrument Serif"; src: url("fonts/InstrumentSerif-Regular.ttf"); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: #05060b; font-family: "Inter", sans-serif; color: #f4f5f8; }
+.abs { position: absolute; }
+/* the man in the reserve, huge and dark behind everything */
+#res { left: -120px; top: 80px; width: 1320px; height: 1610px; background: url(reserve.jpg) center 20% / cover;
+  filter: grayscale(.6) brightness(.42) contrast(1.25) blur(1.5px); }
+#tint { inset: 0; background: radial-gradient(900px 900px at 50% 40%, rgba(160,20,40,.25), rgba(5,6,11,0) 70%),
+  linear-gradient(rgba(5,6,11,.75) 0%, rgba(5,6,11,.05) 22%, rgba(5,6,11,.1) 55%, rgba(5,6,11,.95) 88%); }
+/* Noah, front, fading into the dark */
+#noah { left: 300px; top: 820px; width: 820px; height: 820px; background: url(noah.jpg) 35% center / cover;
+  -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%); filter: brightness(1.05) saturate(1.1); }
+#top { left: 0; right: 0; top: 230px; text-align: center; }
+#top small { display: block; font-size: 40px; font-weight: 800; letter-spacing: 14px; color: rgba(244,245,248,.75); }
+#top b { display: block; font-family: "Fraunces", serif; font-weight: 900; font-size: 250px; line-height: .95; letter-spacing: 8px;
+  text-shadow: 0 0 40px rgba(255,60,80,.55), 0 12px 40px rgba(0,0,0,.8); }
+#ep { left: 50%; top: 545px; transform: translateX(-50%); padding: 14px 34px; border: 3px solid #ff3b4d; border-radius: 16px; font-size: 44px; font-weight: 800; letter-spacing: 6px; color: #fff; background: rgba(10,0,4,.6); white-space: nowrap; }
+#clock { left: 50%; transform: translateX(-50%); top: 690px; padding: 10px 26px; border-radius: 18px; background: #0a0a0c; border: 3px solid #2a2a30;
+  font-family: "DejaVu Sans Mono", monospace; font-weight: 700; font-size: 110px; letter-spacing: 4px; color: #ff2d3c; text-shadow: 0 0 24px rgba(255,45,60,.9); }
+/* the note slipped under the door */
+#tag { left: 60px; top: 960px; padding: 12px 22px; border-radius: 12px; background: #ffc65a; color: #1a1406; font-size: 30px; font-weight: 900; letter-spacing: 2px; transform: rotate(-4deg); }
+#note { left: 50px; top: 1040px; width: 540px; padding: 40px 24px; background: #f1ede2; color: #17171a; border-radius: 6px; transform: rotate(-5deg);
+  box-shadow: 0 30px 60px rgba(0,0,0,.7); font-family: "DejaVu Sans", sans-serif; font-weight: 700; font-size: 54px; line-height: 1.3; letter-spacing: 4px; white-space: nowrap; text-align: center; }
+#q { left: 0; right: 0; top: 1610px; text-align: center; font-family: "Fraunces", serif; font-weight: 900; font-size: 74px; line-height: 1.05; text-shadow: 0 6px 30px rgba(0,0,0,.9); }
+#q span { color: #ffc65a; }
+</style></head><body>
+<div class="abs" id="res"></div>
+<div class="abs" id="tint"></div>
+<div class="abs" id="noah"></div>
+<div class="abs" id="top"><small>SÉRIE</small><b>NOAH</b></div>
+<div class="abs" id="ep">ÉPISODE 1</div>
+<div class="abs" id="clock">23:11</div>
+<div class="abs" id="tag">DÉCODE AVANT NOAH</div>
+<div class="abs" id="note">BNVN DNS T<br>NVLL VLL, NH</div>
+<div class="abs" id="q">Qui glisse ces messages<br><span>sous sa porte ?</span></div>
+</body></html>
